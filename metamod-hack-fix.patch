@@ -1,0 +1,35 @@
+diff -crB metamod_base//metamod/Makefile metamod/metamod/Makefile
+*** metamod_base//metamod/Makefile	2010-08-05 21:04:40.000000000 +0200
+--- metamod/metamod/Makefile	2010-08-05 21:03:25.000000000 +0200
+***************
+*** 249,255 ****
+  
+  # linux .so compile commands
+  DO_CC_LINUX=$(CC) $(CFLAGS) -fPIC $(INCLUDEDIRS) -o $@ -c $< $(FILTER)
+! LINK_LINUX=$(CC) $(CFLAGS) -shared -ldl -lm $(EXTRA_LINK) $(OBJ_LINUX) -o $@
+  
+  # sort by date
+  ifeq "$(OS)" "linux"
+--- 249,255 ----
+  
+  # linux .so compile commands
+  DO_CC_LINUX=$(CC) $(CFLAGS) -fPIC $(INCLUDEDIRS) -o $@ -c $< $(FILTER)
+! LINK_LINUX=$(CC) $(CFLAGS) -shared -ldl -lm $(EXTRA_LINK) $(OBJ_LINUX) -o $@ -lstdc++
+  
+  # sort by date
+  ifeq "$(OS)" "linux"
+Only in metamod/metamod: Makefile.backup
+diff -crB metamod_base//metamod/osdep.cpp metamod/metamod/osdep.cpp
+*** metamod_base//metamod/osdep.cpp	2010-08-05 21:04:40.000000000 +0200
+--- metamod/metamod/osdep.cpp	2010-08-05 20:59:09.000000000 +0200
+***************
+*** 191,196 ****
+--- 191,197 ----
+  // meta_errno values:
+  //  - ME_NOTFOUND	couldn't find a matching sharedlib for this ptr
+  mBOOL IS_VALID_PTR(void *memptr) {
++   return(mTRUE);
+  	Dl_info dli;
+  	memset(&dli, 0, sizeof(dli));
+  	if(dladdr(memptr, &dli))
+Only in metamod/metamod: osdep.cpp.backup

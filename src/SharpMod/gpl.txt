@@ -1,0 +1,6 @@
+
+   sharpmod version 0.1 Copyright (c) 2008 Andrius Bentkus <Andrius.Bentkus@rwth-aachen.de>
+   sharpmod comes with ABSOLUTELY NO WARRANTY; for details type 'meta gpl'.
+   This is free software, and you are welcome to redistribute it
+   under certain conditions; type `meta gpl` for details
+
