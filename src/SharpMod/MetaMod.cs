@@ -19,8 +19,7 @@
 //     along with csharpmod.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//#define DEBUG_MESSAGES
-//#define DEBUG_MESSAGES2
+#define DEBUG
 
 using System;
 using System.Runtime;
@@ -29,6 +28,7 @@ using System.Runtime.CompilerServices;
 using Mono.Unix;
 using System.Collections;
 using System.Collections.Generic;
+using SharpMod.Helper;
 
 namespace SharpMod.MetaMod
 {
@@ -538,6 +538,7 @@ typedef struct {
       #endif
       engineFunctions = (EngineFunctions)Marshal.PtrToStructure(engineFunctionsFromEngine, typeof(EngineFunctions));
       MetaModEngine.globalVariables = globalVariables;
+
       SharpMod.Init();
       Server.Init();
     }
@@ -614,29 +615,115 @@ typedef struct {
     #region Message Overrides
     internal static List<object> message_elements;
 
-    #if DEBUG_MESSAGES2
-    private static System.Text.StringBuilder sb = null;
+    #if DEBUG
+
+    public class MessageArgument
+    {
+      public Type Type { get; protected set; }
+      public string ShortTypeName { get { return Type.ToString().Split('.').Last().ToLower(); } }
+      public object Value { get; protected set; }
+      public DateTime CallTime { get; protected set; }
+
+      public MessageArgument(Type type, object value)
+      {
+        CallTime = DateTime.Now;
+        Type = type;
+        Value = value;
+      }
+
+      public override string ToString ()
+      {
+        return string.Format("{0}: {1} @ {2}", Type, Value, CallTime);
+      }
+    }
+
+    public class MessageInformation
+    {
+      public MessageDestination MessageDestination { get; protected set; }
+      public int MessageType { get; protected set; }
+      public IntPtr Value { get; protected set; }
+      public IntPtr PlayerEdict { get; protected set; }
+      public List<MessageArgument> Arguments { get; protected set; }
+
+      public DateTime CallTimeBegin { get; set; }
+      public DateTime CallTimeEnd { get; set; }
+
+      public MessageInformation(MessageDestination destination, int messageType, IntPtr val, IntPtr playerEdict)
+      {
+        MessageDestination = destination;
+        MessageType = messageType;
+        Value = val;
+        PlayerEdict = playerEdict;
+        Arguments = new List<MetaModEngine.MessageArgument>();
+      }
+
+      public string MessageName { get { return (MessageType >= 64 ? Message.TypeNames[MessageType].Name : ""); } }
+
+      /// <summary>
+      /// Returns information about the message in one compact string
+      /// </summary>
+      /// <returns>
+      /// A <see cref="System.String"/>
+      /// </returns>
+      public string OneLineInfo()
+      {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.Append("{0}({1})", MessageName, MessageType);
+
+        sb.Append("({0}, {1}, {2})", MessageDestination, Value, PlayerEdict);
+
+        sb.Append("(");
+        for (int i = 0; i < Arguments.Count; i++) {
+          MessageArgument arguments = Arguments[i];
+          sb.Append("{0}:{1}", arguments.ShortTypeName, arguments.Value);
+          if (i+1 < Arguments.Count) sb.Append(", ");
+        }
+        sb.Append(");");
+        return sb.ToString();
+      }
+
+      /// <summary>
+      /// returns information in a lot of strings
+      /// </summary>
+      /// <returns>
+      /// A <see cref="System.String"/>
+      /// </returns>
+      public string VerboseInfo()
+      {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.Append("\nMessage: {0}\n", Message.TypeNames[MessageType].Name);
+        sb.Append("\n\tMessageDestination={0}", MessageDestination);
+        sb.Append("\n\tMessageType={0}", MessageType);
+        sb.Append("\n\tValue={0}", Value);
+        sb.Append("\n\tPlayerEdict={0}", PlayerEdict);
+        sb.Append("\n\tCallTimeBegin={0}", CallTimeBegin);
+        sb.Append("\n\tCallTimeEnd={0}", CallTimeEnd);
+        foreach (var arg in messageInformation.Arguments) sb.Append("\n\t\t{0}", arg);
+        return sb.ToString();
+      }
+
+      public override string ToString()
+      {
+        // TODO: Create a way to switch between the 2 representation modes
+        return OneLineInfo();
+      }
+
+    }
+
+    internal static MessageInformation messageInformation;
     #endif
 
     internal static int message_type;
 
-    internal static void MessageBeginPost(MessageDestination dst, int MessageType, IntPtr val, IntPtr playerEdict)
+    internal static void MessageBeginPost(MessageDestination dst, int messageType, IntPtr val, IntPtr playerEdict)
     {
+      #if DEBUG
+      messageInformation = new MessageInformation(dst, messageType, val, playerEdict);
+      messageInformation.CallTimeBegin = DateTime.Now;
+      #endif
 
-      #if DEBUG_MESSAGES
-      Console.WriteLine ("Message({0}, {1}({2}), {3}, {4})", dst, Message.TypeNames[MessageType], MessageType, val, playerEdict);
-      #endif
-      #if DEBUG_MESSAGES2
-      sb = new System.Text.StringBuilder();
-      BinaryTree.Node node = Message.TypeNames[MessageType];
-      if (node != null) sb.Append(node.Name);
-      sb.Append("(");
-      sb.Append(MessageType);
-      sb.Append(")");
-      sb.Append("(");
-      #endif
       message_elements = new List<object>();
-      message_type = MessageType;
+      message_type = messageType;
 
       if (playerEdict.ToInt32() == 0)
       {
@@ -653,101 +740,72 @@ typedef struct {
 
     internal static void MessageEndPost()
     {
+      #if DEBUG
+      messageInformation.CallTimeEnd = DateTime.Now;
+      Console.WriteLine (messageInformation);
+      #endif
+
       BinaryTree.Node node = Message.TypeNames[message_type];
 
       if ((node != null) && (node.invoker != null))
       {
-        var param = node.invoker.Method.GetParameters();
-
-        int count = message_elements.Count - param.Length;
-        if (count > 0) message_elements.RemoveRange(param.Length, count);
-        else
-        for (int i = message_elements.Count; i < param.Length; i++)
-        {
-          message_elements.Add(param[i].DefaultValue);
-        }
-        node.invoker.Method.Invoke(null, message_elements.ToArray());
+        InvokeFunction(node.invoker, message_elements);
       }
 
-      #if DEBUG_MESSAGES2
-      Console.WriteLine (sb.ToString());
+    }
 
-      #endif
+    internal static void InvokeFunction(Delegate function, List<object> argList)
+    {
+      var param = function.Method.GetParameters();
+      object[] argumentList = new object[param.Length];
+      argList.CopyTo(0, argumentList, 0, param.Length);
+      for (int i = argList.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
+      function.Method.Invoke(null, argumentList);
     }
 
     internal static void WriteBytePost(int val)
     {
-      #if DEBUG_MESSAGES
-      Console.WriteLine ("\tByte: {0}", val);
-      #endif
-      #if DEBUG_MESSAGES2
-      sb.Append("byte: ");
-      sb.Append(val);
-      sb.Append(", ");
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(byte), (byte)val));
       #endif
       message_elements.Add((byte)val);
     }
 
     internal static void WriteCharPost(int val)
     {
-      #if DEBUG_MESSAGES
-      Console.WriteLine ("\tChar: {0}", val);
-      #endif
-      #if DEBUG_MESSAGES2
-      sb.Append("char: ");
-      sb.Append(val);
-      sb.Append(", ");
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(char), (char)val));
       #endif
       message_elements.Add((char)val);
     }
 
     internal static void WriteStringPost(string val)
     {
-      #if DEBUG_MESSAGES
-      Console.WriteLine ("\tString: {0}", val);
-      #endif
-      #if DEBUG_MESSAGES2
-      sb.Append("string: ");
-      sb.Append(val);
-      sb.Append(", ");
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(string), (string)val));
       #endif
       message_elements.Add(val);
     }
 
     internal static void WriteEntityPost(int entity)
     {
-      #if DEBUG_MESSAGES
-      Console.WriteLine ("\tEntity: {0}", entity);
-      #endif
-      #if DEBUG_MESSAGES2
-      sb.Append("entity: ");
-      sb.Append(entity);
-      sb.Append(", ");
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(Entity), new Entity(new IntPtr(entity))));
       #endif
       message_elements.Add(entity);
     }
 
     internal static void WriteShortPost(int val)
     {
-      #if DEBUG_MESSAGES
-      Console.WriteLine ("\tShort: {0}", val);
-      #endif
-      #if DEBUG_MESSAGES2
-      sb.Append("short: ");
-      sb.Append(val);
-      sb.Append(", ");
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(short), (short)val));
       #endif
       message_elements.Add((short)val);
     }
     internal static void WriteLongPost(int val)
     {
-      #if DEBUG_MESSAGES
-      Console.WriteLine ("\tLong: {0}", val);
-      #endif
-      #if DEBUG_MESSAGES2
-      sb.Append("long: ");
-      sb.Append(val);
-      sb.Append(", ");
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(long), (long)val));
       #endif
       message_elements.Add((long)val);
 
@@ -759,7 +817,7 @@ typedef struct {
       BinaryTree.Node node = new BinaryTree.Node(name, val);
       Message.Types.Add(node);
       Message.TypeNames[val] = node;
-      #if DEBUG_MESSAGES2
+      #if DEBUG
       Console.WriteLine ("Registering: {0} {1}", name, val);
       #endif
     }

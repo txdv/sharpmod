@@ -167,7 +167,8 @@ namespace SharpMod
     public void ShowPlugins()
     {
       int pluginCount = plugins.Count;
-      TextTools.TextTable tt = new TextTools.TextTable(new string[] { "", "name", "author", "version" });
+      TextTools.TextTable tt = new TextTools.TextTable(new string[] { "# ", "name", "author", "version" });
+      tt.Header[0].Alignment = TextTools.Align.Right;
 
       numberFormatCounter = 0;
       var data = from h in plugins

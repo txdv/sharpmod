@@ -25,6 +25,7 @@ using SharpMod.MetaMod;
 
 namespace SharpMod
 {
+  #region Enums
   public enum EdictFlags : int
   {
     Fly = (1 << 0),
@@ -99,7 +100,8 @@ namespace SharpMod
     Pushstep,
   }
 
-  #region unsafe
+  #endregion
+
   // engine/edict.h
   /// <summary>
   /// The Edict struct used for almost everything in the GoldSrc engine (including the players)
@@ -431,7 +433,6 @@ namespace SharpMod
       MetaModEngine.dllapiFunctions.Touch(entity.Pointer, this.Pointer);
     }
   }
-  #endregion
 }
 
 // #define STRING                        (*g_engfuncs.pfnSzFromIndex)

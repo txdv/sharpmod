@@ -56,6 +56,7 @@
     <Compile Include="PluginManager.cs" />
     <Compile Include="Admin.cs" />
     <Compile Include="Menu.cs" />
+    <Compile Include="Helper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
