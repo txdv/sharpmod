@@ -710,8 +710,9 @@ namespace SharpMod
       int comparison = String.Compare(position.Name, newNode.Name);
       if (comparison == 0)
       {
+#if DEBUG
         Console.WriteLine ("{0} {1}", position.Name, newNode.Name);
-        Console.WriteLine ("NESAMONE");
+#endif
       }
       else if (comparison < 0) Add(ref position.left, newNode);
       else if (comparison > 0) Add(ref position.right, newNode);

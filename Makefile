@@ -7,6 +7,7 @@ DOWNLOAD_DIR=tmp/
 
 all: fix
 	$(MAKE) -C include/metamod/metamod OPT=opt
+	mkdir bin
 	$(MAKE) -C src/metamodplugin/
 	xbuild src/sharpmod.sln
 
@@ -40,4 +41,4 @@ clean:
 	rm -f includedir
 	rm -rvf bin
 	$(MAKE) -C src/metamodplugin/ clean
-	#rm -rvf `find src/ -name src` `find src/ -name obj` `find src/ -name *.mdb` `find src/ -name *.pidb`
+	rm -rvf `find src/ -name obj` `find src/ -name *.mdb` `find src/ -name *.pidb` `find src/ -name bin`

@@ -22,8 +22,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-using SharpMod.Menus.Menu;
-using SharpMod.CounterStrike;
+using SharpMod.Menues;
 
 namespace SharpMod
 {
@@ -58,6 +57,24 @@ namespace SharpMod
       PluginManager.GetInstance();
       Server.Print(License);
       Server.RegisterCommand("sharp", sharp);
+      Player.RegisterCommand("say /menu", menu);
+    }
+
+    private static void menu(Player player, Command command)
+    {
+      Menu m = new Menu("Nextmap:");
+      m.NumberedItems = true;
+      m.Add(new Item("de_dust"));
+      m.Add(new Item("de_dust2"));
+      m.Add(new Item("de_dust3"));
+      m.Add(new Item("de_dust4"));
+      m.Add(new Item("de_dust5"));
+      m.Add(new Item("de_dust6"));
+      m.Add(new Item("de_inferno"));
+      m.Add(new Item("de_italy"));
+      m.Add(new Item("de_aztec"));
+      m.Add(new Item("cs_office"));
+      m.Show(player, 60);
     }
 
     static void sharpHelp()

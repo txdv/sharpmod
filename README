@@ -26,7 +26,8 @@ just use make to download, untar, patch and compile the custom metamod and metam
 Mono
 ---------------
 
-Mono 2.4.3 is needed, since earlier versions have a bug.
+Mono 2.4.3 is needed, since earlier versions have a bug, which won't let managed pointers of functions be passed, therefore 
+making it impossible to add server command callbacks.
 
 Using sharpmod in your counter-strike server
 ---------------
