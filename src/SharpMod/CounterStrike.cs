@@ -307,45 +307,29 @@ namespace SharpMod.CounterStrike
       player.SetPrivateData(CounterStrikeOffset.csdeaths, val);
     }
 
-    /// <summary>
-    /// Enumerator for colors that can be used in CounterStrike
-    /// </summary>
-    public enum Color
+    #region Team functions
+
+    public static int GetTeamID(this Player player)
     {
-      Yellow = 0x01,
-      Special = 0x03,
-      Green = 0x04
+      return player.GetPrivateData(CounterStrikeOffset.team);
     }
 
-
-    /// <summary>
-    /// Enumerator for CounterStrike SpecialColors (Spectator, Terrorist, Blue)
-    /// </summary>
-    public enum SpecialColor
+    public static Team GetTeamEnum(this Player player)
     {
-      White = 0,
-      Red = 1,
-      Blue = 3
+      return (Team)player.GetTeamID();
     }
 
-    /// <summary>
-    /// Sends a TeamInfo message to the player to inform of a teamchange
-    /// The SpecialColor is set according to the Team the player is in.
-    /// This is needed in order to use All 3 Counter Strike colors in chat.
-    /// </summary>
-    /// <param name="player">
-    /// A player <see cref="Player"/>
-    /// </param>
-    /// <param name="team">
-    /// The Team strings ("CT","TERRORIST", "SPECTATOR") <see cref="System.String"/>
-    /// </param>
-    public static void TeamInfo(this Player player, string team)
+    public static string GetTeamString(this Player player)
     {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("TeamInfo"), IntPtr.Zero, player.Pointer);
-      //Message.Write(player.ID);
-      Message.Write(team);
-      Message.End();
+      return CounterStrike.GetTeamString(player.GetTeamEnum());
     }
+
+    public static SpecialColor GetTeamColor(this Player player)
+    {
+      return SpecialColor.Blue;
+    }
+
+    #endregion
 
     /// <summary>
     /// Prints some colored text in the chat (yellow, green, special).
@@ -366,24 +350,10 @@ namespace SharpMod.CounterStrike
     /// </param>
     public static void ClientColorPrint(this Player player, SpecialColor specialColor, string text, params object[] paramlist)
     {
-      // backup teaminfo
-      // normal color
-      // teaminfo undo
-
-      switch (specialColor)
-      {
-      case SpecialColor.Blue:
-        player.TeamInfo("CT");
-        break;
-      case SpecialColor.Red:
-        player.TeamInfo("TERRORIST");
-        break;
-      case SpecialColor.White:
-        player.TeamInfo("Spectator");
-        break;
-      }
+      string team = player.GetTeamString();
+      player.SendTeamInfoMessage(CounterStrike.GetTeamString(specialColor));
       player.ClientColorPrint(text, paramlist);
-
+      player.SendTeamInfoMessage(team);
     }
 
     /// <summary>
@@ -401,14 +371,18 @@ namespace SharpMod.CounterStrike
     /// </param>
     public static void ClientColorPrint(this Player player, string text, params object[] paramlist)
     {
-
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("SayText"), IntPtr.Zero, player.Pointer);
-      Message.Write((byte)1); // printchat
-      Message.Write(String.Format(text, paramlist));
-      Message.End();
+      player.SendSayTextMessage(String.Format(text, paramlist));
     }
 
-
+    /// <summary>
+    /// Get's the Entity of the Weapon weared right now by they player
+    /// </summary>
+    /// <param name="player">
+    /// The player <see cref="Player"/>
+    /// </param>
+    /// <returns>
+    /// A Weapon Entity <see cref="Weapon"/>
+    /// </returns>
     unsafe public static Weapon GetActiveWeapon(this Player player)
     {
       int *ptr = (int *)player.GetPrivateData(CounterStrikeOffset.activeitem);
@@ -425,10 +399,58 @@ namespace SharpMod.CounterStrike
 
   }
 
+  enum ItemFlag : byte
+  {
+    SelectOnEmpty = 1,
+    NoAutoreaload = 2,
+    NoAutoswitchEmpty = 4,
+    LimitInWorld = 8,
+    Exhaustible = 16,
+  }
+
+  public struct WeaponInfo
+  {
+    string name;
+    byte ammoID;
+    byte ammoMaxAmount;
+    byte secondaryAmmoID;
+    byte secondaryAmmoMaxAmount;
+    byte slotID;
+    byte NumberInSlot;
+    byte weaponID;
+    byte flags;
+  }
+
+
+  public enum Team : int
+  {
+    Spectator         = 1,
+    Terrorist         = 2,
+    CounterTerrorist  = 3,
+  }
+
+  /// <summary>
+  /// Enumerator for colors that can be used in CounterStrike
+  /// </summary>
+  public enum Color
+  {
+    Yellow = 0x01,
+    Special = 0x03,
+    Green = 0x04
+  }
+
+  /// <summary>
+  /// Enumerator for CounterStrike SpecialColors (Spectator, Terrorist, Blue)
+  /// </summary>
+  public enum SpecialColor
+  {
+    White = 0,
+    Red = 1,
+    Blue = 3
+  }
 
   public class Weapon : Entity
   {
-
     #region data
     private static int[] maxclipsize = new int[] {
       0,  // first is empty
@@ -562,6 +584,95 @@ namespace SharpMod.CounterStrike
 
   public class CounterStrike
   {
+    #region team represantations
+    public static string GetTeamString(Team team)
+    {
+      switch (team)
+      {
+      case Team.CounterTerrorist:
+        return "CT";
+      case Team.Terrorist:
+        return "TERRORIST";
+      case Team.Spectator:
+      default:
+        return "SPECTATOR";
+      }
+    }
+    public static string GetTeamString(int id)
+    {
+      return GetTeamString((Team)id);
+    }
+    public static string GetTeamString(SpecialColor color)
+    {
+      return GetTeamString(GetTeamID(color));
+    }
+
+    public static Team GetTeamEnum(string team)
+    {
+      switch (team)
+      {
+      case "CT":
+        return Team.CounterTerrorist;
+      case "TERRORIST":
+        return Team.Terrorist;
+      case "SPECTATOR":
+      default:
+        return Team.Spectator;
+      }
+    }
+    public static Team GetTeamEnum(int id)
+    {
+      return (Team)id;
+    }
+    public static Team GetTeamEnum(SpecialColor color)
+    {
+      return (Team)GetTeamID(color);
+    }
+
+    public static int GetTeamID(string team)
+    {
+      return (int)GetTeamEnum(team);
+    }
+    public static int GetTeamID(Team team)
+    {
+      return (int)team;
+    }
+    public static int GetTeamID(SpecialColor color)
+    {
+      switch (color)
+      {
+      case SpecialColor.Blue:
+        return 1;
+      case SpecialColor.Red:
+        return 2;
+      case SpecialColor.White:
+      default:
+        return 3;
+      }
+    }
+
+    public static SpecialColor GetTeamColor(string team)
+    {
+      return GetTeamColor(GetTeamID(team));
+    }
+    public static SpecialColor GetTeamColor(Team team)
+    {
+      return GetTeamColor((int)team);
+    }
+    public static SpecialColor GetTeamColor(int team)
+    {
+      switch (team)
+      {
+      case 1:
+        return SpecialColor.Blue;
+      case 2:
+        return SpecialColor.Red;
+      case 3:
+      default:
+        return SpecialColor.White;
+      }
+    }
+    #endregion
 
     public delegate void BuyzoneDelegate(bool inzone);
     public static event BuyzoneDelegate Buyzone;
@@ -569,10 +680,9 @@ namespace SharpMod.CounterStrike
     public static void Init()
     {
       BinaryTree.Node node = Message.Types.GetNode("StatusIcon");
-      if (node != null)
-      {
-        node.invoker = (Action<Player, byte, string>)StatusIcon;
-      }
+      if (node != null) node.invoker = (Action<Player, byte, string>)StatusIcon;
+      node = Message.Types.GetNode("WeaponList");
+      //if (node != null) node.invoker = (Action<string, byte, byte, byte, byte, byte, byte>)WeaponList;
     }
 
     internal static void StatusIcon(Player player, byte status, string spriteName)

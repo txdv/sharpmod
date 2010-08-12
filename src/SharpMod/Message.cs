@@ -471,6 +471,8 @@ namespace SharpMod
       StatusIcon(player, StatusIconState.Hide, spriteName, 0, 0, 0);
     }
 
+    #endregion
+
     public static void VGUIMenu(this Player player, byte menuID, short keysBitSum, char time, byte multipart, string name)
     {
       Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("VGUIMenu"), IntPtr.Zero, player.Pointer);
@@ -509,7 +511,41 @@ namespace SharpMod
       Message.End();
     }
 
-    #endregion
+    /// <summary>
+    /// Sends a "SayText" message to a client.
+    /// </summary>
+    /// <param name="player">
+    /// A <see cref="Player"/>
+    /// </param>
+    /// <param name="text">
+    /// A <see cref="System.String"/>
+    /// </param>
+    public static void SendSayTextMessage(this Player player, string text)
+    {
+      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("SayText"), IntPtr.Zero, player.Pointer);
+      Message.Write((byte)1); // printchat
+      Message.Write(text);
+      Message.End();
+    }
+
+    /// <summary>
+    /// Sends a TeamInfo message to the player to inform of a teamchange
+    /// The SpecialColor is set according to the Team the player is in.
+    /// This is needed in order to use All 3 Counter Strike colors in chat.
+    /// </summary>
+    /// <param name="player">
+    /// A player <see cref="Player"/>
+    /// </param>
+    /// <param name="team">
+    /// The Team strings ("CT","TERRORIST", "SPECTATOR") <see cref="System.String"/>
+    /// </param>
+    public static void SendTeamInfoMessage(this Player player, string team)
+    {
+      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("TeamInfo"), IntPtr.Zero, player.Pointer);
+      //Message.Write(player.ID);
+      Message.Write(team);
+      Message.End();
+    }
 
   }
 
