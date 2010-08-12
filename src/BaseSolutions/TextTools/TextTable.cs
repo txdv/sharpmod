@@ -56,12 +56,10 @@ namespace TextTools
       MinimumLength = minimumLength;
       MaximumLength = maximumLength;
     }
+
     public Header(string name)
       : this(name, TextTable.defaultHeaderAlignment, TextTable.defaultCellAlignment, 
-             TextTable.defaultMinimumHeaderLength, TextTable.defaultMaximumHeaderLength)
-    {
-      
-    }
+             TextTable.defaultMinimumHeaderLength, TextTable.defaultMaximumHeaderLength) { }
   }
 
   /// <summary>
@@ -139,8 +137,7 @@ namespace TextTools
     protected static Header[] GetHeaderArrayOfStringArray(IList<string> header)
     {
       Header[] headerlist = new Header[header.Count];
-      for (int i = 0; i < header.Count; i++)
-      {
+      for (int i = 0; i < header.Count; i++) {
         headerlist[i] = new Header(header[i]);
 
       }
@@ -174,8 +171,7 @@ namespace TextTools
     protected int GetLongestDataEntryLength(IList<IList<object>> data, int row)
     {
       int max = data[0][row].ToString().Length;
-      for (int i = 1; i < data.Count; i++)
-      {
+      for (int i = 1; i < data.Count; i++) {
         int length = data[i][row].ToString().Length;
         if (length > max) max = length;
       }
@@ -195,8 +191,7 @@ namespace TextTools
     {
       int[] lengths = new int[Header.Count];
       
-      for (int i = 0; i < Header.Count; i++)
-      {
+      for (int i = 0; i < Header.Count; i++) {
         lengths[i] = GetLongestDataEntryLength(data, i);
       }
       return lengths;
@@ -219,8 +214,7 @@ namespace TextTools
     /// </returns>
     protected string Trim(Align alignment, string text, int length)
     {
-      if (text.Length <= length)
-      {
+      if (text.Length <= length) {
         switch (alignment)
         {
         case Align.Left:
@@ -230,6 +224,7 @@ namespace TextTools
           return new string(' ', length - text.Length) + text;
           break;
         case Align.Center:
+        default:
           length = length - text.Length;
           
           int one = length%2;
@@ -238,9 +233,7 @@ namespace TextTools
           return new string(' ', one + side) + text + new string(' ', side);
           break;
         }
-      }
-      else
-      {
+      } else {
         return text.Substring(0, length - Delimeter.Length) + Delimeter;
       }
       // will never reach this code
@@ -262,28 +255,33 @@ namespace TextTools
     /// </param>
     public void Render(IList<IList<object>> data, OutputFunction outputFunction, int maximumWidth)
     {
-      int[] lengths = GetLongestDataEntryLengthArray(data);
 
-      // determine the maximum length
-      for (int i = 0; i < lengths.Length; i++)
-      {
-        if (Header[i].Name.Length > lengths[i])
-        {
-          lengths[i] = Header[i].Name.Length;
-        }
-        if (Header[i].MinimumLength > lengths[i])
-        {
-          lengths[i] = Header[i].MinimumLength;
-        } else if (Header[i].MaximumLength < lengths[i])
-        {
-          lengths[i] = Header[i].MaximumLength;
+      int[] lengths = null;
+      List<int> tmp = new List<int>(Header.Count);
+      foreach (TextTools.Header headerEntry in Header) tmp.Add(headerEntry.Name.Length);
+
+      lengths = tmp.ToArray();
+
+      // it's always the empty list that gets the rockets down
+      if (data.Count > 0) {
+        lengths = GetLongestDataEntryLengthArray(data);
+  
+        // determine the maximum length
+        for (int i = 0; i < lengths.Length; i++) {
+          if (Header[i].Name.Length > lengths[i]) {
+            lengths[i] = Header[i].Name.Length;
+          }
+          if (Header[i].MinimumLength > lengths[i]) {
+            lengths[i] = Header[i].MinimumLength;
+          } else if (Header[i].MaximumLength < lengths[i]) {
+            lengths[i] = Header[i].MaximumLength;
+          }
         }
       }
 
       // build and print the header
       StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < lengths.Length; i++)
-      {
+      for (int i = 0; i < lengths.Length; i++) {
         sb.Append(Trim(Header[i].Alignment, Header[i].Name, lengths[i]));
         sb.Append(" ");
       }

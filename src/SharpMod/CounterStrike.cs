@@ -291,7 +291,6 @@ namespace SharpMod.CounterStrike
     public static int GetDeaths(this Player player)
     {
       return player.GetPrivateData(CounterStrikeOffset.csdeaths);
-      //return *((int *)player.entity->pvPrivateData + (5 + 444));
     }
 
     /// <summary>
@@ -556,7 +555,7 @@ namespace SharpMod.CounterStrike
 
     public int ClipSize {
       get {
-        return 0;
+        return maxclipsize[Type];
       }
     }
   }

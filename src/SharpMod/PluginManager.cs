@@ -139,22 +139,25 @@ namespace SharpMod
 
     public bool Load(FileInfo fi)
     {
-      Assembly asm = Assembly.LoadFile(fi.FullName);
-      foreach (Type type in asm.GetTypes())
+      try
       {
-        if (type.GetInterface("IPlugin") != null)
+        Assembly asm = Assembly.LoadFile(fi.FullName);
+        foreach (Type type in asm.GetTypes())
         {
-          IPlugin ip = (IPlugin)Activator.CreateInstance(type);
-          ip.Load();
-          plugins.Add(ip);
-          return true;
+          if (type.GetInterface("IPlugin") != null)
+          {
+            IPlugin ip = (IPlugin)Activator.CreateInstance(type);
+            ip.Load();
+            plugins.Add(ip);
+            return true;
+          }
         }
-      }
-      return false;
+        return false;
+      } catch { return false; }
     }
 
 
-    protected int numberFormatCounter = 1;
+    protected int numberFormatCounter = 0;
     protected string NumberFormat(int pluginCount)
     {
       numberFormatCounter++;
@@ -166,10 +169,9 @@ namespace SharpMod
       int pluginCount = plugins.Count;
       TextTools.TextTable tt = new TextTools.TextTable(new string[] { "", "name", "author", "version" });
 
-      numberFormatCounter = 1;
+      numberFormatCounter = 0;
       var data = from h in plugins
                  select new string [] { NumberFormat(pluginCount),  h.Name, h.Author, h.Version.ToString() };
-
 
       Console.WriteLine ("Currently loaded plugins:");
       tt.Render(data.ToArray(), Server.Print, Console.WindowWidth);

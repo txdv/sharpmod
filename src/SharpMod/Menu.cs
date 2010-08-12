@@ -131,240 +131,41 @@ namespace SharpMod
       dict[player] = new MenuTime(menu, DateTime.Now, TimeSpan.FromSeconds(menuInfo.displayTime));
       player.ShowMenu(menuInfo.keys, menuInfo.displayTime, menuInfo.text);
     }
+
+    public static void ShowMenu (this Player player, IMenu menu, byte displayTime)
+    {
+      MenuInfo menuInfo = menu.GetMenuInfo(player);
+      menuInfo.displayTime = displayTime;
+      dict[player] = new MenuTime(menu, DateTime.Now, TimeSpan.FromSeconds(menuInfo.displayTime));
+      player.ShowMenu(menuInfo.keys, menuInfo.displayTime, menuInfo.text);
+    }
   }
 }
 
-namespace SharpMod.Menus.SimpleMenu
+namespace SharpMod.Menues
 {
-  public class Item
+
+  public static class SimpleMenuExtender
   {
-    public string Text { get; set; }
-    public bool Enabled { get; set; }
-    public bool Selectable { get; set; }
 
-    #region Constructors
-
-    public Item (string text, bool enabled, bool selectable)
+    public static void Show (this SimpleMenu menu, Player player)
     {
-      Text = text;
-      Enabled = enabled;
-      Selectable = selectable;
+      player.ShowMenu(menu);
     }
 
-    public Item (string text, bool enabled)
-      : this(text, enabled, true)
+    public static void Show (this SimpleMenu menu, Player player, byte displayTime)
     {
+      player.ShowMenu(menu, displayTime);
     }
 
-    public Item (string text)
-      : this(text, true)
+    public static void Show (this SimpleMenu menu, Player player, int displayTime)
     {
+      Show(menu, player, (byte)displayTime);
     }
-
-    #endregion
-
-    #region Select
-    public delegate void SelectDelegate();
-
-    event SelectDelegate Select;
-
-    public virtual void DoSelect()
-    {
-      if (Select != null) Select();
-    }
-    #endregion
-
-    public virtual void MenuIterator(Player player, IList<Item> itemlist, int start, ref int current, int end)
-    {
-      if ((start <= current) && (current < end)) itemlist.Add(this);
-      if (current < end) current++;
-    }
-
-
 
   }
 
-  public class Menu : Item, IList<Item>, IMenu
-  {
-    public const int maximumItemsPerPage = 8;
-
-    private List<Item> list;
-
-    public byte DisplayTime { get; set; }
-    public int ItemsPerPage { get; set; }
-
-    public Menu(string text)
-      : this(text, true)
-    {
-    }
-
-    public Menu(string text, bool enabled)
-      : this(text, enabled, 255)
-    {
-    }
-
-    public Menu(string text, bool enabled, byte displaytime)
-      : this(text, enabled, displaytime, maximumItemsPerPage)
-    {
-
-    }
-
-    public Menu(string text, bool enabled, byte displaytime, int itemsPerPage)
-      : base(text, enabled)
-    {
-      list = new List<Item>();
-      DisplayTime = displaytime;
-      if (itemsPerPage > maximumItemsPerPage) throw new ArgumentException("itemsPerPage can't be bigger then Menu.maximumItemsPerPage (8)");
-      ItemsPerPage = itemsPerPage;
-    }
-
-    public override void MenuIterator (Player player, IList<Item> itemlist, int start, ref int current, int end)
-    {
-      foreach (Item item in list)
-      {
-        item.MenuIterator(player, itemlist, start, ref current, end);
-      }
-    }
-
-
-    #region IMenu implementation
-    public MenuInfo GetMenuInfo (Player player)
-    {
-      StringBuilder sb = new StringBuilder();
-      List<Item> acc = new List<Item>();
-
-      int i = 0, j = 0;;
-      short keys = 0;
-
-      sb.Append(Text);
-      sb.Append("\n\n");
-
-      MenuIterator(player, acc, 0, ref i, 5);
-
-      foreach (Item item in acc)
-      {
-        sb.Append(item.Text);
-        sb.Append("\n");
-        if (item.Enabled) keys |= (short)(1 << j);
-        if (item.Selectable) j++;
-      }
-
-      Console.WriteLine (sb.ToString());
-      return new MenuInfo(keys, DisplayTime, sb.ToString());
-    }
-
-    public bool DoSelect (Player player, int index)
-    {
-      return true;
-    }
-    #endregion
-
-    #region IList<Item> implementation
-    public int IndexOf (Item item)
-    {
-      return list.IndexOf(item);
-    }
-
-
-    public void Insert (int index, Item item)
-    {
-      list.Insert(index, item);
-    }
-
-
-    public void RemoveAt (int index)
-    {
-      list.RemoveAt(index);
-    }
-
-
-    public Item this[int index] {
-      get {
-        return list[index];
-      }
-      set {
-        list[index] = value;
-      }
-    }
-    #endregion
-
-    #region IEnumerable<Item> implementation
-    public IEnumerator<Item> GetEnumerator ()
-    {
-      return list.GetEnumerator();
-    }
-
-    #endregion
-
-    #region IEnumerable implementation
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
-    {
-      return list.GetEnumerator();
-    }
-
-    #endregion
-
-    #region ICollection<Item> implementation
-    public void Add (Item item)
-    {
-      list.Add(item);
-    }
-
-
-    public void Clear ()
-    {
-      list.Clear();
-    }
-
-
-    public bool Contains (Item item)
-    {
-      return list.Contains(item);
-    }
-
-
-    public void CopyTo (Item[] array, int arrayIndex)
-    {
-      list.CopyTo(array, arrayIndex);
-    }
-
-
-    public bool Remove (Item item)
-    {
-      return list.Remove(item);
-    }
-
-
-    public int Count {
-      get {
-        return list.Count;
-      }
-    }
-
-
-    public bool IsReadOnly {
-      get {
-        throw new System.NotImplementedException();
-      }
-    }
-
-    #endregion
-
-    #region IEnumerable<Item> implementation
-    IEnumerator<Item> IEnumerable<Item>.GetEnumerator ()
-    {
-      return list.GetEnumerator();
-    }
-    #endregion
-
-
-  }
-}
-
-namespace SharpMod.Menus.Menu
-{
-
-  public static class ItemColors
+  public static class MenuColor
   {
     public const string Red    = @"\r";
     public const string Yellow = @"\y";
@@ -372,11 +173,18 @@ namespace SharpMod.Menus.Menu
     public const string White  = @"\w";
     public const string Smoke  = @"\d";
   }
+
   public class Item
   {
     public virtual string Text { get; protected set; }
     public virtual bool Enabled { get; protected set; }
     public virtual bool Selectable { get; protected set; }
+
+    public Item(string text)
+      : this(text, true, true) { }
+
+    public Item(string text, bool selectable)
+      : this(text, selectable, true) { }
 
     public Item(string text, bool selectable, bool enabled)
     {
@@ -384,12 +192,6 @@ namespace SharpMod.Menus.Menu
       Enabled = enabled;
       Selectable = selectable;
     }
-
-    public Item(string text)
-      : this(text, true, true) { }
-
-    public Item(string text, bool selectable)
-      : this(text, selectable, true) { }
 
     public virtual void MenuIterator(Player player, IList<Item> itemlist, int start, ref int current, int end)
     {
@@ -409,11 +211,13 @@ namespace SharpMod.Menus.Menu
     {
       return Selectable;
     }
+
     public virtual bool IsEnabled(Player player)
     {
       return Enabled;
     }
   }
+
   public class CVarItem : Item
   {
     private CVar cvar = null;
@@ -436,9 +240,9 @@ namespace SharpMod.Menus.Menu
         {
           if (Values[i].ToLower() == cvar.String.ToLower())
           {
-            sb.Append(ItemColors.Red);
+            sb.Append(MenuColor.Red);
             sb.Append(Values[i]);
-            sb.Append(ItemColors.White);
+            sb.Append(MenuColor.White);
             index = i;
           }
           else
@@ -485,39 +289,26 @@ namespace SharpMod.Menus.Menu
       return true;
     }
 
-
   }
-  public class Menu : Item, IList<Item>, IMenu
-  {
-    public const int maximumItemsPerPage = 8;
 
+  public class SimpleMenu : Item, IList<Item>, IMenu
+  {
     private List<Item> list;
 
     public byte DisplayTime { get; set; }
-    public int ItemsPerPage { get; set; }
+    public bool NumberedItems { get; set; }
+    public bool ColoredMenu { get; set; }
+    public string NumberColor { get; set; }
+    public string DefaultColor { get; set; }
 
-    public Menu(string text)
-      : this(text, true)
-    {
-    }
+    public SimpleMenu(string text)
+      : this(text, true) { }
 
-    public Menu(string text, bool enabled)
-      : this(text, enabled, 255)
-    {
-    }
-
-    public Menu(string text, bool enabled, byte displaytime)
-      : this(text, enabled, displaytime, maximumItemsPerPage)
-    {
-    }
-
-    public Menu(string text, bool enabled, byte displaytime, int itemsPerPage)
+    public SimpleMenu(string text, bool enabled)
       : base(text, enabled)
     {
       list = new List<Item>();
-      DisplayTime = displaytime;
-      if (itemsPerPage > maximumItemsPerPage) throw new ArgumentException("itemsPerPage can't be bigger then Menu.maximumItemsPerPage (8)");
-      ItemsPerPage = itemsPerPage;
+      DisplayTime = 255;
     }
 
     public override void MenuIterator (Player player, IList<Item> itemlist, int start, ref int current, int end)
@@ -528,24 +319,41 @@ namespace SharpMod.Menus.Menu
       }
     }
 
+
+    protected void AddItemText(StringBuilder sb, int index, Item item)
+    {
+      if (NumberedItems) {
+        if (ColoredMenu) {
+          sb.Append(String.Format("{0}{1}. ", NumberColor, index+1));
+        } else {
+          sb.Append(String.Format("{0}. ", index+1));
+        }
+      }
+      // The text is for sure there!
+      sb.Append(String.Format("{0}{1}\n", (Selectable ? DefaultColor : MenuColor.Smoke), item.Text));
+    }
+
     #region IMenu implementation
-    public MenuInfo GetMenuInfo (Player player)
+    public virtual MenuInfo GetMenuInfo (Player player)
     {
       StringBuilder sb = new StringBuilder();
       List<Item> acc = new List<Item>();
 
-      int i = 0, j = 0;;
+
+      int i = 0, j = 0;
       short keys = 0;
+
+      MenuIterator(player, acc, 0, ref i, 10);
+
+      player.menu = this;
+      player.menu_items = acc.ToArray();
 
       sb.Append(Text);
       sb.Append("\n\n");
 
-      MenuIterator(player, acc, 0, ref i, 5);
-
       foreach (Item item in acc)
       {
-        sb.Append(item.Text);
-        sb.Append("\n");
+        AddItemText(sb, j+1, item);
         if (item.Enabled) keys |= (short)(1 << j);
         if (item.Selectable) j++;
       }
@@ -555,7 +363,7 @@ namespace SharpMod.Menus.Menu
 
     public override bool DoSelect(Player player, int index)
     {
-      return true;
+      return player.menu_items[index].DoSelect(player, index);
     }
     #endregion
 
@@ -643,5 +451,109 @@ namespace SharpMod.Menus.Menu
       return list.GetEnumerator();
     }
     #endregion
+  }
+
+  public class PlayerMenuInfo
+  {
+    public Player Player   { get; protected set; }
+    public SimpleMenu Menu { get; protected set; }
+    public int CurrentPage { get; protected set; }
+
+    public PlayerMenuInfo(Player player, SimpleMenu menu)
+    {
+      Player = player;
+      Menu = menu;
+    }
+  }
+
+  public class Menu : SimpleMenu
+  {
+    public const int maximumItemsPerPage = 8;
+    private int itemsPerPage = maximumItemsPerPage;
+    public int ItemsPerPage {
+      get { return itemsPerPage; }
+      set { itemsPerPage = (value < 1 ? 1 : (value > maximumItemsPerPage ? maximumItemsPerPage : value )); }
+    }
+
+    public Menu(string text)
+      : this(text, true) { }
+
+    public Menu(string text, bool enabled)
+      : base(text, enabled) { }
+
+
+    private int GetItemIndex(int page)
+    {
+      return itemsPerPage * page;
+    }
+
+    private int GetPageCount(int items)
+    {
+      return (items / itemsPerPage) + (items % itemsPerPage > 0 ? 1 : 0);
+    }
+
+
+    public override MenuInfo GetMenuInfo (Player player)
+    {
+      StringBuilder sb = new StringBuilder();
+      List<Item> acc = new List<Item>();
+
+
+      int i = 0, j = 0;;
+      short keys = 0;
+      int page = 0;
+
+      if (player.menu == this) {
+        page = player.menu_page;
+      } else {
+        player.menu      = this;
+        player.menu_page = 0;
+      }
+
+      MenuIterator(player, acc, GetItemIndex(page), ref i, GetItemIndex(page) + itemsPerPage);
+
+      player.menu_items = acc.ToArray();
+
+      sb.Append(Text);
+      sb.Append(String.Format(" ({0}/{1})\n\n", page+1, GetPageCount(i)+1));
+
+      foreach (Item item in acc)
+      {
+        AddItemText(sb, j, item);
+        if (item.Enabled) keys |= (short)(1 << j);
+        if (item.Selectable) j++;
+      }
+      sb.Append("\n\n");
+
+      if (page > 0) {
+        keys |= (short)(1 << 8);  // back
+        sb.Append("9. Back\n");
+      }
+      if (page < GetPageCount(i)) {
+        // if there are some more pages, hit the next
+        // page counter
+        keys |= (short)(1 << 9); // next
+        sb.Append("0. Next\n");
+      }
+
+      return new MenuInfo(keys, DisplayTime, sb.ToString());
+    }
+    public override bool DoSelect (Player player, int index)
+    {
+      switch (index)
+      {
+      case 9:
+        if (player.menu_page > 0) player.menu_page--;
+        this.Show(player);
+        return true;
+      case 10:
+        player.menu_page++;
+        this.Show(player);
+        return true;
+      default:
+        return base.DoSelect(player, index);
+      }
+    }
+
   }
 }
