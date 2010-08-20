@@ -187,7 +187,9 @@ namespace SharpMod.MetaMod
   internal delegate void WriteEntityDelegate(int val);
 
   internal unsafe delegate void CVarRegisterDelegate(CVarInfo *pCvar);
+  internal delegate float CVarGetFloatDelegate(string szVarName);
   internal unsafe delegate IntPtr CVarGetStringDelegate(char *name);
+  internal delegate void CVarSetFloatDelegate(string szVarName, float flValue);
   internal unsafe delegate void CVarSetStringDelegate(char *name, string val);
   internal delegate void AlertMessageDelegate(short alerttype, string format);
   internal delegate IntPtr SzFromIndexDelegate(int iString);
@@ -199,6 +201,7 @@ namespace SharpMod.MetaMod
   internal delegate void SetServerKeyValueDelegate(IntPtr infoBuffer, string key, string val);
   internal delegate void SetClientKeyValueDelegate(int clientIndex, IntPtr infoBuffer, string key, string val);
   internal delegate int IsMapValidDelegate(string filename);
+  internal delegate int IsDedicatedServerDelegate();
   internal delegate IntPtr CVarGetPointerDelegate(string cvarname);
   internal delegate void GetPlayerStatsDelegate(IntPtr playerEntity, ref int ping, ref int packet_loss);
   internal delegate void AddServerCommandDelegate(string name, IntPtr functionPointer);
@@ -268,12 +271,12 @@ namespace SharpMod.MetaMod
     internal WriteStringDelegate  WriteString;
     internal WriteEntityDelegate  WriteEntity;
 
-    internal CVarRegisterDelegate CVarRegister;
-    IntPtr CVarGetFloat;
+    internal CVarRegisterDelegate  CVarRegister;
+    internal CVarGetFloatDelegate  CVarGetFloat;
     internal CVarGetStringDelegate CVarGetString;
-    IntPtr CVarSetFloat;
+    internal CVarSetFloatDelegate  CVarSetFloat;
     internal CVarSetStringDelegate CVarSetString;
-    internal AlertMessageDelegate AlertMessage;
+    internal AlertMessageDelegate  AlertMessage;
     IntPtr EngineFprintf;
     IntPtr PvAllocEntPrivateData;
     IntPtr PvEntPrivateData;
@@ -327,7 +330,7 @@ namespace SharpMod.MetaMod
     IntPtr PrecacheGeneric;
     IntPtr GetPlayerUserId;
     IntPtr BuildSoundMsg;
-    IntPtr IsDedicatedServer;
+    internal IsDedicatedServerDelegate IsDedicatedServer;
     internal CVarGetPointerDelegate CVarGetPointer;
     IntPtr GetPlayerWONId;
     IntPtr Info_RemoveKey;

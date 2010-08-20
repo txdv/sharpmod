@@ -111,12 +111,28 @@ namespace SharpMod
     /// <returns>
     /// Value of the CVariable <see cref="System.String"/>
     /// </returns>
-    public unsafe static string GetValue(string name)
+    public unsafe static string GetStringValue(string name)
     {
       IntPtr ptr = UnixMarshal.StringToHeap(name);
       ptr = MetaMod.MetaModEngine.engineFunctions.CVarGetString((char *)ptr.ToPointer());
       return Mono.Unix.UnixMarshal.PtrToString(ptr);
     }
+
+    public unsafe static void SetStringValue(string cvarname, string value)
+    {
+      MetaModEngine.engineFunctions.CVarSetString((char *)Mono.Unix.UnixMarshal.StringToHeap(cvarname).ToPointer(), value);
+    }
+
+    public static float GetFloatValue(string name)
+    {
+      return MetaModEngine.engineFunctions.CVarGetFloat(name);
+    }
+
+    public static void SetFloatValue(string name, float value)
+    {
+      MetaModEngine.engineFunctions.CVarSetFloat(name, value);
+    }
+
 
     /// <summary>
     /// Name of an instance of a CVariable
