@@ -28,7 +28,7 @@ using SharpMod.MetaMod;
 namespace SharpMod
 {
 
-  public class Player : Entity
+  public partial class Player : Entity
   {
     [Serializable]
     public abstract class PlayerEventArgs : EventArgs

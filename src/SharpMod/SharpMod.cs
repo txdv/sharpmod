@@ -22,6 +22,9 @@
 using System;
 using System.IO;
 using System.Reflection;
+using SharpMod.Menues;
+using SharpMod.CounterStrike;
+using SharpMod.Messages;
 
 namespace SharpMod
 {
@@ -52,9 +55,44 @@ namespace SharpMod
       Version = new CVar("sharpmod_version", "0.1");
 
       // load plugins
+
       PluginManager.GetInstance();
       Server.Print(License);
       Server.RegisterCommand("sharp", sharp);
+      Player.RegisterCommand("say /menu", menu);
+      Player.RegisterCommand("say /team", team);
+      Player.RegisterCommand("say /model", model);
+    }
+
+    private static void team(Player player, Command command)
+    {
+      player.ClientColorPrint(player.GetTeamString());
+
+      //player.ClientColorPrint(SpecialColor.White, "{0}Green{1}White", (char)Color.Green, (char)Color.Special);
+    }
+
+    private static void model(Player player, Command command)
+    {
+      Console.WriteLine(player.Classname);
+      //player.ClientPrint(player.InfoKeyBuffer);
+      //Console.WriteLine (player.InfoKeyBuffer);
+    }
+
+    private static void menu(Player player, Command command)
+    {
+      Menu m = new Menu("Nextmap:");
+      m.NumberedItems = true;
+      m.Add(new Item("de_dust"));
+      m.Add(new Item("de_dust2"));
+      m.Add(new Item("de_dust3"));
+      m.Add(new Item("de_dust4"));
+      m.Add(new Item("de_dust5"));
+      m.Add(new Item("de_dust6"));
+      m.Add(new Item("de_inferno"));
+      m.Add(new Item("de_italy"));
+      m.Add(new Item("de_aztec"));
+      m.Add(new Item("cs_office"));
+      m.Show(player, 60);
     }
 
     static void sharpHelp()

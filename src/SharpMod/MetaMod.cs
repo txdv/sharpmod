@@ -25,10 +25,11 @@ using System;
 using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using Mono.Unix;
 using System.Collections;
 using System.Collections.Generic;
+using Mono.Unix;
 using SharpMod.Helper;
+using SharpMod.Math;
 
 namespace SharpMod.MetaMod
 {
@@ -41,6 +42,7 @@ namespace SharpMod.MetaMod
     Center,
     Chat
   };
+
   internal enum MetaResult : int
   {
     Unset = 0,
@@ -89,13 +91,14 @@ namespace SharpMod.MetaMod
     internal void *override_ret;
   }
 
+  // hlsdk/multiplayer/engine/progdefs.h
   internal unsafe struct GlobalVariables
   {
     internal float time;
     internal float frametime;
     internal float force_retouch;
-    internal IntPtr mapname;
-    internal IntPtr startspot;
+    internal int mapname; // string as int
+    internal int startspot; // string as int
     internal float deathmatch;
     internal float coop;
     internal float teamplay;
@@ -119,7 +122,7 @@ namespace SharpMod.MetaMod
     internal int cdAudioTrack;
     internal int maxClients;
     internal int maxEntities;
-    internal IntPtr pStringBase;
+    internal char *pStringBase;
     internal void *psSaveData;
     internal Vector3f vecLandmarkOffset;
   }
@@ -170,22 +173,24 @@ namespace SharpMod.MetaMod
   internal delegate IntPtr Cmd_ArgsDelegate();
   internal delegate IntPtr Cmd_ArgvDelegate(int i);
   internal delegate int Cmd_ArgcDelegate();
-  internal delegate void MessageBeginDelegate(MessageDestination MessageDestination, int MessageType, IntPtr val, IntPtr playerEdict);
+
+  internal delegate void MessageBeginDelegate(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr playerEntity);
   internal delegate void MessageEndDelegate();
 
-  internal delegate void WriteByteDelegate(int val);
-  internal delegate void WriteCharDelegate(int val);
-  internal delegate void WriteEntityDelegate(int val);
-  internal delegate void WriteLongDelegate(int val);
-  internal delegate void WriteShortDelegate(int val);
+  internal delegate void WriteByteDelegate  (int val);
+  internal delegate void WriteCharDelegate  (int val);
+  internal delegate void WriteShortDelegate (int val);
+  internal delegate void WriteLongDelegate  (int val);
+  internal delegate void WriteAngleDelegate (int val);
+  internal delegate void WriteCoordDelegate (int val);
   internal delegate void WriteStringDelegate(string val);
+  internal delegate void WriteEntityDelegate(int val);
 
   internal unsafe delegate void CVarRegisterDelegate(CVarInfo *pCvar);
   internal unsafe delegate IntPtr CVarGetStringDelegate(char *name);
   internal unsafe delegate void CVarSetStringDelegate(char *name, string val);
   internal delegate void AlertMessageDelegate(short alerttype, string format);
-  // TODO: maybe fix string?
-  internal delegate string SzFromIndexDelegate(int iString);
+  internal delegate IntPtr SzFromIndexDelegate(int iString);
   internal delegate int AllocStringDelegate(string szValue);
 
   internal unsafe delegate void GetGameDirDelegate(char *directoy);
@@ -250,16 +255,19 @@ namespace SharpMod.MetaMod
     IntPtr LightStyle;
     IntPtr DecalIndex;
     IntPtr PointContents;
+
     internal MessageBeginDelegate MessageBegin;
     internal MessageEndDelegate   MessageEnd;
+
     internal WriteByteDelegate    WriteByte;
     internal WriteCharDelegate    WriteChar;
     internal WriteShortDelegate   WriteShort;
     internal WriteLongDelegate    WriteLong;
-    IntPtr WriteAngle;
-    IntPtr WriteCoord;
+    internal WriteAngleDelegate   WriteAngle;
+    internal WriteCoordDelegate   WriteCoord;
     internal WriteStringDelegate  WriteString;
     internal WriteEntityDelegate  WriteEntity;
+
     internal CVarRegisterDelegate CVarRegister;
     IntPtr CVarGetFloat;
     internal CVarGetStringDelegate CVarGetString;
@@ -367,6 +375,8 @@ namespace SharpMod.MetaMod
 
   #region Entity functions
 
+  internal delegate void GameInitDelegate();
+  internal delegate void SpawnDelegate(IntPtr pent);
   internal delegate void UseDelegate(IntPtr pentUsed, IntPtr pentOther);
   internal delegate void TouchDelegate(IntPtr pentTouched, IntPtr pentOther);
   internal delegate bool ClientConnectDelegate(IntPtr pEntity, string name, string address, string reject_reason);
@@ -381,8 +391,8 @@ namespace SharpMod.MetaMod
   [StructLayout (LayoutKind.Sequential)]
   internal struct EntityAPI
   {
-    IntPtr GameInit;
-    IntPtr Spawn;
+    internal GameInitDelegate GameInit;
+    internal SpawnDelegate Spawn;
     IntPtr Think;
     internal UseDelegate Use;
     internal TouchDelegate Touch;
@@ -551,6 +561,7 @@ typedef struct {
       Console.WriteLine(" -- MONO: handlerMeta_Query");
       #endif
 
+      // TODO: fix that
       // The following code doesn't work because C# treats char * as a pointer to a char, while
       // in C the offsets are really as long as the text itself, or something like that
       /*
@@ -578,12 +589,12 @@ typedef struct {
 
       pFunctionTable->GetEntityAPI            = IntPtr.Zero;
       pFunctionTable->GetEntityAPIPost        = IntPtr.Zero;
-      pFunctionTable->GetEntityAPI2           = Marshal.GetFunctionPointerForDelegate(new GetEntityApiDelegate(GetEntityAPI2));
-      pFunctionTable->GetEntityAPI2Post       = IntPtr.Zero;
+      pFunctionTable->GetEntityAPI2           = IntPtr.Zero;
+      pFunctionTable->GetEntityAPI2Post       = Marshal.GetFunctionPointerForDelegate(new GetEntityApiDelegate(GetEntityAPI2Post));
       pFunctionTable->GetNewDllFunctions      = IntPtr.Zero;
       pFunctionTable->GetNewDllFunctionsPost  = IntPtr.Zero;
       pFunctionTable->GetEngineFunctions      = IntPtr.Zero;
-      pFunctionTable->GetEngineFunctions      = Marshal.GetFunctionPointerForDelegate(new GetEngineFunctionsDelegate(GetEngineFunctions));
+      pFunctionTable->GetEngineFunctionsPost  = Marshal.GetFunctionPointerForDelegate(new GetEngineFunctionsDelegate(GetEngineFunctionsPost));
 
       globals = pMetaGlobals;
 
@@ -591,19 +602,25 @@ typedef struct {
       dllapiFunctions = (EntityAPI)Marshal.PtrToStructure(pGamedllFuncs, typeof(EntityAPI));
     }
 
-    internal static unsafe int GetEngineFunctions(ref EngineFunctions functions, ref int interfaceVersion)
+    #region Engine Functions Post
+
+    internal static unsafe int GetEngineFunctionsPost(ref EngineFunctions functions, ref int interfaceVersion)
     {
       functions = new EngineFunctions();
-      functions.RegUserMsg = RegisterUserMessage;
+
+      functions.RegUserMsg = RegisterUserMessagePost;
 
       functions.MessageBegin = MessageBeginPost;
-      functions.WriteByte = WriteBytePost;
-      functions.WriteChar = WriteCharPost;
+      functions.MessageEnd = MessageEndPost;
+
+      functions.WriteByte   = WriteBytePost;
+      functions.WriteChar   = WriteCharPost;
+      functions.WriteShort  = WriteShortPost;
+      functions.WriteLong   = WriteLongPost;
+      functions.WriteAngle  = WriteAnglePost;
+      functions.WriteCoord  = WriteCoordPost;
       functions.WriteString = WriteStringPost;
       functions.WriteEntity = WriteEntityPost;
-      functions.WriteLong = WriteLongPost;
-      functions.WriteShort = WriteShortPost;
-      functions.MessageEnd = MessageEndPost;
 
       functions.Cmd_Args = CmdArgs;
       functions.Cmd_Argc = CmdArgc;
@@ -612,120 +629,38 @@ typedef struct {
       return 0;
     }
 
-    #region Message Overrides
-    internal static List<object> message_elements;
+    #region Message handling
 
     #if DEBUG
-
-    public class MessageArgument
-    {
-      public Type Type { get; protected set; }
-      public string ShortTypeName { get { return Type.ToString().Split('.').Last().ToLower(); } }
-      public object Value { get; protected set; }
-      public DateTime CallTime { get; protected set; }
-
-      public MessageArgument(Type type, object value)
-      {
-        CallTime = DateTime.Now;
-        Type = type;
-        Value = value;
-      }
-
-      public override string ToString ()
-      {
-        return string.Format("{0}: {1} @ {2}", Type, Value, CallTime);
-      }
-    }
-
-    public class MessageInformation
-    {
-      public MessageDestination MessageDestination { get; protected set; }
-      public int MessageType { get; protected set; }
-      public IntPtr Value { get; protected set; }
-      public IntPtr PlayerEdict { get; protected set; }
-      public List<MessageArgument> Arguments { get; protected set; }
-
-      public DateTime CallTimeBegin { get; set; }
-      public DateTime CallTimeEnd { get; set; }
-
-      public MessageInformation(MessageDestination destination, int messageType, IntPtr val, IntPtr playerEdict)
-      {
-        MessageDestination = destination;
-        MessageType = messageType;
-        Value = val;
-        PlayerEdict = playerEdict;
-        Arguments = new List<MetaModEngine.MessageArgument>();
-      }
-
-      public string MessageName { get { return (MessageType >= 64 ? Message.TypeNames[MessageType].Name : ""); } }
-
-      /// <summary>
-      /// Returns information about the message in one compact string
-      /// </summary>
-      /// <returns>
-      /// A <see cref="System.String"/>
-      /// </returns>
-      public string OneLineInfo()
-      {
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.Append("{0}({1})", MessageName, MessageType);
-
-        sb.Append("({0}, {1}, {2})", MessageDestination, Value, PlayerEdict);
-
-        sb.Append("(");
-        for (int i = 0; i < Arguments.Count; i++) {
-          MessageArgument arguments = Arguments[i];
-          sb.Append("{0}:{1}", arguments.ShortTypeName, arguments.Value);
-          if (i+1 < Arguments.Count) sb.Append(", ");
-        }
-        sb.Append(");");
-        return sb.ToString();
-      }
-
-      /// <summary>
-      /// returns information in a lot of strings
-      /// </summary>
-      /// <returns>
-      /// A <see cref="System.String"/>
-      /// </returns>
-      public string VerboseInfo()
-      {
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.Append("\nMessage: {0}\n", Message.TypeNames[MessageType].Name);
-        sb.Append("\n\tMessageDestination={0}", MessageDestination);
-        sb.Append("\n\tMessageType={0}", MessageType);
-        sb.Append("\n\tValue={0}", Value);
-        sb.Append("\n\tPlayerEdict={0}", PlayerEdict);
-        sb.Append("\n\tCallTimeBegin={0}", CallTimeBegin);
-        sb.Append("\n\tCallTimeEnd={0}", CallTimeEnd);
-        foreach (var arg in messageInformation.Arguments) sb.Append("\n\t\t{0}", arg);
-        return sb.ToString();
-      }
-
-      public override string ToString()
-      {
-        // TODO: Create a way to switch between the 2 representation modes
-        return OneLineInfo();
-      }
-
-    }
-
     internal static MessageInformation messageInformation;
     #endif
 
+    internal static MessageHeader message_header;
+    internal static List<object> message_elements;
     internal static int message_type;
 
-    internal static void MessageBeginPost(MessageDestination dst, int messageType, IntPtr val, IntPtr playerEdict)
+    internal static void InvokeFunction(Delegate function, List<object> argList)
+    {
+      var param = function.Method.GetParameters();
+      object[] argumentList = new object[param.Length];
+      argList.CopyTo(0, argumentList, 0, param.Length);
+      for (int i = argList.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
+      function.Method.Invoke(null, argumentList);
+    }
+
+    internal static void MessageBeginPost(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr playerEntity)
     {
       #if DEBUG
-      messageInformation = new MessageInformation(dst, messageType, val, playerEdict);
+      messageInformation = new MessageInformation(destination, messageType, floatValue, playerEntity);
       messageInformation.CallTimeBegin = DateTime.Now;
       #endif
 
-      message_elements = new List<object>();
-      message_type = messageType;
 
-      if (playerEdict.ToInt32() == 0)
+      message_header = new MessageHeader(destination, messageType, floatValue, playerEntity);
+
+      message_elements = new List<object>();
+
+      if (playerEntity.ToInt32() == 0)
       {
         // message send to all players
         message_elements.Add(null);
@@ -733,11 +668,10 @@ typedef struct {
       else
       {
         // message send to a specific player
-        message_elements.Add(Player.GetPlayer(playerEdict));
+        message_elements.Add(Player.GetPlayer(playerEntity));
       }
 
     }
-
     internal static void MessageEndPost()
     {
       #if DEBUG
@@ -754,15 +688,6 @@ typedef struct {
 
     }
 
-    internal static void InvokeFunction(Delegate function, List<object> argList)
-    {
-      var param = function.Method.GetParameters();
-      object[] argumentList = new object[param.Length];
-      argList.CopyTo(0, argumentList, 0, param.Length);
-      for (int i = argList.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
-      function.Method.Invoke(null, argumentList);
-    }
-
     internal static void WriteBytePost(int val)
     {
       #if DEBUG
@@ -770,7 +695,6 @@ typedef struct {
       #endif
       message_elements.Add((byte)val);
     }
-
     internal static void WriteCharPost(int val)
     {
       #if DEBUG
@@ -778,23 +702,6 @@ typedef struct {
       #endif
       message_elements.Add((char)val);
     }
-
-    internal static void WriteStringPost(string val)
-    {
-      #if DEBUG
-      messageInformation.Arguments.Add(new MessageArgument(typeof(string), (string)val));
-      #endif
-      message_elements.Add(val);
-    }
-
-    internal static void WriteEntityPost(int entity)
-    {
-      #if DEBUG
-      messageInformation.Arguments.Add(new MessageArgument(typeof(Entity), new Entity(new IntPtr(entity))));
-      #endif
-      message_elements.Add(entity);
-    }
-
     internal static void WriteShortPost(int val)
     {
       #if DEBUG
@@ -808,10 +715,33 @@ typedef struct {
       messageInformation.Arguments.Add(new MessageArgument(typeof(long), (long)val));
       #endif
       message_elements.Add((long)val);
-
+    }
+    internal static void WriteAnglePost(int val)
+    {
+      // TODO: get an idea of what is past with this function
+      Console.WriteLine("WriteAnglePost");
+    }
+    internal static void WriteCoordPost(int val)
+    {
+      // TODO: get an idea of what is past with this function, floats maybe?
+      Console.WriteLine("WriteCoordPost");
+    }
+    internal static void WriteStringPost(string val)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(string), (string)val));
+      #endif
+      message_elements.Add(val);
+    }
+    internal static void WriteEntityPost(int entity)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(Entity), new Entity(new IntPtr(entity))));
+      #endif
+      message_elements.Add(entity);
     }
 
-    internal static void RegisterUserMessage(string name, int size)
+    internal static void RegisterUserMessagePost(string name, int size)
     {
       int val = Message.Types.Count + 64;
       BinaryTree.Node node = new BinaryTree.Node(name, val);
@@ -824,6 +754,7 @@ typedef struct {
     #endregion
 
     #region Command Argument Modifier
+
     unsafe internal static IntPtr CmdArgs()
     {
       if (Command.overrideArguments && Command.instance != null)
@@ -837,7 +768,6 @@ typedef struct {
         return IntPtr.Zero;
       }
     }
-
     unsafe internal static int CmdArgc()
     {
       if (Command.overrideArguments && Command.instance != null)
@@ -851,7 +781,6 @@ typedef struct {
         return 0;
       }
     }
-
     unsafe internal static IntPtr CmdArgv(int i)
     {
       if (Command.overrideArguments && Command.instance != null)
@@ -865,26 +794,32 @@ typedef struct {
         return IntPtr.Zero;
       }
     }
+
     #endregion
 
-    unsafe internal static int GetEntityAPI2(ref EntityAPI functionTable, ref int interfaceVersion)
+    #endregion
+
+    #region EntityAPI2 Post
+
+    unsafe internal static int GetEntityAPI2Post(ref EntityAPI functionTable, ref int interfaceVersion)
     {
       #if DEBUG
       Console.WriteLine(" -- MONO: GetEntityAPI2Post");
       #endif
       functionTable = new EntityAPI();
-      functionTable.ClientConnect = Player.OnConnect;
+      functionTable.Spawn = Spawn;
+      functionTable.Use = UsePost;
+      functionTable.ClientConnect    = Player.OnConnect;
       functionTable.ClientDisconnect = Player.OnDisconnect;
-      functionTable.ServerActivate = ServerActivate;
-      functionTable.ClientCommand = Player.OnCommand;
-      functionTable.PutInServer = Player.OnPutInServer;
+      functionTable.ServerActivate   = ServerActivatePost;
+      functionTable.ClientCommand    = Player.OnCommand;
+      functionTable.PutInServer      = Player.OnPutInServer;
 
       Server.Init();
-
       return 0;
     }
 
-    internal static void ServerActivate(IntPtr pEdictList, int edictCount, int clientMax)
+    internal static void ServerActivatePost(IntPtr pEdictList, int edictCount, int clientMax)
     {
       #if DEBUG
       Console.WriteLine(" -- MONO: ServerActivate");
@@ -894,5 +829,19 @@ typedef struct {
       // TODO: check if it is really counter strike
       if (Server.GameDirectory == "cstrike") CounterStrike.CounterStrike.Init();
     }
+
+    internal static bool spawnInitialized = false;
+    internal static void Spawn(IntPtr pent)
+    {
+      if (spawnInitialized) return;
+      spawnInitialized = true;
+      // TODO: call precache method for plugins
+    }
+    internal static void UsePost(IntPtr pentUsed, IntPtr pentOther)
+    {
+      // TODO: do something in here
+    }
+
+    #endregion
   }
 }

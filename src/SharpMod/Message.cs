@@ -34,29 +34,16 @@ hlsdk/multiplayer/common/const.h:
 #define MSG_SPEC      9   // Sends to all spectator proxies
 */
 
+#define DEBUG
+
 using System;
 using System.Collections.Generic;
 using SharpMod.MetaMod;
-using System.Drawing;
+using SharpMod.Helper;
+using SharpMod.GeneratedMessages;
 
 namespace SharpMod
 {
-
-  /// <summary>
-  /// A struct for all the HudMessage values
-  /// </summary>
-  public struct HudMessageStruct
-  {
-    public float x,y;
-    public int effect;
-    public byte r1, g1, b1, a1;
-    public byte r2, g2, b2, a2;
-    public float fadeinTime;
-    public float fadeoutTime;
-    public float holdTime;
-    public float fxTime;
-    public int channel;
-  }
 
   /// <summary>
   /// An enum for MessageDestinations, used by Message.Begin
@@ -75,15 +62,130 @@ namespace SharpMod
     Spectator
   }
 
+  public struct MessageHeader
+  {
+    public MessageHeader(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr entity)
+    {
+      this.Destination = destination;
+      this.MessageType = messageType;
+      this.FloatValue = floatValue;
+      this.Entity = entity;
+    }
+
+    public MessageDestination Destination;
+    public int MessageType;
+    public IntPtr FloatValue;
+    public IntPtr Entity;
+  }
+
+  public class MessageArgument
+  {
+    public Type Type { get; protected set; }
+    public string ShortTypeName { get { return Type.ToString().Split('.').Last().ToLower(); } }
+    public object Value { get; protected set; }
+    public DateTime CallTime { get; protected set; }
+
+    public MessageArgument(Type type, object value)
+    {
+      CallTime = DateTime.Now;
+      Type = type;
+      Value = value;
+    }
+
+    public override string ToString ()
+    {
+      return string.Format("{0}: {1} @ {2}", Type, Value, CallTime);
+    }
+  }
+
+  public class MessageInformation
+  {
+    public MessageDestination MessageDestination { get; protected set; }
+    public int MessageType { get; protected set; }
+    public IntPtr Value { get; protected set; }
+    public IntPtr PlayerEdict { get; protected set; }
+    public List<MessageArgument> Arguments { get; protected set; }
+
+    public DateTime CallTimeBegin { get; set; }
+    public DateTime CallTimeEnd { get; set; }
+
+    public MessageInformation(MessageDestination destination, int messageType, IntPtr val, IntPtr playerEdict)
+    {
+      MessageDestination = destination;
+      MessageType = messageType;
+      Value = val;
+      PlayerEdict = playerEdict;
+      Arguments = new List<MessageArgument>();
+    }
+
+    public string MessageName { get { return (MessageType >= 64 ? Message.TypeNames[MessageType].Name : ""); } }
+
+    /// <summary>
+    /// Returns information about the message in one compact string
+    /// </summary>
+    /// <returns>
+    /// A <see cref="System.String"/>
+    /// </returns>
+    public string OneLineInfo()
+    {
+      System.Text.StringBuilder sb = new System.Text.StringBuilder();
+      sb.Append("{0}({1})", MessageName, MessageType);
+
+      sb.Append("({0}, {1}, {2})", MessageDestination, Value, PlayerEdict);
+
+      sb.Append("(");
+      for (int i = 0; i < Arguments.Count; i++) {
+        MessageArgument argument = Arguments[i];
+        if (argument.Type == typeof(string))
+            sb.Append("{0}:{1}", argument.ShortTypeName, (argument.Value as string).Escape());
+        else
+            sb.Append("{0}:{1}", argument.ShortTypeName, argument.Value);
+        if (i+1 < Arguments.Count) sb.Append(", ");
+      }
+      sb.Append(");");
+      return sb.ToString();
+    }
+
+    /// <summary>
+    /// returns information in a lot of strings
+    /// </summary>
+    /// <returns>
+    /// A <see cref="System.String"/>
+    /// </returns>
+    public string VerboseInfo()
+    {
+      System.Text.StringBuilder sb = new System.Text.StringBuilder();
+      sb.Append("\nMessage: {0}\n", Message.TypeNames[MessageType].Name);
+      sb.Append("\n\tMessageDestination={0}", MessageDestination);
+      sb.Append("\n\tMessageType={0}", MessageType);
+      sb.Append("\n\tValue={0}", Value);
+      sb.Append("\n\tPlayerEdict={0}", PlayerEdict);
+      sb.Append("\n\tCallTimeBegin={0}", CallTimeBegin);
+      sb.Append("\n\tCallTimeEnd={0}", CallTimeEnd);
+      foreach (var arg in Arguments) sb.Append("\n\t\t{0}", arg);
+      return sb.ToString();
+    }
+
+    public override string ToString()
+    {
+      // TODO: Create a way to switch between the 2 representation modes
+      return OneLineInfo();
+    }
+
+  }
+
   /// <summary>
   /// A wrapper class for sending messages with the goldsrc engine
   /// </summary>
   public static class Message
   {
+    #if DEBUG
+    private static MessageInformation messageInformation;
+    #endif
+
     static Message()
     {
       Tree<MessageHandler> t = new Tree<MessageHandler>();
-
     }
     /// <summary>
     /// A private count for the arguments send by the function.
@@ -100,6 +202,7 @@ namespace SharpMod
 
     #region Engine Message Functions
 
+    #region Base Message Functions
     /// <summary>
     /// Begins with the sending of a message.
     /// </summary>
@@ -115,9 +218,14 @@ namespace SharpMod
     /// <param name="player">
     /// If send to a specific player, the player entity has to be supplied here <see cref="IntPtr"/>
     /// </param>
-    public static void Begin(MessageDestination destination, int msg_type, IntPtr flValue, IntPtr playerEntity)
+    public static void Begin(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr playerEntity)
     {
-      MetaModEngine.engineFunctions.MessageBegin(destination, msg_type, flValue, playerEntity);
+      #if DEBUG
+      messageInformation = new MessageInformation(destination, messageType, floatValue, playerEntity);
+      messageInformation.CallTimeBegin = DateTime.Now;
+      #endif
+
+      MetaModEngine.engineFunctions.MessageBegin(destination, messageType, floatValue, playerEntity);
       count = 0;
     }
 
@@ -126,66 +234,20 @@ namespace SharpMod
     /// </summary>
     public static void End()
     {
+      #if DEBUG
+      messageInformation.CallTimeEnd = DateTime.Now;
+      Console.WriteLine ("Custom: {0}", messageInformation);
+      #endif
+
       MetaModEngine.engineFunctions.MessageEnd();
-      //EngineInterface.MessageEnd();
     }
 
-    /// <summary>
-    /// Writes a character into the message
-    /// If the message buffer is already full, writing will be omitted.
-    /// </summary>
-    /// <param name="val">
-    /// A character value <see cref="System.Char"/>
-    /// </param>
-    public static void WriteChar(char val)
-    {
-      if (count+sizeof(char) < MaxLength)
-      {
-        MetaModEngine.engineFunctions.WriteChar((int)val);
-        count += sizeof(char);
-      }
-    }
+    #endregion
 
-    /// <summary>
-    /// Writes a character into the message
-    /// If the message buffer is already full, writing will be omitted.
-    /// </summary>
-    /// <param name="val">
-    /// A character value <see cref="System.Char"/>
-    /// </param>
-    public static void Write(char val)
-    {
-      WriteChar(val);
-    }
+    // some information in:
+    // parsemsg.cpp
 
-    /// <summary>
-    /// Writes a long in the message.
-    /// </summary>
-    /// <param name="val">
-    /// A long value <see cref="System.Int64"/>
-    /// If the message buffer is already full, writing will be omitted.
-    /// </param>
-    public static void WriteLong(long val)
-    {
-      if (count+sizeof(long) < MaxLength)
-      {
-        MetaModEngine.engineFunctions.WriteLong((int)val);
-        count += sizeof(long);
-      }
-    }
-
-    /// <summary>
-    /// Writes a long in the message.
-    /// </summary>
-    /// <param name="val">
-    /// A long value <see cref="System.Int64"/>
-    /// If the message buffer is already full, writing will be omitted.
-    /// </param>
-    public static void Write(long val)
-    {
-      WriteLong(val);
-    }
-
+    #region WriteByte
 
     /// <summary>
     /// Writes a byte value.
@@ -196,6 +258,9 @@ namespace SharpMod
     /// </param>
     public static void WriteByte(byte val)
     {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(byte), (byte)val));
+      #endif
       if (count+sizeof(byte) < MaxLength)
       {
         MetaModEngine.engineFunctions.WriteByte((int)val);
@@ -215,6 +280,169 @@ namespace SharpMod
       WriteByte(val);
     }
 
+    #endregion
+    #region WriteChar
+
+    /// <summary>
+    /// Writes a character into the message
+    /// If the message buffer is already full, writing will be omitted.
+    /// </summary>
+    /// <param name="val">
+    /// A character value <see cref="System.Char"/>
+    /// </param>
+    public static void WriteChar(char val)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(char), (char)val));
+      #endif
+      if (count+sizeof(char) < MaxLength)
+      {
+        MetaModEngine.engineFunctions.WriteChar((int)val);
+        count += sizeof(char);
+      }
+    }
+
+    /// <summary>
+    /// Writes a character into the message
+    /// If the message buffer is already full, writing will be omitted.
+    /// </summary>
+    /// <param name="val">
+    /// A character value <see cref="System.Char"/>
+    /// </param>
+    public static void Write(char val)
+    {
+      WriteChar(val);
+    }
+
+    #endregion
+    #region WriteShort
+
+    /// <summary>
+    /// Writes a short into the message.
+    /// If the message buffer is already full, writing will be omitted.
+    /// </summary>
+    /// <param name="val">
+    /// A character value <see cref="System.Char"/>
+    /// </param>
+    public static void WriteShort(short val)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(short), (short)val));
+      #endif
+      if (count+sizeof(short) < MaxLength)
+      {
+        MetaModEngine.engineFunctions.WriteShort(val);
+        count += sizeof(short);
+      }
+    }
+
+    /// <summary>
+    /// Writes a short into the message.
+    /// If the message buffer is already full, writing will be omitted.
+    /// </summary>
+    /// <param name="val">
+    /// A character value <see cref="System.Char"/>
+    /// </param>
+    public static void Write(short val)
+    {
+      WriteShort(val);
+    }
+
+    #endregion
+    #region WriteLong
+
+    /// <summary>
+    /// Writes a long in the message.
+    /// </summary>
+    /// <param name="val">
+    /// A long value <see cref="System.Int64"/>
+    /// If the message buffer is already full, writing will be omitted.
+    /// </param>
+    public static void WriteLong(long val)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(long), (long)val));
+      #endif
+      if (count+sizeof(long) < MaxLength)
+      {
+        MetaModEngine.engineFunctions.WriteLong((int)val);
+        count += sizeof(long);
+      }
+    }
+
+    public static void WriteLong(int val)
+    {
+      WriteLong((long)val);
+    }
+
+    /// <summary>
+    /// Writes a long in the message.
+    /// </summary>
+    /// <param name="val">
+    /// A long value <see cref="System.Int64"/>
+    /// If the message buffer is already full, writing will be omitted.
+    /// </param>
+    public static void Write(long val)
+    {
+      WriteLong(val);
+    }
+
+    #endregion
+    #region WriteAngle
+
+    // TODO: Check if WriteAngle is implemented correctly
+
+    /// <summary>
+    /// Writes an angle in the message.
+    /// </summary>
+    /// <param name="val">
+    /// An angle value <see cref="System.Int32"/>
+    /// If the message buffer is already full, writing will be omitted.
+    /// </param>
+    public static void WriteAngle(int val)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(int), val));
+      #endif
+
+      // TODO: check if this really what the WriteEntity functions sends
+
+      if (count+sizeof(int) < MaxLength)
+      {
+        MetaModEngine.engineFunctions.WriteAngle(val);
+        count += sizeof(int);
+      }
+    }
+
+    #endregion
+    #region WriteCoord
+
+    // TODO: Check if WriteCoord is implemented correctly
+
+    /// <summary>
+    /// Writes a coord value into the message.
+    /// </summary>
+    /// <param name="val">
+    /// A coord value <see cref="System.Int32"/>
+    /// If the message buffer is already full, writing will be omitted.
+    /// </param>
+    public static void WriteCoord(int val)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(int), val));
+      #endif
+
+      // TODO: check if this really what the WriteEntity functions sends
+
+      if (count+sizeof(int) < MaxLength)
+      {
+        MetaModEngine.engineFunctions.WriteCoord(val);
+        count += sizeof(int);
+      }
+    }
+
+    #endregion
+    #region WriteString
 
     /// <summary>
     /// Writes a string value into the buffer.
@@ -225,6 +453,10 @@ namespace SharpMod
     /// </param>
     public static void WriteString(string val)
     {
+      if (val == null) return;
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(string), (string)val));
+      #endif
       if (count+val.Length >= MaxLength)
       {
         MetaModEngine.engineFunctions.WriteString(val.Substring(0, count+val.Length-MaxLength-1));
@@ -247,307 +479,40 @@ namespace SharpMod
       WriteString(val);
     }
 
-    /// <summary>
-    /// Writes a short into the message.
-    /// If the message buffer is already full, writing will be omitted.
-    /// </summary>
-    /// <param name="val">
-    /// A character value <see cref="System.Char"/>
-    /// </param>
-    public static void WriteShort(short val)
+    #endregion
+    #region WriteEntity
+
+    public static void WriteEntity(int entity)
     {
-      if (count+sizeof(short) < MaxLength)
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(Entity), entity));
+      #endif
+
+      // TODO: check if this really what the WriteEntity functions sends
+
+      if (count+sizeof(int) < MaxLength)
       {
-        MetaModEngine.engineFunctions.WriteShort(val);
-        count += sizeof(short);
+        MetaModEngine.engineFunctions.WriteEntity((int)entity);
+        count += sizeof(int);
       }
     }
-    /// <summary>
-    /// Writes a short into the message.
-    /// If the message buffer is already full, writing will be omitted.
-    /// </summary>
-    /// <param name="val">
-    /// A character value <see cref="System.Char"/>
-    /// </param>
-    public static void Write(short val)
+
+    public static void WriteEntity(Entity entity)
     {
-      WriteShort(val);
+      // TODO: check if this really what the WriteEntity functions sends
+
+      WriteEntity(entity.Index);
+    }
+
+    public static void Write(Entity entity)
+    {
+      WriteEntity(entity);
     }
 
     #endregion
 
-
-    #region Engine Chat Text Functions
-
-    /// <summary>
-    /// Prints some text in the clients chat, not colored.
-    /// Use {0} for argument typing.
-    /// </summary>
-    /// <param name="player">
-    /// Player <see cref="Player"/>
-    /// </param>
-    /// <param name="text">
-    /// Text <see cref="System.String"/>
-    /// </param>
-    /// <param name="obj">
-    /// Arguments <see cref="System.Object[]"/>
-    /// </param>
-    public static void ClientPrint(this Player player, string text, object[] obj)
-    {
-      ClientPrint(player, String.Format(text, obj));
-    }
-
-    /// <summary>
-    /// Prints some text in the clients chat, not colored.
-    /// </summary>
-    /// <param name="player">
-    /// Player <see cref="Player"/>
-    /// </param>
-    /// <param name="text">
-    /// Text to print <see cref="System.String"/>
-    /// </param>
-    public static void ClientPrint(this Player player, string text)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("TextMsg"), IntPtr.Zero, player.Pointer);
-      Message.Write((byte)3); // printchat
-      Message.Write(text);
-      Message.End();
-    }
-
-    /// <summary>
-    /// This function prints all the messages in an array of string to a client.
-    /// </summary>
-    /// <param name="player">
-    /// Player <see cref="Player"/>
-    /// </param>
-    /// <param name="text">
-    /// Array of string <see cref="System.String[]"/>
-    /// </param>
-    public static void ClientPrint(this Player player, string[] text)
-    {
-      foreach (string line in text)
-      {
-        player.ClientPrint(line);
-      }
-    }
-    /// <summary>
-    /// Splits the string in an array (determines boundaries by \n and \r) and prints each string
-    /// </summary>
-    /// <param name="player">
-    /// Player <see cref="Player"/>
-    /// </param>
-    /// <param name="text">
-    /// String with \r and \n for line determination. <see cref="System.String"/>
-    /// </param>
-    public static void ClientPrintEachLine(this Player player, string text)
-    {
-      player.ClientPrint(text.Split(new char[] {'\n', '\r'}));
-    }
-
     #endregion
 
-    /// <summary>
-    /// A function for internal use, HudMessage uses this in order to scale some values.
-    /// </summary>
-    /// <param name="val">
-    /// The original value. <see cref="System.Single"/>
-    /// </param>
-    /// <param name="scale">
-    /// The scale factor. <see cref="System.Single"/>
-    /// </param>
-    /// <returns>
-    /// The result in 16bit int form. <see cref="System.Int16"/>
-    /// </returns>
-    private static short FixedUnsigned16(float val, float scale)
-    {
-      int output;
-      output = (int)((float)val * scale);
-      if (output >  32767) output =  32767;
-      if (output < -32768) output = -32768;
-      return (short)output;
-    }
-    /// <summary>
-    /// Sends a hudmessage to a player.
-    /// The player will see a hudmessage on his screen.
-    /// </summary>
-    /// <param name="player">
-    /// The player. <see cref="Player"/>
-    /// </param>
-    /// <param name="textparams">
-    /// A struct with all the hudmessages. <see cref="HudMessageStruct"/>
-    /// </param>
-    /// <param name="message">
-    /// The text to draw on the hud. <see cref="System.String"/>
-    /// </param>
-    public static void HudMessage(this Player player, HudMessageStruct textparams, string message)
-    {
-      if (player == null)
-        Message.Begin(MessageDestination.BroadCast, 23, IntPtr.Zero, IntPtr.Zero);
-      else
-        Message.Begin(MessageDestination.OneReliable, 23, IntPtr.Zero, player.Pointer);
-
-      Message.Write((byte)29);
-      Message.Write((byte)(textparams.channel & 0xFF));
-      Message.Write(FixedUnsigned16(textparams.x, 1 << 13));
-      Message.Write(FixedUnsigned16(textparams.y, 1 << 13));
-      Message.Write((byte)textparams.effect);
-
-      Message.Write(textparams.r1);
-      Message.Write(textparams.g1);
-      Message.Write(textparams.b1);
-      Message.Write(textparams.a1);
-
-      Message.Write(textparams.r2);
-      Message.Write(textparams.g2);
-      Message.Write(textparams.b2);
-      Message.Write(textparams.a2);
-
-      Message.Write(FixedUnsigned16(textparams.fadeinTime, 1<<8));
-      Message.Write(FixedUnsigned16(textparams.fadeoutTime, 1<<8));
-      Message.Write(FixedUnsigned16(textparams.holdTime, 1<<8));
-
-      if (textparams.effect == 2)
-        Message.Write(FixedUnsigned16(textparams.fxTime, 1<<8));
-
-      Message.Write(message);
-      Message.End();
-    }
-
-    /// <summary>
-    /// Sends a client the HideWeapon message in order to hide hud elements.
-    /// </summary>
-    /// <param name="player">
-    /// The player which to use. <see cref="Player"/>
-    /// </param>
-    /// <param name="elements">
-    /// The elements which to hide, use the enum HudElements <see cref="System.Byte"/>
-    /// </param>
-    public static void HideWeapons(this Player player, byte elements)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("HideWeapon"), IntPtr.Zero, player.Pointer);
-      Message.Write(elements);
-      Message.End();
-    }
-
-    #region StatusIcon
-
-    public enum StatusIconState : byte
-    {
-      Hide = 0,
-      Show,
-      Flash
-    };
-
-    public static void StatusIcon(this Player player, StatusIconState status, string spriteName, Color color)
-    {
-      StatusIcon(player, status, spriteName, color.R, color.G, color.B);
-    }
-
-    public static void StatusIcon(this Player player, StatusIconState status, string spriteName, byte r, byte g, byte b)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("StatusIcon"), IntPtr.Zero, player.Pointer);
-      Message.WriteByte((byte)status);
-      Message.Write(spriteName);
-      if (status != StatusIconState.Hide)
-      {
-        Message.Write(r);
-        Message.Write(g);
-        Message.Write(b);
-      }
-      Message.End();
-    }
-
-    /// <summary>
-    /// Sends a message to show a status icon
-    /// </summary>
-    /// <param name="player">
-    /// A player <see cref="Player"/>
-    /// </param>
-    /// <param name="spriteName">
-    /// The spritname of the status icon <see cref="System.String"/>
-    /// </param>
-    public static void HideStatusIcon(this Player player, string spriteName)
-    {
-      StatusIcon(player, StatusIconState.Hide, spriteName, 0, 0, 0);
-    }
-
-    #endregion
-
-    public static void VGUIMenu(this Player player, byte menuID, short keysBitSum, char time, byte multipart, string name)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("VGUIMenu"), IntPtr.Zero, player.Pointer);
-      Message.End();
-    }
-
-    public static void VoiceMask(this Player player, long AudiblePlayerIndexBitSum, long ServerBannedPlayersIndexbitSum)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("VoiceMask"), IntPtr.Zero, player.Pointer);
-      Message.Write(AudiblePlayerIndexBitSum);
-      Message.Write(ServerBannedPlayersIndexbitSum);
-      Message.End();
-    }
-
-    public static void SendWeaponListMessage(this Player player, string WeaponName, byte PrimaryAmmoID, byte PrimaryAmmoMaxAmount,
-                                             byte SecondaryAmmoID, byte SecondaryAmmoMaxAmount, byte SlotID, byte NumberInSlot, byte WeaponID,
-                                             byte Flags)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("WeaponList"), IntPtr.Zero, player.Pointer);
-      Message.Write(WeaponName);
-      Message.Write(PrimaryAmmoID);
-      Message.Write(PrimaryAmmoMaxAmount);
-      Message.Write(SecondaryAmmoID);
-      Message.Write(SecondaryAmmoMaxAmount);
-      Message.Write(SlotID);
-      Message.Write(NumberInSlot);
-      Message.Write(WeaponID);
-      Message.Write(Flags);
-      Message.End();
-    }
-
-    public static void SendWeaponPickupMessage(this Player player, byte weapon)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("WeapPickup"), IntPtr.Zero, player.Pointer);
-      Message.Write(weapon);
-      Message.End();
-    }
-
-    /// <summary>
-    /// Sends a "SayText" message to a client.
-    /// </summary>
-    /// <param name="player">
-    /// A <see cref="Player"/>
-    /// </param>
-    /// <param name="text">
-    /// A <see cref="System.String"/>
-    /// </param>
-    public static void SendSayTextMessage(this Player player, string text)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("SayText"), IntPtr.Zero, player.Pointer);
-      Message.Write((byte)1); // printchat
-      Message.Write(text);
-      Message.End();
-    }
-
-    /// <summary>
-    /// Sends a TeamInfo message to the player to inform of a teamchange
-    /// The SpecialColor is set according to the Team the player is in.
-    /// This is needed in order to use All 3 Counter Strike colors in chat.
-    /// </summary>
-    /// <param name="player">
-    /// A player <see cref="Player"/>
-    /// </param>
-    /// <param name="team">
-    /// The Team strings ("CT","TERRORIST", "SPECTATOR") <see cref="System.String"/>
-    /// </param>
-    public static void SendTeamInfoMessage(this Player player, string team)
-    {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("TeamInfo"), IntPtr.Zero, player.Pointer);
-      //Message.Write(player.ID);
-      Message.Write(team);
-      Message.End();
-    }
-
-  }
 
   enum PluginFunctions
   {
@@ -693,7 +658,7 @@ namespace SharpMod
     }
 
   }
-
+  }
 
   /// <summary>
   /// The BinaryTree class to efficiently look up the integer identifiers

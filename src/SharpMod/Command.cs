@@ -23,50 +23,10 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using SharpMod.MetaMod;
+using SharpMod.Helper;
 
 namespace SharpMod
 {
-
-  public static class StringExtensions
-  {
-    public static string[] Split(this string text, char c)
-    {
-      return text.Split(new char[] { c });
-    }
-
-    public static string Shift(this string text, char c)
-    {
-      string[] res = text.Split(new char[] { c }, 2);
-      if (res.Length == 2) return res[1];
-      else return string.Empty;
-    }
-
-    public static string Join(this string[] stringarray, char c)
-    {
-      if (stringarray.Length != 0)
-      {
-        StringBuilder sb = new StringBuilder(stringarray[0]);
-        if (stringarray.Length > 1)
-        {
-          for (int i = 1; i < stringarray.Length; i++)
-          {
-            sb.Append(c);
-            sb.Append(stringarray[i]);
-          }
-        }
-        return sb.ToString();
-      }
-      else
-      {
-        return string.Empty;
-      }
-    }
-
-    public static bool Contains(this string text, char c)
-    {
-      return text.Contains(c.ToString());
-    }
-  }
 
   /// <summary>
   /// A class for handling commands send by the players
@@ -233,6 +193,10 @@ namespace SharpMod
       }
     }
   }
+
+
+  // TODO: Move specific commands which belong to specific mods to specific extenion files
+  // very SPECIFIC
 
   /// <summary>
   /// A special class for handling SayCommand (say, say_team)

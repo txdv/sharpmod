@@ -21,7 +21,11 @@
 
 using System;
 using System.Runtime.InteropServices;
+using SharpMod.Math;
 using SharpMod.MetaMod;
+
+// TODO: Write a mapper which would upon createn
+// of an entity check against the classname and use the proper wrapper class (hostage, player, etc..)
 
 namespace SharpMod
 {
@@ -290,39 +294,29 @@ namespace SharpMod
     internal Link *next;
   };
 
-  [StructLayout (LayoutKind.Sequential)]
-  internal struct Vector3f
-  {
-    float x;
-    float y;
-    float z;
-  };
+  // TODO: reuse instances of this class, save the pointers in a list or something
 
   public unsafe class Entity
   {
     internal Edict *entity;
     public IntPtr Pointer { get; set; }
 
+    #region Constructors
 
     internal Entity(Edict *entity)
     {
       this.entity = entity;
       Pointer = new IntPtr(entity);
     }
+
     public Entity()
-      : this(MetaModEngine.engineFunctions.CreateEntity())
-    {
-    }
+      : this(MetaModEngine.engineFunctions.CreateEntity()) { }
 
     public Entity(int className)
-      : this(MetaModEngine.engineFunctions.CreateNamedEntity(className))
-    {
-    }
+      : this(MetaModEngine.engineFunctions.CreateNamedEntity(className)) { }
 
     internal Entity(void *ptr)
-      : this((Edict*)ptr)
-    {
-    }
+      : this((Edict*)ptr) { }
 
     public Entity(IntPtr ptr)
     {
@@ -330,37 +324,31 @@ namespace SharpMod
       entity = (Edict *)ptr.ToPointer();
     }
 
-    // public static Entity Create() { return new Entity(); }
+    #endregion
 
-    public static Entity Find(Entity startSearchAfter, string field, string val)
-    {
-      return new Entity(MetaModEngine.engineFunctions.FindEntityByString(startSearchAfter.Pointer, field, val));
+    /// <summary>
+    /// Returns the index of the entity
+    /// </summary>
+    public int Index {
+      get {
+        return GetIndex(Pointer);
+      }
     }
 
-    internal static Entity Find(Edict *startSearchAfter, string field, string val)
-    {
-      return Find(new Entity(startSearchAfter), field, val);
-    }
-
-    internal static void Remove(IntPtr entity)
-    {
-      MetaModEngine.engineFunctions.RemoveEntity(entity);
+    /// <summary>
+    /// returns the entity class name
+    /// </summary>
+    unsafe public string Classname {
+      get {
+        IntPtr ptr = MetaModEngine.engineFunctions.SzFromIndex(entity->v.classname);
+        return Mono.Unix.UnixMarshal.PtrToString(ptr);
+        return "not implemented yet";
+      }
     }
 
     public int GetIllumination()
     {
       return MetaModEngine.engineFunctions.GetEntityIllum(Pointer);
-    }
-
-    public static int GetIndex(IntPtr ptr)
-    {
-      return MetaModEngine.engineFunctions.IndexOfEdict(ptr);
-    }
-
-    public int Index {
-      get {
-        return GetIndex(Pointer);
-      }
     }
 
     public int Offset {
@@ -428,14 +416,34 @@ namespace SharpMod
     {
       MetaModEngine.dllapiFunctions.Use(entity.Pointer, this.Pointer);
     }
+
     public void Touch(Entity entity)
     {
       MetaModEngine.dllapiFunctions.Touch(entity.Pointer, this.Pointer);
     }
+
+    #region static methods
+
+    public static int GetIndex(IntPtr ptr)
+    {
+      return MetaModEngine.engineFunctions.IndexOfEdict(ptr);
+    }
+
+    public static Entity Find(Entity startSearchAfter, string field, string val)
+    {
+      return new Entity(MetaModEngine.engineFunctions.FindEntityByString(startSearchAfter.Pointer, field, val));
+    }
+
+    internal static Entity Find(Edict *startSearchAfter, string field, string val)
+    {
+      return Find(new Entity(startSearchAfter), field, val);
+    }
+
+    internal static void Remove(IntPtr entity)
+    {
+      MetaModEngine.engineFunctions.RemoveEntity(entity);
+    }
+
+    #endregion
   }
 }
-
-// #define STRING                        (*g_engfuncs.pfnSzFromIndex)
-// #define STRING(offset) (const char *)(gpGlobals->pStringBase + (int)offset)
-// #define MAKE_STRING(str) ((int)str - (int)STRING(0))
-// CREATE_NAMED_ENTITY(MAKE_STRING("trigger_hurt"));

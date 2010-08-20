@@ -1,0 +1,349 @@
+<messages>
+	<message name="ADStop"/>
+	<message name="AllowSpec">
+		<argument type="byte" name="Allowed"/>
+	</message>
+	<message name="AmmoPickup">
+		<argument type="byte" name="AmmoID"/>
+		<argument type="byte" name="Ammount"/>
+	</message>
+	<message name="AmmoX">
+		<argument type="byte" name="AmmoID"/>
+		<argument type="byte" name="Ammount"/>
+	</message>
+	<message name="ArmorType">
+		<argument type="byte" name="Flag"/>
+	</message>
+	<message name="BarTime">
+		<argument type="short" name="Duration"/> 
+	</message>
+	<message name="BarTime2">
+		<argument type="short" name="Duratino"/>
+		<argument type="short" name="startPercents"/>  
+	</message>
+	<message name="Battery">
+		<argument type="short" name="Armor"/> 
+	</message>
+	<message name="BlinkAcct">
+		<argument type="byte" name="BlinkAmt"/>
+	</message>
+	<message name="BombDrop">
+		<argument type="coord" name="CoordX"/>
+		<argument type="coord" name="CoordY"/>
+		<argument type="coord" name="CoordZ"/>
+		<argument type="byte" name="Flag"/>  
+	</message>
+	<message name="BombPickup"/>
+	<message name="BotProgress">
+		<argument type="byte" name="Flag"/>
+		<argument type="byte" name="Progress"/>
+		<argument type="string" name="Header"/> 
+	</message>
+	<message name="BotVoice">
+		<argument type="byte" name="Status"/>
+		<argument type="byte" name="PlayerIndex"/>
+	</message>
+	<message name="Brass">
+		<argument type="byte" name="Unknown"/>
+		<argument type="coord" name="StartX"/>
+		<argument type="coord" name="StartY"/>
+		<argument type="coord" name="StartZ"/>
+		<argument type="coord" name="VelocityX"/>
+		<argument type="coord" name="VelocityY"/>
+		<argument type="coord" name="VelocityZ"/>
+		<argument type="coord" name="UnknownX"/>
+		<argument type="coord" name="UnknownY"/>
+		<argument type="coord" name="UnknownZ"/>
+		<argument type="angle" name="Life"/>
+		<argument type="short" name="Model"/>
+		<argument type="byte" name="Unknownb1"/>
+		<argument type="byte" name="Unknownb2"/>
+		<argument type="byte" name="Unknownb3"/> 
+	</message>
+	<message name="BuyClose"/>
+	<message name="ClCorpse">
+		<argument type="string" name="ModelName"/>
+		<argument type="long" name="CoordX"/>
+		<argument type="long" name="CoordY"/>
+		<argument type="long" name="CoordZ"/>
+		<argument type="coord" name="Angle0"/>
+		<argument type="coord" name="Angle1"/>
+		<argument type="coord" name="Angle2"/>
+		<argument type="long" name="Delay"/>
+		<argument type="byte" name="Sequence"/>
+		<argument type="byte" name="ClassID"/>
+		<argument type="byte" name="TeamID"/>
+		<argument type="byte" name="PlayerID"/>
+	</message>
+	<message name="Crosshair">
+		<argument type="byte" name="Flag"/>
+	</message>
+	<message name="CurWeapon">
+		<argument type="byte" name="IsActive"/>
+		<argument type="byte" name="WeaponID"/>
+		<argument type="byte" name="ClipAmmo"/>
+	</message>
+	<message name="CZCareer">
+		<argument type="string" name="Type"/>
+		<argument type="*" name="Parameters"/>
+	</message>
+	<message name="CZCareerHUD">
+		<argument type="string" name="Type"/>
+		<argument type="*" name="Parameters"/>
+	</message>
+	<message name="Damage">
+		<argument type="byte" name="DamageSave"/>
+		<argument type="byte" name="DamageTake"/>
+		<argument type="long" name="DamageType"/>
+		<argument type="coord" name="CoordX"/>
+		<argument type="coord" name="CoordY"/>
+		<argument type="coord" name="CoordZ"/>
+	</message>
+	<message name="DeathMsg">
+		<argument type="byte" name="KillerID"/>
+		<argument type="byte" name="VictimID"/>
+		<argument type="byte" name="IsHeadshot"/>
+		<argument type="string" name="TruncatedWeaponName"/>
+	</message>
+	<message name="FlashBat">
+		<argument type="byte" name="ChargePercents"/>
+	</message>
+	<message name="Flashlight">
+		<argument type="byte" name="Flag"/>
+		<argument type="byte" name="ChargePercents"/>
+	</message>
+	<message name="Fog">
+		<argument type="byte" name="FogValue1"/>
+		<argument type="byte" name="FogValue2"/>
+		<argument type="byte" name="Unknown"/>
+	</message>
+	<message name="ForceCam">
+		<argument type="byte" name="ForececamValue"/>
+		<argument type="byte" name="ForcechasecamValue"/>
+		<argument type="byte" name="Unknown"/>
+	</message>
+	<message name="GameMode">
+		<argument type="byte" name="Unknown"/>
+	</message>
+	<message name="GameTitle"/>
+	<message name="Geiger">
+		<argument type="byte" name="Distance"/>
+	</message>
+	<message name="Health">
+		<argument type="byte" name="Health"/>
+	</message>
+	<message name="HideWeapon">
+		<argument type="byte" name="Flags"/>
+	</message>
+	<message name="HLTV">
+		<argument type="byte" name="ClientID"/>
+		<argument type="byte" name="Flags"/>
+	</message>
+	<message name="HostageK">
+		<argument type="byte" name="HostageID"/>
+	</message>
+	<message name="HostagePos">
+		<argument type="byte" name="Flag"/>
+		<argument type="byte" name="HostageID"/>
+		<argument type="coord" name="CoordX"/>
+		<argument type="coord" name="CoordY"/>
+		<argument type="coord" name="CoordZ"/>
+	</message>
+	<message name="HudText"/>
+	<message name="HudTextArgs">
+		<argument type="string" name="TextCode"/>
+		<argument type="byte" name="Unknown1"/>
+		<argument type="byte" name="Unknown2"/>
+	</message>
+	<message name="HudTextPro"/>
+	<message name="InitHUD"/>
+	<message name="ItemPickup">
+		<argument type="string" name="ItemName"/>
+	</message>
+	<message name="ItemStatus">
+		<argument type="byte" name="ItemBitSum"/>
+	</message>
+	<message name="Location">
+		<argument type="byte" name="Money"/>
+	</message>
+	<message name="Money">
+		<argument type="long" name="Amount"/>
+		<argument type="byte" name="Flag"/>
+	</message>
+	<message name="MOTD">
+		<argument type="byte" name="Flag"/>
+		<argument type="string" name="Text"/>
+	</message>
+	<message name="NVGToggle">
+		<argument type="byte" name="Flag"/>
+	</message>
+	<message name="Radar">
+		<argument type="byte" name="PlayerID"/>
+		<argument type="coord" name="CoordX"/>
+		<argument type="coord" name="CoordY"/>
+		<argument type="coord" name="CoordZ"/>
+	</message>
+	<message name="ReceiveW"/>
+	<message name="ReloadSound">
+		<argument type="byte" name="Unknown1"/>
+		<argument type="byte" name="Unknown2"/>
+	</message>
+	<message name="ReqState"/>
+	<message name="ResetHUD"/>
+	<message name="RoundTime">
+		<argument type="short" name="Time"/>
+	</message>
+	<message name="SayText">
+		<argument type="byte" name="SenderID"/>
+		<argument type="string" name="String1"/>
+		<argument type="string" name="String2" default="null"/>
+		<argument type="string" name="String3" default="null"/>
+	</message>
+	<message name="Scenario">
+		<argument type="byte" name="Active"/>
+		<argument type="string" name="Sprite"/>
+		<argument type="byte" name="Alpha"/>
+		<argument type="short" name="FlashRate"/>
+		<argument type="short" name="Unknown"/>
+	</message>
+	<message name="ScoreAttrib">
+		<argument type="byte" name="PlayerID"/>
+		<argument type="byte" name="Flags"/>
+	</message>
+	<message name="ScoreInfo">
+		<argument type="byte" name="PlayerID"/>
+		<argument type="short" name="Frags"/>
+		<argument type="short" name="Deaths"/>
+		<argument type="short" name="ClassID"/>
+		<argument type="short" name="TeamID"/>
+	</message>
+	<message name="ScreenFade">
+		<argument type="short" name="Duration"/>
+		<argument type="short" name="HoldTime"/>
+		<argument type="short" name="Flags"/>
+		<argument type="byte" name="ColorR"/>
+		<argument type="byte" name="ColorG"/>
+		<argument type="byte" name="ColorB"/>
+		<argument type="byte" name="Alpha"/>
+	</message>
+	<message name="ScreenShake">
+		<argument type="short" name="Amplitude"/>
+		<argument type="short" name="Duration"/>
+		<argument type="short" name="Frequency"/>
+	</message>
+	<message name="SendAudio">
+		<argument type="byte" name="SenderID"/>
+		<argument type="string" name="AduioCode"/>
+		<argument type="short" name="Pitch"/>
+	</message>
+	<message name="ServerName">
+		<argument type="string" name="ServerName"/>
+	</message>
+	<message name="SetFOV">
+		<argument type="byte" name="Degrees"/>
+	</message>
+	<message name="ShadowIdx">
+		<argument type="long" name="Unknown"/>
+	</message>
+	<message name="ShowMenu">
+		<argument type="short" name="KeyBitSum"/>
+		<argument type="char" name="Time"/>
+		<argument type="byte" name="MultiPart"/>
+		<argument type="string" name="Text"/>
+	</message>
+	<message name="ShowTimer"/>
+	<message name="SpecHealth">
+		<argument type="byte" name="Health"/>
+	</message>
+	<message name="SpecHealth2">
+		<argument type="byte" name="Health"/>
+		<argument type="byte" name="PlayerID"/>
+	</message>
+	<message name="Spectator">
+		<argument type="byte" name="ClientID"/>
+		<argument type="byte" name="Unknown"/>
+	</message>
+	<message name="StatusIcon">
+		<argument type="byte" name="Status"/>
+		<argument type="string" name="SpriteName"/>
+		<argument type="byte" name="ColorR" default="0"/>
+		<argument type="byte" name="ColorG" default="0"/>
+		<argument type="byte" name="ColorB" default="0"/>
+    <messagecode><![CDATA[
+      Message.WriteByte(Status);
+      Message.WriteString(SpriteName);
+      if (Status != 0)
+      {
+        Message.WriteByte(ColorR);
+        Message.WriteByte(ColorG);
+        Message.WriteByte(ColorB);
+      }]]></messagecode>
+	</message>
+	<message name="StatusValue">
+		<argument type="byte" name="Flag"/>
+		<argument type="short" name="Value"/>
+	</message>
+	<message name="StatusText">
+		<argument type="byte" name="Unknown"/>
+		<argument type="string" name="Text"/>
+	</message>
+	<message name="TaskTime">
+		<argument type="short" name="Time"/>
+		<argument type="byte" name="Active"/>
+		<argument type="byte" name="Fade"/>
+	</message>
+	<message name="TeamInfo">
+		<argument type="byte" name="PlayerID"/>
+		<argument type="string" name="TeamName"/>
+	</message>
+	<message name="TeamScore">
+		<argument type="string" name="Score"/>
+	</message>
+	<message name="TextMsg">
+		<argument type="byte" name="DestinationType"/>
+		<argument type="string" name="MessageContent"/>
+		<argument type="string" name="Submsg1" default="null"/>
+		<argument type="string" name="Submsg2" default="null"/>
+		<argument type="string" name="Submsg3" default="null"/>
+		<argument type="string" name="Submsg4" default="null"/>
+	</message>
+	<message name="Train">
+		<argument type="byte" name="Speed"/>
+	</message>
+	<message name="TutorClose"/>
+	<message name="TutorLine"/>
+	<message name="TutorState"/>
+	<message name="TutorText">
+		<argument type="string" name="Unknown1"/>
+		<argument type="byte" name="Unknown2"/>
+		<argument type="short" name="Unknown3"/>
+		<argument type="short" name="Unknown4"/>
+		<argument type="short" name="Unknown5"/>
+	</message>
+	<message name="ViewMode"/>
+	<message name="VGUIMenu">
+		<argument type="byte" name="MenuID"/>
+		<argument type="short" name="KeyBitSum"/>
+		<argument type="char" name="Time"/>
+		<argument type="byte" name="MultiPart"/>
+		<argument type="string" name="Name"/>
+	</message>
+	<message name="VoiceMask">
+		<argument type="long" name="AudiblePlayersIndexbitSum"/>
+		<argument type="long" name="ServerBannedPlayersIndexBitSum"/>
+	</message>
+	<message name="WeaponList">
+		<argument type="string" name="WeaponName"/>
+		<argument type="byte" name="PrimaryAmmoID"/>
+		<argument type="byte" name="PrimaryAmmoMaxAmount"/>
+		<argument type="byte" name="SecondaryAmmoID"/>
+		<argument type="byte" name="SecondaryAmmoMaxAmount"/>
+		<argument type="byte" name="SlotID"/>
+		<argument type="byte" name="NumberInSlot"/>
+		<argument type="byte" name="WeaponID"/>
+		<argument type="byte" name="Flags"/>
+	</message>
+	<message name="WeapPickup">
+		<argument type="byte" name="WeaponID"/>
+	</message>
+</messages>
