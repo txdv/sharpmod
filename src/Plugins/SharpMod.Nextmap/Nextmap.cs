@@ -61,7 +61,7 @@ namespace SharpMod.Nextmap
       try {
 
         List<string> list = new List<string>();
-        StreamReader sr = new StreamReader(File.Open(Server.GameDirectory + "/" + CVar.GetValue("mapcyclefile"), FileMode.Open));
+        StreamReader sr = new StreamReader(File.Open(Server.GameDirectory + "/" + CVar.GetStringValue("mapcyclefile"), FileMode.Open));
         while (!sr.EndOfStream)
         {
           string line = sr.ReadLine();

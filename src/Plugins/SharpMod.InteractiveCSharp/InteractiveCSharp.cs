@@ -26,6 +26,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Mono.CSharp;
 using SharpMod;
+using SharpMod.Messages;
+using SharpMod.Helper;
 
 namespace InteractiveCSharp
 {
@@ -172,6 +174,7 @@ namespace InteractiveCSharp
         {
           System.IO.TextWriter tw = new System.IO.StringWriter();
           PrettyPrint(tw, result);
+
           p.ClientPrintEachLine(tw.ToString());
         }
       }
@@ -226,7 +229,7 @@ namespace InteractiveCSharp
     void HandleSayExec(Player player, Command command)
     {
       // Ommit /exec and execute the following text
-      string exec_string = command.Arguments[1].Shift(' ') + ";";
+      string exec_string = command.Arguments[1].Split(' ').Shift().Join(' ') + ";";
       EvaluateGoldSrc(player, exec_string);
     }
   }
