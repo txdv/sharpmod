@@ -19,47 +19,137 @@
 //     along with csharpmod.  If not, see <http://www.gnu.org/licenses/>.
 // 
 
+// TODO: implement all methods from amxmodx/dlls/cstrike/cstrike/cstrike.cpp
+
 using System;
+using System.Reflection;
+using SharpMod.Messages;
+using SharpMod.GeneratedMessages;
 
 namespace SharpMod.CounterStrike
 {
-  public enum Weapons : byte
+
+  #region Enumerations
+
+  public enum Weapons : int
   {
-    P228         = 1,
-    SCOUT        = 3,
-    HEGRENADE    = 4,
-    XM1014       = 5,
-    C4           = 6,
-    MAC10        = 7,
-    AUG          = 8,
-    SMOKEGRENADE = 9,
-    ELITE        = 10,
-    FIVESEVEN    = 11,
-    UMP45        = 12,
-    SG550        = 13,
-    GALIL        = 14,
-    FAMAS        = 15,
-    USP          = 16,
-    GLOCK18      = 17,
-    AWP          = 18,
-    MP5NAVY      = 19,
-    M249         = 20,
-    M3           = 21,
-    M4A1         = 22,
-    TMP          = 23,
-    G3SG1        = 24,
-    FLASHBANG    = 25,
-    DEAGLE       = 26,
-    SG552        = 27,
-    AK47         = 28,
-    KNIFE        = 29,
-    P90          = 30,
-    VEST         = 31,
-    VESTHELM     = 32
+    weapon_p228      = 1,
+    weapon_scout     = 3,
+    weapon_hegrenade,
+    weapon_xm1014,
+    weapon_c4,
+    weapon_mac10,
+    weapon_aug,
+    weapon_smokegrenade,
+    weapon_elite,
+    weapon_fiveseven,
+    weapon_ump45,
+    weapon_sg550,
+    weapon_galil,
+    weapon_famas,
+    weapon_usp,
+    weapon_glock18,
+    weapon_awp,
+    weapon_mp5navy,
+    weapon_m249,
+    weapon_m3,
+    weapon_m4a1,
+    weapon_tmp,
+    weapon_g3sg1,
+    weapon_flashbang,
+    weapon_deagle,
+    weapon_sg552,
+    weapon_ak47,
+    weapon_knife,
+    weapon_p90,
+    weapon_vest,
+    weapon_vesthelm,
   }
 
+  internal enum WeaponsSilenced : int
+  {
+    weapon_usp  = (1 << 0),
+    weapon_m4a1 = (1 << 2),
+  }
+
+  public enum WeaponAnimations : int
+  {
+    noanimation = 0,
+    weapon_m4a1_silencer_attach =  6,
+    weapon_m4a1_silencer_detach = 13,
+    weapon_usp_silencer_attach  =  7,
+    weapon_usp_silencer_detach  = 15,
+  }
+
+  public enum WeaponMode : int
+  {
+    weapon_glock_semiautomatic = 0,
+    weapon_glock_burstmode     = 2,
+    weapon_famas_automatic     = 0,
+    weapon_famas_burstmode     = 16,
+  }
+
+  public enum WeaponAmmo : int
+  {
+    ammo_338magnum = 0,
+    ammo_762nato,
+    ammo_556natobox,
+    ammo_556nato,
+    ammo_buckshot,
+    ammo_45acp,
+    ammo_57mm,
+    ammo_50ae,
+    ammo_357sig,
+    ammo_9mm
+  }
+
+  public enum ItemFlag : int
+  {
+    SelectOnEmpty = 1,
+    NoAutoreaload = 2,
+    NoAutoswitchEmpty = 4,
+    LimitInWorld = 8,
+    Exhaustible = 16,
+  }
+
+  public enum Team : int
+  {
+    Unassigned = 0,
+    Terrorist = 1,
+    CounterTerrorist = 2,
+    Spectator = 3,
+  }
+
+  /// <summary>
+  /// Enumerator for colors that can be used in CounterStrike
+  /// </summary>
+  public enum Color : int
+  {
+    Yellow = 0x01,
+    Special = 0x03,
+    Green = 0x04
+  }
+
+  /// <summary>
+  /// Enumerator for CounterStrike SpecialColors (Spectator, Terrorist, Blue)
+  /// </summary>
+  public enum SpecialColor
+  {
+    White = 0,
+    Red = 1,
+    Blue = 3
+  }
   // The offsets can be found in the amxmodx cstrike plugin code
   // amxmodx-1.8.1/dlls/cstrike/cstrike/cstrike.h
+
+  public enum ArmorType : int
+  {
+    NoArmor = 0,
+    Vest = 1,
+    VestHelmet = 2,
+  }
+
+  #endregion
 
   internal static class CounterStrikeOffset
   {
@@ -143,7 +233,6 @@ namespace SharpMod.CounterStrike
 
       if (Server.Is64Bit)
       {
-
         // TODO: enter values from amxmodx-1.8.1/dlls/cstrike/cstrike/cstrike.h
 
       } else { // its a 32bit system
@@ -208,20 +297,7 @@ namespace SharpMod.CounterStrike
   public static class PlayerExtensions
   {
 
-    /// <summary>
-    /// Sets the amount of money a player posesses.
-    /// Only server side is updated.
-    /// </summary>
-    /// <param name="player">
-    /// The player <see cref="Player"/>
-    /// </param>
-    /// <param name="money">
-    /// The amount of money <see cref="System.Int32"/>
-    /// </param>
-    public static void SetMoney(this Player player, int money)
-    {
-      player.SetPrivateData(CounterStrikeOffset.csmoney, money);
-    }
+    #region Money
 
     /// <summary>
     /// Gets the amount of money a player posesses
@@ -239,6 +315,22 @@ namespace SharpMod.CounterStrike
     }
 
     /// <summary>
+    /// Sets the amount of money a player posesses.
+    /// Only server side is updated.
+    /// </summary>
+    /// <param name="player">
+    /// The player <see cref="Player"/>
+    /// </param>
+    /// <param name="money">
+    /// The amount of money <see cref="System.Int32"/>
+    /// </param>
+    public static void SetMoney(this Player player, int money)
+    {
+      player.SetPrivateData(CounterStrikeOffset.csmoney, money);
+    }
+
+
+    /// <summary>
     /// Sends a message to the player in order to update the HUD for the money.
     /// Only client side is udpated.
     /// </summary>
@@ -253,11 +345,7 @@ namespace SharpMod.CounterStrike
     /// </param>
     public static void SendMoneyMessage(this Player player, int money, bool flash)
     {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("Money"), IntPtr.Zero, player.Pointer);
-      Message.Write((long)money);
-      if (flash) Message.Write((byte)1);
-      else Message.Write((byte)0);
-      Message.End();
+      player.SendMoneyMessage(money, (byte)(flash ? 1 : 0));
     }
 
     /// <summary>
@@ -278,6 +366,10 @@ namespace SharpMod.CounterStrike
       SetMoney(player, money);
       SendMoneyMessage(player, money, flash);
     }
+
+    #endregion
+
+    #region Deaths
 
     /// <summary>
     /// Gets the deathcount of a player
@@ -302,10 +394,12 @@ namespace SharpMod.CounterStrike
     /// <param name="val">
     /// The deathcount the player shall have afterwards <see cref="System.Int32"/>
     /// </param>
-    public static unsafe void SetDeaths(this Player player, int val)
+    public static void SetDeaths(this Player player, int val)
     {
       player.SetPrivateData(CounterStrikeOffset.csdeaths, val);
     }
+
+    #endregion
 
     #region Team functions
 
@@ -321,15 +415,17 @@ namespace SharpMod.CounterStrike
 
     public static string GetTeamString(this Player player)
     {
-      return CounterStrike.GetTeamString(player.GetTeamEnum());
+      return CounterStrike.GetTeamString(player.GetTeamID());
     }
 
     public static SpecialColor GetTeamColor(this Player player)
     {
-      return SpecialColor.Blue;
+      return CounterStrike.GetTeamColor(player.GetTeamID());
     }
 
     #endregion
+
+    #region ColorPrint
 
     /// <summary>
     /// Prints some colored text in the chat (yellow, green, special).
@@ -350,6 +446,7 @@ namespace SharpMod.CounterStrike
     /// </param>
     public static void ClientColorPrint(this Player player, SpecialColor specialColor, string text, params object[] paramlist)
     {
+      // TODO: for some reason this doesn't work, thought the messages come in a proper way
       string team = player.GetTeamString();
       player.SendTeamInfoMessage(CounterStrike.GetTeamString(specialColor));
       player.ClientColorPrint(text, paramlist);
@@ -374,6 +471,8 @@ namespace SharpMod.CounterStrike
       player.SendSayTextMessage(String.Format(text, paramlist));
     }
 
+    #endregion
+
     /// <summary>
     /// Get's the Entity of the Weapon weared right now by they player
     /// </summary>
@@ -385,6 +484,7 @@ namespace SharpMod.CounterStrike
     /// </returns>
     unsafe public static Weapon GetActiveWeapon(this Player player)
     {
+      // TODO: rewrite this ugly code
       int *ptr = (int *)player.GetPrivateData(CounterStrikeOffset.activeitem);
       if (ptr == (int *)0) return null;
       Entvars *pev = *(Entvars **)ptr;
@@ -394,59 +494,118 @@ namespace SharpMod.CounterStrike
 
     public static void SendWeaponPickupMessage(this Player player, Weapons weapon)
     {
-      player.SendWeaponPickupMessage((byte)weapon);
+      player.SendWeapPickupMessage((byte)weapon);
     }
 
-  }
 
-  enum ItemFlag : byte
-  {
-    SelectOnEmpty = 1,
-    NoAutoreaload = 2,
-    NoAutoswitchEmpty = 4,
-    LimitInWorld = 8,
-    Exhaustible = 16,
-  }
+    #region Ammo
 
-  public struct WeaponInfo
-  {
-    string name;
-    byte ammoID;
-    byte ammoMaxAmount;
-    byte secondaryAmmoID;
-    byte secondaryAmmoMaxAmount;
-    byte slotID;
-    byte NumberInSlot;
-    byte weaponID;
-    byte flags;
-  }
+    /// <summary>
+    /// Sets the "backpack" ammo ammount, the ammo the players carries around.
+    /// </summary>
+    /// <param name="player">
+    /// the player <see cref="Player"/>
+    /// </param>
+    /// <param name="ammoType">
+    /// The weaponammo type <see cref="WeaponAmmo"/>
+    /// </param>
+    /// <param name="amount">
+    /// amount of ammo <see cref="System.Int32"/>
+    /// </param>
+    public static void SetAmmo(this Player player, WeaponAmmo ammoType, int ammount)
+    {
+      player.SetPrivateData(CounterStrikeOffset.Ammo.awm + (int)ammoType, ammount);
+    }
+
+    /// <summary>
+    /// Gets the ammount of ammo the player carries around.
+    /// </summary>
+    /// <param name="player">
+    /// The player <see cref="Player"/>
+    /// </param>
+    /// <param name="ammoType">
+    /// The ammo type <see cref="WeaponAmmo"/>
+    /// </param>
+    /// <returns>
+    /// The amount of ammo <see cref="System.Int32"/>
+    /// </returns>
+    public static int GetAmmo(this Player player, WeaponAmmo ammoType)
+    {
+      return player.GetPrivateData(CounterStrikeOffset.Ammo.awm + (int)ammoType);
+    }
 
 
-  public enum Team : int
-  {
-    Spectator         = 1,
-    Terrorist         = 2,
-    CounterTerrorist  = 3,
-  }
+    public static void SendAmmo(this Player player, WeaponAmmo ammoType, byte ammount)
+    {
+      player.SetAmmo(ammoType, ammount);
+      player.SendAmmoXMessage((byte)ammoType, ammount);
+    }
 
-  /// <summary>
-  /// Enumerator for colors that can be used in CounterStrike
-  /// </summary>
-  public enum Color
-  {
-    Yellow = 0x01,
-    Special = 0x03,
-    Green = 0x04
-  }
+    public static void SendAmmo(this Player player, WeaponAmmo ammoType, int ammount)
+    {
+      player.SendAmmo(ammoType, (byte)ammount);
+    }
 
-  /// <summary>
-  /// Enumerator for CounterStrike SpecialColors (Spectator, Terrorist, Blue)
-  /// </summary>
-  public enum SpecialColor
-  {
-    White = 0,
-    Red = 1,
-    Blue = 3
+    #endregion
+
+    #region Armor
+
+    public static ArmorType GetArmorType(this Player player)
+    {
+      return (ArmorType)player.GetPrivateData(CounterStrikeOffset.armortype);
+    }
+
+    public static void SetArmorType(this Player player, ArmorType armorType)
+    {
+      player.SetArmorType((int)armorType);
+    }
+
+    public static void SetArmorType(this Player player, int armorType)
+    {
+      player.SetPrivateData(CounterStrikeOffset.armortype, armorType);
+    }
+
+    #endregion
+
+    #region SendTeamInfoMessage
+
+    public static void SendTeamInfoMessage(this Player player, Team team)
+    {
+      player.SendTeamInfoMessage(CounterStrike.GetTeamString(team));
+    }
+
+    public static void SendTeamInfoMessage(this Player player, Player playerTeamChange, Team team)
+    {
+      player.SendTeamInfoMessage(playerTeamChange, CounterStrike.GetTeamString(team));
+    }
+    #endregion
+
+    #region VIP
+
+    public static bool GetVIP(this Player player)
+    {
+      return (player.GetPrivateData(CounterStrikeOffset.vip) == 1);
+    }
+
+    public static void SetVIP(this Player player, bool value)
+    {
+      player.SetPrivateData(CounterStrikeOffset.vip, (value ? 1 : 0));
+    }
+
+    // TODO: implement this one
+    // public static void SetVIP(this Player player, bool value, bool updateModel, bool updateScoreBoard) { }
+
+    #endregion
+
+    #region Animation
+
+    public static void SetWeaponAnimation(this Player player, WeaponAnimations animation)
+    {
+      player.WeaponAnimation = (int)animation;
+    }
+
+    #endregion
+
   }
 
   public class Weapon : Entity
@@ -498,57 +657,10 @@ namespace SharpMod.CounterStrike
       Armor,
     };
 
-    public static Weapon.Class GetWeaponType(Weapons weapon)
-    {
-      switch (weapon)
-      {
-
-      case Weapons.P228:
-      case Weapons.ELITE:
-      case Weapons.FIVESEVEN:
-      case Weapons.USP:
-      case Weapons.GLOCK18:
-      case Weapons.DEAGLE:
-        return Weapon.Class.Pistol;
-
-      case Weapons.SCOUT:
-      case Weapons.XM1014:
-      case Weapons.AUG:
-      case Weapons.SG550:
-      case Weapons.GALIL:
-      case Weapons.FAMAS:
-      case Weapons.AWP:
-      case Weapons.MP5NAVY:
-      case Weapons.M249:
-      case Weapons.M3:
-      case Weapons.M4A1:
-      case Weapons.TMP:
-      case Weapons.G3SG1:
-      case Weapons.AK47:
-      case Weapons.P90:
-        return Weapon.Class.Primary;
-
-      case Weapons.SMOKEGRENADE:
-      case Weapons.HEGRENADE:
-      case Weapons.FLASHBANG:
-        return Weapon.Class.Grenade;
-
-      case Weapons.VEST:
-      case Weapons.VESTHELM:
-        return Weapon.Class.Armor;
-
-      default:
-        return Weapon.Class.Undefined;
-      }
-    }
-
-
     unsafe internal Weapon(void *ptr)
-      : base(ptr)
-    {
-    }
+      : base(ptr) { }
 
-    public int Ammo {
+    public int ClipAmmo {
       get {
         return GetPrivateData(CounterStrikeOffset.clipammo);
       }
@@ -563,21 +675,224 @@ namespace SharpMod.CounterStrike
       }
     }
 
-    public Weapon.Class TypeClass {
+    public Weapons TypeEnum {
       get {
-        return GetWeaponType((Weapons)Type);
+        return Weapon.GetTypeEnum(Type);
       }
     }
 
-    public int Silencer {
+    public string TypeString {
       get {
-        return GetPrivateData(CounterStrikeOffset.silencerfiremode);
+        return Weapon.GetTypeString(Type);
       }
     }
+
+    public bool HasSilencer {
+      get {
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_m4a1:
+        case Weapons.weapon_usp:
+          return true;
+        default:
+          return false;
+        }
+      }
+    }
+
+    unsafe public bool Silencer {
+      get {
+        int silencer = GetPrivateData(CounterStrikeOffset.silencerfiremode);
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_m4a1:
+          return (silencer & (int)WeaponsSilenced.weapon_m4a1) > 0;
+        case Weapons.weapon_usp:
+          return (silencer & (int)WeaponsSilenced.weapon_usp) > 0;
+        }
+        // all other weapons have no silencer ..
+        return false;
+      }
+      set {
+        // TODO: Make an extra function for this?
+        if (HasSilencer) {
+          if (value && !Silencer) {
+            SetPrivateData(CounterStrikeOffset.silencerfiremode,
+                           GetPrivateData(CounterStrikeOffset.silencerfiremode) | (int)Weapon.GetWeaponSilence(this));
+
+            if (Owner != null && Owner is Player) (Owner as Player).SetWeaponAnimation(AttachAnimation);
+          } else if (!value && Silencer) {
+            SetPrivateData(CounterStrikeOffset.silencerfiremode,
+                           GetPrivateData(CounterStrikeOffset.silencerfiremode) & (~(int)Weapon.GetWeaponSilence(this)));
+
+            if (Owner != null && Owner is Player) (Owner as Player).SetWeaponAnimation(DetachAnimation);
+          }
+        }
+      }
+    }
+
+    internal static WeaponsSilenced GetWeaponSilence(Weapon weapon)
+    {
+      switch (weapon.TypeEnum)
+      {
+        case Weapons.weapon_m4a1:
+          return WeaponsSilenced.weapon_m4a1;
+        case Weapons.weapon_usp:
+          return WeaponsSilenced.weapon_usp;
+      default:
+        throw new Exception();
+      }
+    }
+
+    #region Attach && Detach
+
+    public static WeaponAnimations GetSilencerAttachAnimation(Weapons weapon)
+    {
+      switch (weapon)
+      {
+      case Weapons.weapon_m4a1:
+        return WeaponAnimations.weapon_m4a1_silencer_attach;
+      case Weapons.weapon_usp:
+        return WeaponAnimations.weapon_usp_silencer_attach;
+      default:
+        return WeaponAnimations.noanimation;
+      }
+    }
+    public static WeaponAnimations GetSilencerDetachAnimation(Weapons weapon)
+    {
+      switch (weapon)
+      {
+      case Weapons.weapon_m4a1:
+        return WeaponAnimations.weapon_m4a1_silencer_detach;
+      case Weapons.weapon_usp:
+        return WeaponAnimations.weapon_usp_silencer_detach;
+      default:
+        return WeaponAnimations.noanimation;
+      }
+    }
+
+    public WeaponAnimations AttachAnimation
+    {
+      get {
+        return GetSilencerAttachAnimation(TypeEnum);
+      }
+    }
+    public WeaponAnimations DetachAnimation
+    {
+      get {
+        return GetSilencerDetachAnimation(TypeEnum);
+      }
+    }
+
+    #endregion
+
+    #region Burstmode
+
+    public bool HasBurstMode {
+      get {
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_glock18:
+        case Weapons.weapon_famas:
+          return true;
+        default:
+          return false;
+        }
+      }
+    }
+
+    public bool BurstMode {
+      get {
+        int silencer = GetPrivateData(CounterStrikeOffset.silencerfiremode);
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_glock18:
+          return (silencer & (int)WeaponMode.weapon_glock_burstmode) > 0;
+        case Weapons.weapon_famas:
+          return (silencer & (int)WeaponMode.weapon_famas_burstmode) > 0;
+        }
+        // all other weapons have no silencer ..
+        return false;
+      }
+      // TODO: add BurstMode
+      set { }
+    }
+
+    #endregion
 
     public int ClipSize {
       get {
         return maxclipsize[Type];
+      }
+    }
+
+    #region Weapon representations
+
+    private static string[] weaponStrings;
+    private static Weapons[] weaponEnum;
+    static Weapon()
+    {
+      FieldInfo[] fields = typeof(Weapons).GetFields(BindingFlags.Public | BindingFlags.Static);
+      // since we ommit 0 and 2, we have to add 2 more to accomodate all
+      // the fields ;)
+      weaponStrings = new string[fields.Length+2];
+      weaponEnum = new Weapons[fields.Length+2];
+
+      int i = 1;
+      foreach (FieldInfo fi in fields)
+      {
+        weaponStrings[i] = fi.Name;
+        weaponEnum[i] = (Weapons)fi.GetValue(null);
+        i++;
+        if (i == 2) i++;
+      }
+    }
+
+
+    public static int GetType(string weaponname)
+    {
+      for (int i = 0; i < weaponStrings.Length; i++) if (weaponStrings[i] == weaponname) return i;
+      return -1;
+    }
+    public static int GetType(Weapons weapon)
+    {
+      for (int i = 0; i < weaponEnum.Length; i++) if (weaponEnum[i] == weapon) return i;
+      return -1;
+    }
+
+    public static string GetTypeString(int i)
+    {
+      return weaponStrings[i];
+    }
+    public static string GetTypeString(Weapons weapon)
+    {
+      return GetTypeString((int)weapon);
+    }
+
+    public static Weapons GetTypeEnum(int i)
+    {
+      return weaponEnum[i];
+    }
+    public static Weapons GetTypeEnum(string weaponname)
+    {
+      return weaponEnum[GetType(weaponname)];
+    }
+
+    #endregion
+
+    // TODO: implement this one
+    // public bool WeaponSilenced { get { } set { } }
+    // public bool BurstMode { get { } set { } }
+  }
+
+  public class Hostage : Entity
+  {
+    unsafe internal Hostage(void *ptr)
+      : base(ptr) { }
+
+    public int HostageIndex {
+      get {
+        return GetPrivateData(CounterStrikeOffset.hostageid);
       }
     }
   }
@@ -589,10 +904,12 @@ namespace SharpMod.CounterStrike
     {
       switch (team)
       {
-      case Team.CounterTerrorist:
-        return "CT";
+      case Team.Unassigned:
+      return "UNASSIGNED";
       case Team.Terrorist:
         return "TERRORIST";
+      case Team.CounterTerrorist:
+        return "CT";
       case Team.Spectator:
       default:
         return "SPECTATOR";
@@ -609,16 +926,7 @@ namespace SharpMod.CounterStrike
 
     public static Team GetTeamEnum(string team)
     {
-      switch (team)
-      {
-      case "CT":
-        return Team.CounterTerrorist;
-      case "TERRORIST":
-        return Team.Terrorist;
-      case "SPECTATOR":
-      default:
-        return Team.Spectator;
-      }
+      return (Team)GetTeamID(team);
     }
     public static Team GetTeamEnum(int id)
     {
@@ -631,7 +939,18 @@ namespace SharpMod.CounterStrike
 
     public static int GetTeamID(string team)
     {
-      return (int)GetTeamEnum(team);
+      switch (team)
+      {
+      case "UNASSIGNED":
+        return 0;
+      case "TERRORIST":
+        return 1;
+      case "CT":
+        return 2;
+      case "SPECTATOR":
+      default:
+        return 3;
+      }
     }
     public static int GetTeamID(Team team)
     {
@@ -641,9 +960,9 @@ namespace SharpMod.CounterStrike
     {
       switch (color)
       {
-      case SpecialColor.Blue:
-        return 1;
       case SpecialColor.Red:
+        return 1;
+      case SpecialColor.Blue:
         return 2;
       case SpecialColor.White:
       default:
@@ -664,9 +983,9 @@ namespace SharpMod.CounterStrike
       switch (team)
       {
       case 1:
-        return SpecialColor.Blue;
-      case 2:
         return SpecialColor.Red;
+      case 2:
+        return SpecialColor.Blue;
       case 3:
       default:
         return SpecialColor.White;

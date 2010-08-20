@@ -21,6 +21,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using SharpMod.Math;
 
 namespace SharpMod
 {
@@ -53,31 +54,13 @@ namespace SharpMod
 
   #region MetaMod Engine structs
 
-  // hlsdk/multiplayer/utils/common/math.h
-  [StructLayout (LayoutKind.Sequential)]
-  internal struct Vector3D
-  {
-    public double x;
-    public double y;
-    public double z;
-  }
-
-  // hlsdk/multiplayer/utils/common/math.h
-  [StructLayout (LayoutKind.Sequential)]
-  internal struct Vector4D
-  {
-    public double x;
-    public double y;
-    public double z;
-  }
-
   // hlsdk/multiplayer/common/usercmd.h
   [StructLayout (LayoutKind.Sequential)]
   internal struct UserCommand
   {
     public short lerp_sec;
     public byte msec;
-    public Vector3D viewangles;
+    public Vector3d viewangles;
     
     public float forwardmove;
     public float upmove;
@@ -87,7 +70,7 @@ namespace SharpMod
     public byte weaponselect;
 
     public int impact_index;
-    public Vector3D impact_position;
+    public Vector3d impact_position;
   }
   #endregion
 }

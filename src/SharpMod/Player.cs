@@ -28,7 +28,7 @@ using SharpMod.MetaMod;
 namespace SharpMod
 {
 
-  public class Player : Entity
+  public partial class Player : Entity
   {
     [Serializable]
     public abstract class PlayerEventArgs : EventArgs
@@ -548,6 +548,18 @@ namespace SharpMod
       Server.EnqueueCommand("writeip");
       Kick(message);
     }
+
+    unsafe public int WeaponAnimation
+    {
+      get {
+        return entity->v.weaponanim;
+      }
+      set {
+        entity->v.weaponanim = value;
+      }
+    }
+
+
 
   }
 }

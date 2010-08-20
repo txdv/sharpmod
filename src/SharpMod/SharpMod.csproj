@@ -21,6 +21,11 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="ruby munger.rb messages.xml MessageGeneratedFunctions.template.cs MessageGeneratedFunctions.cs" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -57,6 +62,9 @@
     <Compile Include="Admin.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Math.cs" />
+    <Compile Include="MessageGeneratedFunctions.cs" />
+    <Compile Include="MessageFunctions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -76,5 +84,8 @@
       <Project>{BADBD373-6538-4F67-92AC-BA43F89CC440}</Project>
       <Name>TextTools</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="messages.xml" />
   </ItemGroup>
 </Project>

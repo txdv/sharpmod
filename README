@@ -28,6 +28,10 @@ Mono
 
 Mono 2.4.3 is needed, since earlier versions have a bug, which won't let managed pointers of functions be passed, therefore 
 making it impossible to add server command callbacks.
+Also compile it with default parameter specifiers allowed, since they are used in the code.
+I have used custom mono build version 2.4.3 "Mono C# compiler version 142.39.0.0"
+"Mono JIT compiler version 142439 (tarball Thu Dec 10 21:46:59 CET 2009)"
+
 
 Using sharpmod in your counter-strike server
 ---------------

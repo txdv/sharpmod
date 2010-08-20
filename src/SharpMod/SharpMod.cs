@@ -52,6 +52,7 @@ namespace SharpMod
       Version = new CVar("sharpmod_version", "0.1");
 
       // load plugins
+
       PluginManager.GetInstance();
       Server.Print(License);
       Server.RegisterCommand("sharp", sharp);

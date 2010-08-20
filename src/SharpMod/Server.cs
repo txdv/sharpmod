@@ -260,6 +260,11 @@ namespace SharpMod
       get { return Marshal.SizeOf(typeof(IntPtr)) == 4; }
     }
 
-	
+    public static bool IsDedicated
+    {
+      get {
+        return MetaModEngine.engineFunctions.IsDedicatedServer() == 1;
+      }
+    }
 	}
 }
