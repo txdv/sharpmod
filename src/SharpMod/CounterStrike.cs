@@ -29,6 +29,8 @@ using SharpMod.GeneratedMessages;
 namespace SharpMod.CounterStrike
 {
 
+  #region Enumerations
+
   public enum Weapons : int
   {
     weapon_p228      = 1,
@@ -62,6 +64,29 @@ namespace SharpMod.CounterStrike
     weapon_p90,
     weapon_vest,
     weapon_vesthelm,
+  }
+
+  internal enum WeaponsSilenced : int
+  {
+    weapon_usp  = (1 << 0),
+    weapon_m4a1 = (1 << 2),
+  }
+
+  public enum WeaponAnimations : int
+  {
+    noanimation = 0,
+    weapon_m4a1_silencer_attach =  6,
+    weapon_m4a1_silencer_detach = 13,
+    weapon_usp_silencer_attach  =  7,
+    weapon_usp_silencer_detach  = 15,
+  }
+
+  public enum WeaponMode : int
+  {
+    weapon_glock_semiautomatic = 0,
+    weapon_glock_burstmode     = 2,
+    weapon_famas_automatic     = 0,
+    weapon_famas_burstmode     = 16,
   }
 
   public enum WeaponAmmo : int
@@ -123,6 +148,8 @@ namespace SharpMod.CounterStrike
     Vest = 1,
     VestHelmet = 2,
   }
+
+  #endregion
 
   internal static class CounterStrikeOffset
   {
@@ -206,7 +233,6 @@ namespace SharpMod.CounterStrike
 
       if (Server.Is64Bit)
       {
-
         // TODO: enter values from amxmodx-1.8.1/dlls/cstrike/cstrike/cstrike.h
 
       } else { // its a 32bit system
@@ -458,6 +484,7 @@ namespace SharpMod.CounterStrike
     /// </returns>
     unsafe public static Weapon GetActiveWeapon(this Player player)
     {
+      // TODO: rewrite this ugly code
       int *ptr = (int *)player.GetPrivateData(CounterStrikeOffset.activeitem);
       if (ptr == (int *)0) return null;
       Entvars *pev = *(Entvars **)ptr;
@@ -569,6 +596,16 @@ namespace SharpMod.CounterStrike
     // public static void SetVIP(this Player player, bool value, bool updateModel, bool updateScoreBoard) { }
 
     #endregion
+
+    #region Animation
+
+    public static void SetWeaponAnimation(this Player player, WeaponAnimations animation)
+    {
+      player.WeaponAnimation = (int)animation;
+    }
+
+    #endregion
+
   }
 
   public class Weapon : Entity
@@ -650,11 +687,138 @@ namespace SharpMod.CounterStrike
       }
     }
 
-    public int Silencer {
+    public bool HasSilencer {
       get {
-        return GetPrivateData(CounterStrikeOffset.silencerfiremode);
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_m4a1:
+        case Weapons.weapon_usp:
+          return true;
+        default:
+          return false;
+        }
       }
     }
+
+    unsafe public bool Silencer {
+      get {
+        int silencer = GetPrivateData(CounterStrikeOffset.silencerfiremode);
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_m4a1:
+          return (silencer & (int)WeaponsSilenced.weapon_m4a1) > 0;
+        case Weapons.weapon_usp:
+          return (silencer & (int)WeaponsSilenced.weapon_usp) > 0;
+        }
+        // all other weapons have no silencer ..
+        return false;
+      }
+      set {
+        // TODO: Make an extra function for this?
+        if (HasSilencer) {
+          if (value && !Silencer) {
+            SetPrivateData(CounterStrikeOffset.silencerfiremode,
+                           GetPrivateData(CounterStrikeOffset.silencerfiremode) | (int)Weapon.GetWeaponSilence(this));
+
+            if (Owner != null && Owner is Player) (Owner as Player).SetWeaponAnimation(AttachAnimation);
+          } else if (!value && Silencer) {
+            SetPrivateData(CounterStrikeOffset.silencerfiremode,
+                           GetPrivateData(CounterStrikeOffset.silencerfiremode) & (~(int)Weapon.GetWeaponSilence(this)));
+
+            if (Owner != null && Owner is Player) (Owner as Player).SetWeaponAnimation(DetachAnimation);
+          }
+        }
+      }
+    }
+
+    internal static WeaponsSilenced GetWeaponSilence(Weapon weapon)
+    {
+      switch (weapon.TypeEnum)
+      {
+        case Weapons.weapon_m4a1:
+          return WeaponsSilenced.weapon_m4a1;
+        case Weapons.weapon_usp:
+          return WeaponsSilenced.weapon_usp;
+      default:
+        throw new Exception();
+      }
+    }
+
+    #region Attach && Detach
+
+    public static WeaponAnimations GetSilencerAttachAnimation(Weapons weapon)
+    {
+      switch (weapon)
+      {
+      case Weapons.weapon_m4a1:
+        return WeaponAnimations.weapon_m4a1_silencer_attach;
+      case Weapons.weapon_usp:
+        return WeaponAnimations.weapon_usp_silencer_attach;
+      default:
+        return WeaponAnimations.noanimation;
+      }
+    }
+    public static WeaponAnimations GetSilencerDetachAnimation(Weapons weapon)
+    {
+      switch (weapon)
+      {
+      case Weapons.weapon_m4a1:
+        return WeaponAnimations.weapon_m4a1_silencer_detach;
+      case Weapons.weapon_usp:
+        return WeaponAnimations.weapon_usp_silencer_detach;
+      default:
+        return WeaponAnimations.noanimation;
+      }
+    }
+
+    public WeaponAnimations AttachAnimation
+    {
+      get {
+        return GetSilencerAttachAnimation(TypeEnum);
+      }
+    }
+    public WeaponAnimations DetachAnimation
+    {
+      get {
+        return GetSilencerDetachAnimation(TypeEnum);
+      }
+    }
+
+    #endregion
+
+    #region Burstmode
+
+    public bool HasBurstMode {
+      get {
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_glock18:
+        case Weapons.weapon_famas:
+          return true;
+        default:
+          return false;
+        }
+      }
+    }
+
+    public bool BurstMode {
+      get {
+        int silencer = GetPrivateData(CounterStrikeOffset.silencerfiremode);
+        switch (TypeEnum)
+        {
+        case Weapons.weapon_glock18:
+          return (silencer & (int)WeaponMode.weapon_glock_burstmode) > 0;
+        case Weapons.weapon_famas:
+          return (silencer & (int)WeaponMode.weapon_famas_burstmode) > 0;
+        }
+        // all other weapons have no silencer ..
+        return false;
+      }
+      // TODO: add BurstMode
+      set { }
+    }
+
+    #endregion
 
     public int ClipSize {
       get {
@@ -669,15 +833,18 @@ namespace SharpMod.CounterStrike
     static Weapon()
     {
       FieldInfo[] fields = typeof(Weapons).GetFields(BindingFlags.Public | BindingFlags.Static);
-      weaponStrings = new string[fields.Length];
-      weaponEnum = new Weapons[fields.Length];
+      // since we ommit 0 and 2, we have to add 2 more to accomodate all
+      // the fields ;)
+      weaponStrings = new string[fields.Length+2];
+      weaponEnum = new Weapons[fields.Length+2];
 
-      int i = 0;
+      int i = 1;
       foreach (FieldInfo fi in fields)
       {
         weaponStrings[i] = fi.Name;
         weaponEnum[i] = (Weapons)fi.GetValue(null);
         i++;
+        if (i == 2) i++;
       }
     }
 
