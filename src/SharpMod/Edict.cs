@@ -342,7 +342,6 @@ namespace SharpMod
       get {
         IntPtr ptr = MetaModEngine.engineFunctions.SzFromIndex(entity->v.classname);
         return Mono.Unix.UnixMarshal.PtrToString(ptr);
-        return "not implemented yet";
       }
     }
 
@@ -364,6 +363,7 @@ namespace SharpMod
       }
     }
 
+    // TODO: rewrite this function
     public EdictFlags Flags {
       get {
         return (EdictFlags)entity->v.flags;
@@ -397,7 +397,21 @@ namespace SharpMod
       }
     }
 
-    public bool DropToFloor ()
+    // TODO: add this function to entity collector
+    public Entity Owner {
+      // TODO: dirty dirty hack, fix this
+      get {
+        switch (GetClassName(entity->v.owner))
+        {
+        case "player":
+          return new Player(new IntPtr(entity->v.owner));
+        default:
+          return new Entity(entity->v.owner);
+        }
+      }
+    }
+
+    public bool DropToFloor()
     {
       return MetaModEngine.engineFunctions.DropToFloor(Pointer) == 1;
     }
@@ -442,6 +456,12 @@ namespace SharpMod
     internal static void Remove(IntPtr entity)
     {
       MetaModEngine.engineFunctions.RemoveEntity(entity);
+    }
+
+    internal static string GetClassName(Edict *entity)
+    {
+      IntPtr ptr = MetaModEngine.engineFunctions.SzFromIndex(entity->v.classname);
+      return Mono.Unix.UnixMarshal.PtrToString(ptr);
     }
 
     #endregion

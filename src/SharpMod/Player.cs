@@ -549,5 +549,17 @@ namespace SharpMod
       Kick(message);
     }
 
+    unsafe public int WeaponAnimation
+    {
+      get {
+        return entity->v.weaponanim;
+      }
+      set {
+        entity->v.weaponanim = value;
+      }
+    }
+
+
+
   }
 }
