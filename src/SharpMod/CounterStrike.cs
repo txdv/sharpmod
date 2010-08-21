@@ -81,10 +81,10 @@ namespace SharpMod.CounterStrike
     weapon_usp_silencer_detach  = 15,
   }
 
-  public enum WeaponMode : int
+  internal enum WeaponMode : int
   {
-    weapon_glock_semiautomatic = 0,
-    weapon_glock_burstmode     = 2,
+    weapon_glock18_semiautomatic = 0,
+    weapon_glock18_burstmode     = 2,
     weapon_famas_automatic     = 0,
     weapon_famas_burstmode     = 16,
   }
@@ -687,6 +687,14 @@ namespace SharpMod.CounterStrike
       }
     }
 
+    public int ClipSize {
+      get {
+        return maxclipsize[Type];
+      }
+    }
+
+    #region Silencer
+
     public bool HasSilencer {
       get {
         switch (TypeEnum)
@@ -718,12 +726,12 @@ namespace SharpMod.CounterStrike
         if (HasSilencer) {
           if (value && !Silencer) {
             SetPrivateData(CounterStrikeOffset.silencerfiremode,
-                           GetPrivateData(CounterStrikeOffset.silencerfiremode) | (int)Weapon.GetWeaponSilence(this));
+                           GetPrivateData(CounterStrikeOffset.silencerfiremode) | (int)Weapon.GetWeaponSilence(TypeEnum));
 
             if (Owner != null && Owner is Player) (Owner as Player).SetWeaponAnimation(AttachAnimation);
           } else if (!value && Silencer) {
             SetPrivateData(CounterStrikeOffset.silencerfiremode,
-                           GetPrivateData(CounterStrikeOffset.silencerfiremode) & (~(int)Weapon.GetWeaponSilence(this)));
+                           GetPrivateData(CounterStrikeOffset.silencerfiremode) & (~(int)Weapon.GetWeaponSilence(TypeEnum)));
 
             if (Owner != null && Owner is Player) (Owner as Player).SetWeaponAnimation(DetachAnimation);
           }
@@ -731,9 +739,9 @@ namespace SharpMod.CounterStrike
       }
     }
 
-    internal static WeaponsSilenced GetWeaponSilence(Weapon weapon)
+    internal static WeaponsSilenced GetWeaponSilence(Weapons weapon)
     {
-      switch (weapon.TypeEnum)
+      switch (weapon)
       {
         case Weapons.weapon_m4a1:
           return WeaponsSilenced.weapon_m4a1;
@@ -786,6 +794,8 @@ namespace SharpMod.CounterStrike
 
     #endregion
 
+    #endregion
+
     #region Burstmode
 
     public bool HasBurstMode {
@@ -807,24 +817,70 @@ namespace SharpMod.CounterStrike
         switch (TypeEnum)
         {
         case Weapons.weapon_glock18:
-          return (silencer & (int)WeaponMode.weapon_glock_burstmode) > 0;
+          return (silencer & (int)WeaponMode.weapon_glock18_burstmode) > 0;
         case Weapons.weapon_famas:
           return (silencer & (int)WeaponMode.weapon_famas_burstmode) > 0;
         }
         // all other weapons have no silencer ..
         return false;
       }
-      // TODO: add BurstMode
-      set { }
+
+      set {
+        if (HasBurstMode) {
+          if (value && !BurstMode) {
+            SetPrivateData(CounterStrikeOffset.silencerfiremode, (int)GetWeaponBurstMode(TypeEnum));
+            if (Owner != null && Owner is Player)
+              (Owner as Player).SendTextMsgMessage(TextMsgPosition.Center, "#Switch_To_BurstFire");
+
+          } else if (!value && BurstMode) {
+            SetPrivateData(CounterStrikeOffset.silencerfiremode, 0);
+            if (Owner != null && Owner is Player)
+              (Owner as Player).SendTextMsgMessage(TextMsgPosition.Center, GetAutomaticModeString(TypeEnum));
+          }
+        }
+      }
+    }
+
+    internal static WeaponMode GetWeaponBurstMode(Weapons weapon)
+    {
+      switch (weapon)
+      {
+      case Weapons.weapon_glock18:
+        return WeaponMode.weapon_glock18_burstmode;
+      case Weapons.weapon_famas:
+        return WeaponMode.weapon_famas_burstmode;
+      default:
+        throw new Exception();
+      }
+    }
+
+    internal static WeaponMode GetWeaponAutomaticMode(Weapons weapon)
+    {
+      switch (weapon)
+      {
+      case Weapons.weapon_glock18:
+        return WeaponMode.weapon_glock18_semiautomatic;
+      case Weapons.weapon_famas:
+        return WeaponMode.weapon_famas_automatic;
+      default:
+        throw new Exception();
+      }
+    }
+
+    internal static string GetAutomaticModeString(Weapons weapon)
+    {
+      switch (weapon)
+      {
+      case Weapons.weapon_glock18:
+        return "#Switch_To_SemiAuto";
+      case Weapons.weapon_famas:
+        return "#Switch_To_FullAuto";
+      default:
+        throw new Exception();
+      }
     }
 
     #endregion
-
-    public int ClipSize {
-      get {
-        return maxclipsize[Type];
-      }
-    }
 
     #region Weapon representations
 
@@ -873,6 +929,7 @@ namespace SharpMod.CounterStrike
     {
       return weaponEnum[i];
     }
+
     public static Weapons GetTypeEnum(string weaponname)
     {
       return weaponEnum[GetType(weaponname)];
@@ -880,9 +937,6 @@ namespace SharpMod.CounterStrike
 
     #endregion
 
-    // TODO: implement this one
-    // public bool WeaponSilenced { get { } set { } }
-    // public bool BurstMode { get { } set { } }
   }
 
   public class Hostage : Entity

@@ -25,6 +25,15 @@ using SharpMod.GeneratedMessages;
 
 namespace SharpMod.Messages
 {
+  public enum TextMsgPosition : int
+  {
+    Console1 = 1,
+    Console2 = 2,
+    Chat = 3,
+    Center = 4,
+  }
+
+
   public static class MessageFunctions
   {
 
@@ -167,6 +176,12 @@ namespace SharpMod.Messages
     }
 
     #endregion
+
+    public static void SendTextMsgMessage(this Player player, TextMsgPosition position, string text)
+    {
+      player.SendTextMsgMessage((byte)position, text);
+
+    }
 
     /// <summary>
     /// Sends a "SayText" message to a client.

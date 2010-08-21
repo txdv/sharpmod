@@ -30,7 +30,33 @@ Mono 2.4.3 is needed, since earlier versions have a bug, which won't let managed
 making it impossible to add server command callbacks.
 Also compile it with default parameter specifiers allowed, since they are used in the code.
 I have used custom mono build version 2.4.3 "Mono C# compiler version 142.39.0.0"
-"Mono JIT compiler version 142439 (tarball Thu Dec 10 21:46:59 CET 2009)"
+"Mono JIT compiler version 142439 (tarball Thu Dec 10 21:46:59 CET 2009)".
+
+I tried it on the 2.6.4 version, works aswell too, just download it from github.
+the commands look like this (just use another directory if you dont like /opt/mono-2.6.4 or dont have root rights):
+
+git clone ....
+./autogen.sh
+./configure --prefix=/opt/mono-2.6.4
+make
+sudo make install
+
+use the following script to use your custom mono build:
+
+MONO_PREFIX="/opt/mono-2.6.4"
+GNOME_PREFIX=/usr/lib
+export DYLD_LIBRARY_PATH=$MONO_PREFIX/lib:$DYLD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$MONO_PREFIX/lib:$LD_LIBRARY_PATH
+export C_INCLUDE_PATH=$MONO_PREFIX/include:$GNOME_PREFIX/include
+export ACLOCAL_PATH=$MONO_PREFIX/share/aclocal
+export PKG_CONFIG_PATH=$MONO_PREFIX/lib/pkgconfig:$GNOME_PREFIX/lib/pkgconfig
+PATH=$MONO_PREFIX/bin:$PATH
+PS1="[mono] \w @ "
+
+write it into mono-dev-env and chmod +x mono-dev-env
+execute it with ". mono-dev-env"
+Now you are running your custom mono version.
+
 
 
 Using sharpmod in your counter-strike server
