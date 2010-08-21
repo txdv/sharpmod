@@ -387,7 +387,7 @@ namespace SharpMod.MetaMod
   //internal unsafe delegate char *CVarGetStringDelegate(char *szVarName);
   internal delegate void PutInServerDelegate(IntPtr playerEntity);
   internal delegate void ClientCommandDelegate(IntPtr entity);
-  internal delegate void ClientUserInfoChangedDelegate(IntPtr pEntity, IntPtr infoBuffer);
+  internal delegate void ClientUserInfoChangedDelegate(IntPtr pEntity, string infoBuffer);
   internal delegate void ServerActivateDelegate(IntPtr pEdictList, int edictCount, int clientMax);
 
 

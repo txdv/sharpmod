@@ -24,7 +24,6 @@
 using System;
 using System.Reflection;
 using SharpMod.Messages;
-using SharpMod.GeneratedMessages;
 
 namespace SharpMod.CounterStrike
 {
@@ -148,6 +147,28 @@ namespace SharpMod.CounterStrike
     Vest = 1,
     VestHelmet = 2,
   }
+
+  public enum InternalModels : int
+  {
+    CS_DONTCHANGE = 0,
+    CS_CT_URBAN = 1,
+    CS_T_TERROR = 2,
+    CS_T_LEET = 3,
+    CS_T_ARCTIC = 4,
+    CS_CT_GSG9 = 5,
+    CS_CT_GIGN = 6,
+    CS_CT_SAS = 7,
+    CS_T_GUERILLA = 8,
+    CS_CT_VIP = 9,
+    CZ_T_MILITIA = 10,
+    CZ_CT_SPETSNAZ = 11
+  };
+
+  public enum MapZones : int
+  {
+    Buyzone = (1 << 0),
+  }
+
 
   #endregion
 
@@ -401,6 +422,20 @@ namespace SharpMod.CounterStrike
 
     #endregion
 
+    #region InternalModel
+
+    public static void SetInternalMode(this Player player, InternalModels model)
+    {
+      player.SetPrivateData(CounterStrikeOffset.internalmodel, (int)model);
+    }
+
+    public static InternalModels GetInternalMode(this Player player)
+    {
+      return (InternalModels)player.GetPrivateData(CounterStrikeOffset.internalmodel);
+    }
+
+    #endregion
+
     #region Team functions
 
     public static int GetTeamID(this Player player)
@@ -473,6 +508,8 @@ namespace SharpMod.CounterStrike
 
     #endregion
 
+    #region Weapon Functions
+
     /// <summary>
     /// Get's the Entity of the Weapon weared right now by they player
     /// </summary>
@@ -497,8 +534,9 @@ namespace SharpMod.CounterStrike
       player.SendWeapPickupMessage((byte)weapon);
     }
 
+    #endregion
 
-    #region Ammo
+    #region Weapon Ammo Functions
 
     /// <summary>
     /// Sets the "backpack" ammo ammount, the ammo the players carries around.
@@ -550,9 +588,13 @@ namespace SharpMod.CounterStrike
 
     #region Armor
 
+    public static int GetArmorTypeID(this Player player)
+    {
+      return player.GetPrivateData(CounterStrikeOffset.armortype);
+    }
     public static ArmorType GetArmorType(this Player player)
     {
-      return (ArmorType)player.GetPrivateData(CounterStrikeOffset.armortype);
+      return (ArmorType)player.GetArmorTypeID();
     }
 
     public static void SetArmorType(this Player player, ArmorType armorType)
@@ -592,8 +634,35 @@ namespace SharpMod.CounterStrike
       player.SetPrivateData(CounterStrikeOffset.vip, (value ? 1 : 0));
     }
 
-    // TODO: implement this one
-    // public static void SetVIP(this Player player, bool value, bool updateModel, bool updateScoreBoard) { }
+    public static void MakeVIP(this Player player, bool updateModel, bool updateScoreboard)
+    {
+      player.SetVIP(true);
+      if (updateModel) {
+        player.SetInternalMode(InternalModels.CS_CT_VIP);
+        player.UpdateUserInfo(player.InfoKeyBuffer);
+      }
+      if (updateScoreboard) {
+        player.SendScoreAttribMessage(ScoreAttribute.VIP);
+      }
+    }
+
+    public static void UnmakeVIP(this Player player, bool updateModel, bool updateScoreboard, InternalModels newModel)
+    {
+      player.SetVIP(false);
+      if (updateModel) {
+        player.SetInternalMode(newModel);
+        player.UpdateUserInfo(player.InfoKeyBuffer);
+      }
+      if (updateScoreboard) {
+        player.SendScoreAttribMessage(player.GetDefaultScoreBoardAttribute());
+      }
+    }
+
+    public static void SetVIP(this Player player, bool value, bool updateModel, bool updateScoreBoard)
+    {
+      if (value) player.MakeVIP(updateModel, updateScoreBoard);
+      else       player.UnmakeVIP(updateModel, updateScoreBoard, (InternalModels)(new Random().Next(4)));
+    }
 
     #endregion
 
@@ -606,6 +675,39 @@ namespace SharpMod.CounterStrike
 
     #endregion
 
+    #region Mapzone Functions
+
+    public static int GetMapzoneRaw(this Player player)
+    {
+      return player.GetPrivateData(CounterStrikeOffset.mapzone);
+    }
+
+    public static void SetMapzoneRaw(this Player player, int mapzone)
+    {
+      player.SetPrivateData(CounterStrikeOffset.mapzone, mapzone);
+    }
+
+    public static bool IsInBuyzone(this Player player)
+    {
+      return player.GetMapzoneRaw() == (int)MapZones.Buyzone;
+    }
+
+    #endregion
+
+    public static ScoreAttribute GetDefaultScoreBoardAttribute(this Player player)
+    {
+      if (player.IsDead) return ScoreAttribute.Dead;
+      // TODO: maybe check if model is equal VIP too?
+      if (player.GetVIP()) return ScoreAttribute.VIP;
+      // TODO: add bomb check
+      return ScoreAttribute.Nothing;
+    }
+
+    // TODO: implement this
+    //public static bool CanPlantBomb(this Player player)
+    //{
+    //  return player.GetPrivateData(CounterStrikeOffset.defuseplant
+    //}
   }
 
   public class Weapon : Entity

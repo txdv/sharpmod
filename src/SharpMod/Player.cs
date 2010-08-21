@@ -559,6 +559,16 @@ namespace SharpMod
       }
     }
 
+    public void UpdateUserInfo(string infoString)
+    {
+      MetaModEngine.dllapiFunctions.ClientUserInfoChanged(Pointer, infoString);
+    }
+
+    public void UpdateUserInfo()
+    {
+      UpdateUserInfo(InfoKeyBuffer);
+    }
+
 
 
   }

@@ -59,6 +59,13 @@ Now you are running your custom mono version.
 
 
 
+
+Ruby
+---------------
+
+A lot of code is now generated with ruby, so you will need to install ruby, rubygems and erb (with rubygems)
+
+
 Using sharpmod in your counter-strike server
 ---------------
 Use the metamod binary in the directory include/metamod/metamod/opt/metamod_i386.so in your server, create a soft link

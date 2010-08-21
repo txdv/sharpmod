@@ -104,6 +104,15 @@ namespace SharpMod
     Pushstep,
   }
 
+  public enum DeadFlags : int
+  {
+    Alive = 0,
+    Dying = 1,
+    Dead  = 2,
+    Respawnable = 3,
+    Discardbody = 4,
+  }
+
   #endregion
 
   // engine/edict.h
@@ -414,6 +423,19 @@ namespace SharpMod
     public bool DropToFloor()
     {
       return MetaModEngine.engineFunctions.DropToFloor(Pointer) == 1;
+    }
+
+    public bool IsDead {
+      get { return !(DeadFlag == DeadFlags.Alive); }
+    }
+
+    public DeadFlags DeadFlag {
+      get {
+        return (DeadFlags)entity->v.deadflag;
+      }
+      set {
+        entity->v.deadflag = (int)value;
+      }
     }
 
     unsafe public void SetPrivateData(int offset, int value)
