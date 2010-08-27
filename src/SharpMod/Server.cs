@@ -245,7 +245,7 @@ namespace SharpMod
     }
 
     /// <summary>
-    /// Returns true if the server is a 64 bit system machine
+    /// Returns true if the server runs on a 64 bit system machine
     /// </summary>
     public static bool Is64Bit
     {
@@ -253,18 +253,49 @@ namespace SharpMod
     }
 
     /// <summary>
-    /// Returns true if the server is a 32 bit system machine
+    /// Returns true if the server runs on a 32 bit system machine
     /// </summary>
     public static bool Is32Bit
     {
       get { return Marshal.SizeOf(typeof(IntPtr)) == 4; }
     }
 
+    /// <summary>
+    /// Returns true if the server is a dedicated server
+    /// </summary>
     public static bool IsDedicated
     {
       get {
         return MetaModEngine.engineFunctions.IsDedicatedServer() == 1;
       }
+    }
+
+    /// <summary>
+    /// Precache Model
+    /// </summary>
+    /// <param name="filename">
+    /// A filename <see cref="System.String"/>
+    /// </param>
+    /// <returns>
+    /// True for successfull load <see cref="System.Boolean"/>
+    /// </returns>
+    public static bool PrecacheModel(string filename)
+    {
+      return MetaModEngine.engineFunctions.PrecacheModel(filename) == 1;
+    }
+
+    /// <summary>
+    /// Precache Sound
+    /// </summary>
+    /// <param name="filename">
+    /// The filename of the sound <see cref="System.String"/>
+    /// </param>
+    /// <returns>
+    /// True for successfull load <see cref="System.Boolean"/>
+    /// </returns>
+    public static bool PrecacheSound(string filename)
+    {
+      return MetaModEngine.engineFunctions.PrecacheSound(filename) == 1;
     }
 	}
 }

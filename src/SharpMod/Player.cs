@@ -349,7 +349,7 @@ namespace SharpMod
     public static Player GetPlayer(IntPtr entity)
     {
       int index = MetaModEngine.engineFunctions.IndexOfEdict(entity);
-      if (Player.playerlist[index] == null) Player.playerlist[index] = new Player(entity);
+      if (Player.playerlist[index] == null) Player.playerlist[index] = Entity.CreateEntity(entity) as Player;
       return Player.playerlist[index];
     }
 
@@ -557,6 +557,16 @@ namespace SharpMod
       set {
         entity->v.weaponanim = value;
       }
+    }
+
+    public void UpdateUserInfo(string infoString)
+    {
+      MetaModEngine.dllapiFunctions.ClientUserInfoChanged(Pointer, infoString);
+    }
+
+    public void UpdateUserInfo()
+    {
+      UpdateUserInfo(InfoKeyBuffer);
     }
 
 

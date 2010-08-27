@@ -41,6 +41,12 @@ namespace SharpMod.Math
       this.y = y;
       this.z = z;
     }
+
+    public override string ToString ()
+    {
+      return string.Format("vector3f({0}, {1}, {2})", x, y, z);
+    }
+
   };
 
   [StructLayout (LayoutKind.Sequential)]

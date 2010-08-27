@@ -149,6 +149,9 @@ namespace SharpMod.MetaMod
 
   #region Engine Functions
 
+  internal delegate int PrecacheModelDelegate(string filename);
+  internal delegate int PrecacheSoundDelegate(string filename);
+
   internal delegate IntPtr FindEntityByStringDelegate(IntPtr entity, string field, string val);
   internal delegate int GetEntityIllumDelegate(IntPtr entity);
   internal unsafe delegate IntPtr FindEntityInSphereDelegate(IntPtr startSearchAfter, float *org, float rad);
@@ -212,8 +215,8 @@ namespace SharpMod.MetaMod
   [StructLayout (LayoutKind.Sequential)]
   internal struct EngineFunctions
   {
-    IntPtr PrecacheModel;
-    IntPtr PrecacheSound;
+    internal PrecacheModelDelegate PrecacheModel;
+    internal PrecacheSoundDelegate PrecacheSound;
     IntPtr SetModel;
     IntPtr ModelIndex;
     IntPtr ModelFrames;
@@ -387,7 +390,7 @@ namespace SharpMod.MetaMod
   //internal unsafe delegate char *CVarGetStringDelegate(char *szVarName);
   internal delegate void PutInServerDelegate(IntPtr playerEntity);
   internal delegate void ClientCommandDelegate(IntPtr entity);
-  internal delegate void ClientUserInfoChangedDelegate(IntPtr pEntity, IntPtr infoBuffer);
+  internal delegate void ClientUserInfoChangedDelegate(IntPtr pEntity, string infoBuffer);
   internal delegate void ServerActivateDelegate(IntPtr pEdictList, int edictCount, int clientMax);
 
 
@@ -629,6 +632,8 @@ typedef struct {
       functions.Cmd_Argc = CmdArgc;
       functions.Cmd_Argv = CmdArgv;
 
+      functions.RemoveEntity = RemoveEntityPost;
+
       return 0;
     }
 
@@ -719,15 +724,38 @@ typedef struct {
       #endif
       message_elements.Add((long)val);
     }
+
     internal static void WriteAnglePost(int val)
     {
       // TODO: get an idea of what is past with this function
       Console.WriteLine("WriteAnglePost");
     }
-    internal static void WriteCoordPost(int val)
+
+    internal static int writeCoordCount = 0;
+    internal static Vector3f coord = new Vector3f();
+    unsafe internal static void WriteCoordPost(int val)
     {
+      float *flValue = (float *)&val;
+      switch (writeCoordCount)
+      {
+      case 0:
+        coord.x = *flValue;
+        break;
+      case 1:
+        coord.y = *flValue;
+        break;
+      default:
+        coord.z = *flValue;
+        break;
+      }
+
+      if (writeCoordCount >= 2) {
+        #if DEBUG
+        messageInformation.Arguments.Add(new MessageArgument(typeof(Vector3f), coord));
+        #endif
+        writeCoordCount = 0;
+      } else { writeCoordCount++; }
       // TODO: get an idea of what is past with this function, floats maybe?
-      Console.WriteLine("WriteCoordPost");
     }
     internal static void WriteStringPost(string val)
     {
@@ -799,6 +827,11 @@ typedef struct {
     }
 
     #endregion
+
+    public static void RemoveEntityPost(IntPtr entity)
+    {
+      Entity.RemoveEntity(entity);
+    }
 
     #endregion
 
