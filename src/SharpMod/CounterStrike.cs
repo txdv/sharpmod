@@ -489,14 +489,13 @@ namespace SharpMod.CounterStrike
       if (ptr == (int *)0) return null;
       Entvars *pev = *(Entvars **)ptr;
       if (pev == (Entvars *)0) return null;
-      return new Weapon(pev->pContainingEntity);
+      return Entity.CreateEntity(new IntPtr(pev->pContainingEntity)) as Weapon;
     }
 
     public static void SendWeaponPickupMessage(this Player player, Weapons weapon)
     {
       player.SendWeapPickupMessage((byte)weapon);
     }
-
 
     #region Ammo
 
@@ -847,7 +846,6 @@ namespace SharpMod.CounterStrike
         if (i == 2) i++;
       }
     }
-
 
     public static int GetType(string weaponname)
     {

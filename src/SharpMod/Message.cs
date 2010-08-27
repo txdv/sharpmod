@@ -41,6 +41,7 @@ using System.Collections.Generic;
 using SharpMod.MetaMod;
 using SharpMod.Helper;
 using SharpMod.GeneratedMessages;
+using SharpMod.Math;
 
 namespace SharpMod
 {
@@ -405,7 +406,7 @@ namespace SharpMod
       messageInformation.Arguments.Add(new MessageArgument(typeof(int), val));
       #endif
 
-      // TODO: check if this really what the WriteEntity functions sends
+      // TODO: check if this really what the WriteAngle functions sends
 
       if (count+sizeof(int) < MaxLength)
       {
@@ -419,6 +420,25 @@ namespace SharpMod
 
     // TODO: Check if WriteCoord is implemented correctly
 
+    public static void WriteCoord(Vector3f val)
+    {
+      #if DEBUG
+      messageInformation.Arguments.Add(new MessageArgument(typeof(Vector3f), val));
+      #endif
+      if (count+sizeof(float)*3 < MaxLength) {
+        WriteCoord(val.x);
+        WriteCoord(val.x);
+        WriteCoord(val.x);
+      }
+    }
+
+    unsafe internal static void WriteCoord(float val)
+    {
+      int *intValue = (int *)&val;
+      MetaModEngine.engineFunctions.WriteAngle(*intValue);
+    }
+
+    /*
     /// <summary>
     /// Writes a coord value into the message.
     /// </summary>
@@ -440,6 +460,7 @@ namespace SharpMod
         count += sizeof(int);
       }
     }
+    */
 
     #endregion
     #region WriteString
@@ -588,15 +609,13 @@ namespace SharpMod
       if (count > 0) {
         // remove some
         newlist.RemoveRange(parameters.Length, count);
-      }
-      else {
+      } else {
         // add some
         for (int i = list.Length; i < parameters.Length; i++)
         {
           newlist.Add(parameters[i].DefaultValue);
         }
       }
-
       object ret = handler.Method.Invoke(null, newlist.ToArray());
       if (ret.GetType() is PluginFunctions) return (PluginFunctions)ret;
       else return PluginFunctions.Continue;

@@ -20,6 +20,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SharpMod.Math;
 using SharpMod.MetaMod;
@@ -309,19 +310,83 @@ namespace SharpMod
       Pointer = new IntPtr(entity);
     }
 
-    public Entity()
-      : this(MetaModEngine.engineFunctions.CreateEntity()) { }
-
-    public Entity(int className)
-      : this(MetaModEngine.engineFunctions.CreateNamedEntity(className)) { }
-
     internal Entity(void *ptr)
       : this((Edict*)ptr) { }
 
-    public Entity(IntPtr ptr)
+    internal Entity(IntPtr ptr)
     {
       Pointer = ptr;
       entity = (Edict *)ptr.ToPointer();
+    }
+
+    public Entity()
+      : this(MetaModEngine.engineFunctions.CreateEntity()) { }
+
+    public Entity(int classNameIndex)
+      : this(MetaModEngine.engineFunctions.CreateNamedEntity(classNameIndex)) { }
+
+    public Entity(string className)
+      : this(MetaModEngine.engineFunctions.CreateNamedEntity(MetaModEngine.engineFunctions.AllocString(className))) { }
+
+    #endregion
+
+    /*
+    // TODO: consider making these public instead of the constructors?
+    public static Entity Create()
+    {
+      return CreateEntity(MetaModEngine.engineFunctions.CreateEntity());
+    }
+
+    public static Entity Create(int classNameIndex)
+    {
+      return CreateEntity(MetaModEngine.engineFunctions.CreateNamedEntity(classNameIndex));
+    }
+
+    public static Entity Create(string className)
+    {
+      return Create(MetaModEngine.engineFunctions.AllocString(className));
+    }
+    */
+
+    #region Entity Handling
+
+    private static Dictionary<int, Entity> entityDictionary = new Dictionary<int, Entity>();
+
+    internal static Entity RegisterEntity(int index, Entity entity)
+    {
+      entityDictionary[index] = entity;
+      return entity;
+    }
+    public static Entity CreateEntity(IntPtr entityPointer)
+    {
+      if (entityPointer.ToPointer() == null) return null;
+      int index = Entity.GetIndex(entityPointer);
+      if (entityDictionary.ContainsKey(index)) {
+        return entityDictionary[index];
+      } else {
+        Edict* edict = (Edict *)entityPointer.ToPointer();
+        // TODO: 1 and maxplayer can be bot or player
+        if (index >= 1 && index <= Server.MaxPlayers) return RegisterEntity(index, new Player(entityPointer));
+        string classname = GetClassName(edict);
+        if (classname.StartsWith("weapon_")) return RegisterEntity(index, new CounterStrike.Weapon(edict));
+        switch (classname)
+        {
+        case "player":
+          return RegisterEntity(index, new Player(entityPointer));
+        default:
+          return RegisterEntity(index, new Entity(entityPointer));
+        }
+      }
+    }
+
+    internal static void RemoveEntity(IntPtr entityPointer)
+    {
+      int index = GetIndex(entityPointer);
+      if (entityDictionary.ContainsKey(index)) {
+        Entity entity = entityDictionary[index];
+        if (entity is IDisposable) (entity as IDisposable).Dispose();
+        entityDictionary.Remove(index);
+      }
     }
 
     #endregion
@@ -399,15 +464,8 @@ namespace SharpMod
 
     // TODO: add this function to entity collector
     public Entity Owner {
-      // TODO: dirty dirty hack, fix this
       get {
-        switch (GetClassName(entity->v.owner))
-        {
-        case "player":
-          return new Player(new IntPtr(entity->v.owner));
-        default:
-          return new Entity(entity->v.owner);
-        }
+        return CreateEntity(new IntPtr(entity));
       }
     }
 
@@ -440,7 +498,7 @@ namespace SharpMod
 
     public static int GetIndex(IntPtr ptr)
     {
-      return MetaModEngine.engineFunctions.IndexOfEdict(ptr);
+       return MetaModEngine.engineFunctions.IndexOfEdict(ptr);
     }
 
     public static Entity Find(Entity startSearchAfter, string field, string val)
@@ -460,6 +518,9 @@ namespace SharpMod
 
     internal static string GetClassName(Edict *entity)
     {
+      // TODO: consider returning empty string?
+      if (entity->v.classname == 0) return null;
+
       IntPtr ptr = MetaModEngine.engineFunctions.SzFromIndex(entity->v.classname);
       return Mono.Unix.UnixMarshal.PtrToString(ptr);
     }
