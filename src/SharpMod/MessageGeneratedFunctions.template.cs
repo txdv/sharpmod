@@ -74,7 +74,7 @@ end
 %>using System;
 using System.Reflection;
 
-namespace SharpMod.GeneratedMessages
+namespace SharpMod.Messages
 {
 
   #region MessageStructs
@@ -89,7 +89,7 @@ namespace SharpMod.GeneratedMessages
 
   #region All message functions
 
-  public static class GeneratedMessageFunctions
+  public static partial class MessageFunctions
   {
     // Let's make message sending fun!
     // Let's create predefined methods for every message, so you dont have to lookup all the time everything!
@@ -105,9 +105,20 @@ namespace SharpMod.GeneratedMessages
 
       Message.End();
     }
+
     public static void Send<%= message.name %>Message(MessageDestination destination, IntPtr floatValue, IntPtr playerEntity, <%= message.name %>Message val)
     {
       Send<%= message.name %>Message(destination, floatValue,playerEntity <% if message.arg_array.size > 0 then %>, <% end %><%= message.arg_array.collect { |arg| "val.#{arg.name}" }.join(", ") %>);
+    }
+
+    public static void Send<%= message.name %>Message(MessageDestination destination, IntPtr playerEntity, <%= message.name %>Message val)
+    {
+      Send<%= message.name %>Message(destination, IntPtr.Zero, playerEntity <% if message.arg_array.size > 0 then %>, <% end %><%= message.arg_array.collect { |arg| "val.#{arg.name}" }.join(", ") %>);
+    }
+
+    public static void Send<%= message.name %>Message(MessageDestination destination, <%= message.name %>Message val)
+    {
+      Send<%= message.name %>Message(destination, IntPtr.Zero, IntPtr.Zero <% if message.arg_array.size > 0 then %>, <% end %><%= message.arg_array.collect { |arg| "val.#{arg.name}" }.join(", ") %>);
     }
     
     public static void Send<%= message.name%>Message(this Player player, IntPtr floatValue, <%= message.name %>Message val)

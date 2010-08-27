@@ -21,11 +21,39 @@
 
 using System;
 using System.Drawing;
-using SharpMod.GeneratedMessages;
+using SharpMod.Messages;
 
 namespace SharpMod.Messages
 {
-  public static class MessageFunctions
+  public enum TextMsgPosition : int
+  {
+    Console1 = 1,
+    Console2 = 2,
+    Chat = 3,
+    Center = 4,
+  }
+
+  public enum ScoreAttribute : int
+  {
+    /// <summary>
+    /// Does nothing
+    /// </summary>
+    Nothing = 0,
+    /// <summary>
+    /// Updates the dead indication in the scoreboard
+    /// </summary>
+    Dead = 1,
+    /// <summary>
+    /// Terrorist only, updates the bomb scoreboard indication
+    /// </summary>
+    Bomb = 2,
+    /// <summary>
+    /// Counter-Terrorist only, updates the scoreboard to show the vip
+    /// </summary>
+    VIP = 4,
+  }
+
+  public static partial class MessageFunctions
   {
 
     #region Engine Chat Text Functions
@@ -168,6 +196,14 @@ namespace SharpMod.Messages
 
     #endregion
 
+    #region TextMsg
+
+    public static void SendTextMsgMessage(this Player player, TextMsgPosition position, string text)
+    {
+      player.SendTextMsgMessage((byte)position, text);
+
+    }
+
     /// <summary>
     /// Sends a "SayText" message to a client.
     /// </summary>
@@ -183,5 +219,25 @@ namespace SharpMod.Messages
       player.SendSayTextMessage((byte)1, text);
     }
 
+    #endregion
+
+    #region AttribMessage
+
+    /// <summary>
+    /// Informs everyone that some information changed for the player.
+    /// </summary>
+    /// <param name="player">
+    /// The player which score attribute has changed <see cref="Player"/>
+    /// </param>
+    /// <param name="attrib">
+    /// The score attribute <see cref="ScoreAttribute"/>
+    /// </param>
+    public static void SendScoreAttribMessage(this Player player, ScoreAttribute attrib)
+    {
+      SendScoreAttribMessage(MessageDestination.AllReliable, IntPtr.Zero, IntPtr.Zero, (byte)player.Index, (byte)attrib);
+    }
+
+
+    #endregion
   }
 }

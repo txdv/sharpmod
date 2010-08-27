@@ -40,7 +40,7 @@ using System;
 using System.Collections.Generic;
 using SharpMod.MetaMod;
 using SharpMod.Helper;
-using SharpMod.GeneratedMessages;
+using SharpMod.Messages;
 using SharpMod.Math;
 
 namespace SharpMod
