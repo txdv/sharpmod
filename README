@@ -58,12 +58,20 @@ execute it with ". mono-dev-env"
 Now you are running your custom mono version.
 
 
-
-
 Ruby
 ---------------
 
 A lot of code is now generated with ruby, so you will need to install ruby, rubygems and erb (with rubygems)
+
+
+
+Plugins
+---------------
+
+For now we *support* IronRuby, there are some more advanced examples are in the ruby-plugins branch.
+SharpMod requires IronRuby-1.1, the best solution is to use IronRuby-1.1-dotnet3.5 with mono-2.6.7
+Only the 1.1 introduces the new method extensions loading which is heavily used in SharpMod.
+Just post all IronRuby specific *.dll's (found in the package under /bin) in the bin directory of sharpmod.
 
 
 Using sharpmod in your counter-strike server

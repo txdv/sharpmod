@@ -21,7 +21,7 @@
 
 using System;
 using System.IO;
-using System.Reflection;
+using IronRuby;
 
 namespace SharpMod
 {
@@ -40,21 +40,29 @@ namespace SharpMod
     {
       get
       {
-        StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("sharpmod.gpl.txt"));
+        StreamReader sr = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("sharpmod.gpl.txt"));
         string ret = sr.ReadToEnd();
         sr.Close();
         return ret;
       }
     }
 
+    /// <summary>
+    /// Returns the moddirectory
+    /// </summary>
+    public static string MODDirectory { get { return Server.GameDirectory + @"/addons/sharpmod/"; } }
+
 		public static void Init()
 		{
       Version = new CVar("sharpmod_version", "0.1");
 
-      // load plugins
-
-      PluginManager.GetInstance();
       Server.Print(License);
+
+      // load plugins
+      PluginManager.GetInstance();
+      RubyPluginManager.GetInstance();
+
+      // Registering after the plugins, since the DLR goes MAAAD if i do it before
       Server.RegisterCommand("sharp", sharp);
     }
 

@@ -25,9 +25,14 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
+using IronRuby.Builtins;
 
 namespace SharpMod
 {
+
+  #region Plugin Code
 
   /// <summary>
   /// Interface for loading Plugins.
@@ -103,6 +108,10 @@ namespace SharpMod
     public virtual void Unload() { }
   }
 
+  #endregion
+
+  #region Base Plugin Manager
+
   /// <summary>
   /// The plugin manager.
   /// Manages plugins, loads, unloads them
@@ -110,26 +119,24 @@ namespace SharpMod
   public class PluginManager
   {
     #region Static code
-    // some nice singleton pattern
-    internal static PluginManager pm = null;
+
+    private static PluginManager pm = null;
     public static PluginManager GetInstance()
     {
       if (pm == null) pm = new PluginManager();
       return pm;
     }
+
     #endregion
 
-    private string pluginDirectory = @"cstrike/addons/sharpmod/plugins/";
+    private static string pluginDirectory = SharpMod.MODDirectory + "plugins/";
     private List<IPlugin> plugins = null;
 
-    internal PluginManager()
+    private PluginManager()
     {
       plugins = new List<IPlugin>();
       if (Directory.Exists(pluginDirectory))
-      foreach (string file in Directory.GetFiles(pluginDirectory, "SharpMod*.dll"))
-      {
-        Load(file);
-      }
+      foreach (string file in Directory.GetFiles(pluginDirectory, "SharpMod*.dll")) Load(file);
     }
 
     public bool Load(string path)
@@ -147,13 +154,20 @@ namespace SharpMod
           if (type.GetInterface("IPlugin") != null)
           {
             IPlugin ip = (IPlugin)Activator.CreateInstance(type);
-            ip.Load();
-            plugins.Add(ip);
+            //ip.Load();
+            //plugins.Add(ip);
+            Load(ip);
             return true;
           }
         }
         return false;
       } catch { return false; }
+    }
+
+    public void Load(IPlugin plugin)
+    {
+      plugin.Load();
+      plugins.Add(plugin);
     }
 
 
@@ -178,6 +192,96 @@ namespace SharpMod
       tt.Render(data.ToArray(), Server.Print, Console.WindowWidth);
       Console.WriteLine ("{0} Plugins", plugins.Count);
     }
+  }
 
+  #endregion
+
+  #region IronRuby
+
+  // Kinda a hack, isn't it? :D
+  public class RubyPlugin : BasicPlugin
+  {
+    private string name, author, description;
+    private Version version;
+    public delegate void UnloadDelegate();
+    private UnloadDelegate unload;
+
+    public RubyPlugin(string name, string author, string description, Version version, UnloadDelegate unload)
+    {
+      this.name = name;
+      this.author = author;
+      this.description = description;
+      this.version = version;
+      this.unload = unload;
+    }
+
+    public override void Unload() { unload(); }
+
+    public override string Name { get { return name; } }
+    public override string Author { get { return author; } }
+    public override string Description { get { return description; } }
+    public override Version Version { get { return version; } }
+
+
+  }
+
+  #endregion
+
+  public class RubyPluginManager
+  {
+
+    #region Static code
+
+    private static RubyPluginManager pm = null;
+    public static RubyPluginManager GetInstance()
+    {
+      if (pm == null) pm = new RubyPluginManager();
+      return pm;
+    }
+
+    #endregion
+
+    private static string pluginDirectory = SharpMod.MODDirectory + "plugins/ruby/";
+    private ScriptEngine engine;
+
+    private RubyPluginManager()
+    {
+      Assembly.LoadFile(SharpMod.MODDirectory + "IronRuby.dll");
+      Assembly.LoadFile(SharpMod.MODDirectory + "IronRuby.Libraries.dll");
+      engine = IronRuby.Ruby.CreateEngine();
+
+      // Load the current assembly, so we can access all the SharpMod goodies
+      engine.Runtime.LoadAssembly(Assembly.LoadFile(Assembly.GetExecutingAssembly().Location));
+
+      foreach (string file in Directory.GetFiles(pluginDirectory, "*.rb")) Load(file);
+    }
+
+
+    public void Load(string filename)
+    {
+
+      ScriptSource script = engine.CreateScriptSourceFromFile(filename);
+      ScriptScope scope = engine.CreateScope();
+      object o = script.Execute(scope);
+
+      if (o is IPlugin) PluginManager.GetInstance().Load(o as IPlugin);
+      else {
+
+        string name, author, description;
+        Version version;
+        RubyPlugin.UnloadDelegate unload;
+
+        if (!scope.TryGetVariable<string> ("name",        out name))        name        = "unknown";
+        if (!scope.TryGetVariable<string> ("author",      out author))      author      = "unknown";
+        if (!scope.TryGetVariable<string> ("description", out description)) description = "no description";
+        if (!scope.TryGetVariable<Version>("version",     out version))     version     = new Version(0, 0);
+
+        // Load the methods
+        if (!scope.TryGetVariable<RubyPlugin.UnloadDelegate>("unload", out unload)) unload = null;
+
+        PluginManager.GetInstance().Load(new RubyPlugin(name, author, description, version, unload));
+
+      }
+    }
   }
 }

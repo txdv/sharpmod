@@ -159,7 +159,7 @@ namespace SharpMod
 
     /// <summary>
     /// Maximum players the server can hold at any time
-    /// </summary>
+    /// </summary>z
     public static int MaxPlayers
 		{
 			get { return maxplayers; }

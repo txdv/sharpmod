@@ -219,10 +219,8 @@ namespace TextTools
         {
         case Align.Left:
           return text + new string(' ', length - text.Length);
-          break;
         case Align.Right:
           return new string(' ', length - text.Length) + text;
-          break;
         case Align.Center:
         default:
           length = length - text.Length;
@@ -231,7 +229,6 @@ namespace TextTools
           int side = length/2;
           
           return new string(' ', one + side) + text + new string(' ', side);
-          break;
         }
       } else {
         return text.Substring(0, length - Delimeter.Length) + Delimeter;
