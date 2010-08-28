@@ -53,9 +53,12 @@ namespace SharpMod
 
       // load plugins
 
-      PluginManager.GetInstance();
       Server.Print(License);
       Server.RegisterCommand("sharp", sharp);
+
+      // Initialize plugin system
+      PluginManager.GetInstance();
+
     }
 
     static void sharpHelp()
