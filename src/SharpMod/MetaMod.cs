@@ -862,6 +862,10 @@ typedef struct {
       #endif
       Server.SetMaxPlayers(clientMax);
 
+      // Load plugins here
+      PluginManager.GetInstance().LoadPlugins();
+      RubyPluginManager.GetInstance().LoadPlugins();
+
       // TODO: check if it is really counter strike
       if (Server.GameDirectory == "cstrike") CounterStrike.CounterStrike.Init();
     }
