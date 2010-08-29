@@ -20,6 +20,7 @@
 //
 
 using System;
+using System.IO;
 using System.Text;
 
 namespace SharpMod.Helper
@@ -151,6 +152,15 @@ namespace SharpMod.Helper
     public static string ToHex(this int val)
     {
       return Convert.ToString(val, 16).PadLeft(8, '0');
+    }
+
+    public static void WriteBunch(this TextWriter sw, int times, string word)
+    {
+      for (int i = 0; i < times; i++) sw.Write(word);
+    }
+    public static void WriteBunch(this TextWriter sw, int times)
+    {
+      WriteBunch(sw, times, "     ");
     }
   }
 }

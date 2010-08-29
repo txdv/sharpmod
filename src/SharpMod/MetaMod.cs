@@ -754,7 +754,6 @@ typedef struct {
         #endif
         writeCoordCount = 0;
       } else { writeCoordCount++; }
-      // TODO: get an idea of what is past with this function, floats maybe?
     }
     internal static void WriteStringPost(string val)
     {

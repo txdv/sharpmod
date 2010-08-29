@@ -23,6 +23,7 @@ using System;
 using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using SharpMod.Helper;
 using System.IO;
 
@@ -30,135 +31,34 @@ namespace SharpMod.Debug
 {
   unsafe public class MemoryTracker
   {
+    #region C linked list implementation
+
     [StructLayout (LayoutKind.Sequential)]
-    public struct linked_list_node {
+    internal struct linked_list_node {
       public void *ptr;
       public int size;
       public void *caller;
       public linked_list_node *next;
+
+      public override string ToString ()
+      {
+        return string.Format("0x{0} size:{1} caller:{2}",
+                             ((int)(ptr)).ToHex(),
+                             size,
+                             ((int)(caller)).ToHex());
+      }
+
     }
 
-    private static linked_list_node ***llptr;
+    internal static linked_list_node ***llptr;
 
-    private static void linked_list_pointer(linked_list_node ***ll)
+    internal static void linked_list_pointer(linked_list_node ***ll)
     {
       llptr = ll;
     }
 
-    public static Entity IsEntity(void *ptr)
-    {
-      for (int i = 0; i < Entity.Count; i++) {
-        Entity e = new Entity(Entity.GetEntity(i));
-        Edict *edict = e.entity;
-        if (edict != null) {
-          if ((void *)edict == ptr) return e;
-        }
-      }
-      return null;
-    }
 
-    public static Entity IsPrivateDate(void *ptr)
-    {
-      for (int i = 0; i < Entity.Count; i++)
-      {
-
-        Entity e = new Entity(Entity.GetEntity(i));
-        Edict *edict = e.entity;
-        if (edict != null) {
-          if (edict->pvPrivateData != null) {
-            if (ptr == edict->pvPrivateData) {
-              return e;
-            }
-          }
-        }
-      }
-      return null;
-    }
-
-    public static Entity IsEntvars(void *ptr)
-    {
-      for (int i = 0; i < Entity.Count; i++)
-      {
-        Entity e = new Entity(Entity.GetEntity(i));
-
-        Entvars *entvars = &(e.entity->v);
-        if (entvars != null) {
-          if (entvars == ptr) return e;
-        }
-      }
-      return null;
-    }
-
-    public static bool IsEntity2(void *ptr)
-    {
-      for (int i = 0; i < Entity.Count; i++)
-      {
-
-        Entity e = new Entity(Entity.GetEntity(i));
-        Edict *edict = e.entity;
-        if ((int)edict != 0) {
-          if ((void *)edict == ptr) {
-            Console.WriteLine ("its a pointer to an entity");
-
-          }
-          if ((int)edict->pvPrivateData != 0) {
-            if (ptr == edict->pvPrivateData) {
-              if ((void *)edict->pvPrivateData == ptr) {
-                Console.WriteLine ("its a pointer to private data");
-              }
-            }
-          }
-        }
-      }
-      return false;
-    }
-
-    public static void PrintPrivateData(Entity entity, TextWriter sw)
-    {
-
-      linked_list_node *private_data = GetListElement(entity.entity->pvPrivateData);
-      if (private_data == null) {
-        sw.WriteLine ("Sadly it I haven't got in my lsit");
-        return;
-      }
-      sw.WriteLine ("0x{0} 0x{1} {2}",
-                         Convert.ToString((int)private_data->ptr, 16),
-                         Convert.ToString((int)private_data->caller, 16),
-                         private_data->size);
-
-      int i = 0;
-      for (; i < private_data->size; )
-      {
-        sw.Write ("0x{0}: ", i.ToHex());
-        int j = 0;
-        while ((i < private_data->size) && (j < 4))
-        {
-          int *ptr = (int *)entity.entity->pvPrivateData + i;
-          sw.Write("{0} ", Convert.ToString(*ptr, 16).PadLeft(8, '0'));
-          i++;
-          j++;
-        }
-        sw.WriteLine ();
-      }
-
-      Entity en;
-      for (i = 0; i < private_data->size; i++)
-      {
-        int *ptr = (int *)entity.entity->pvPrivateData + i;
-        if ((en = IsEntity((void *)(*ptr))) != null) {
-          sw.WriteLine ("0x{0}: Entity({1}) ", i.ToHex(), en.Classname);
-        }
-        if ((en = IsPrivateDate((void *)(*ptr))) != null) {
-          sw.WriteLine("0x{0}: PrivateData, Entity({1})", i.ToHex(), en.Classname);
-        }
-        if ((en = IsEntvars((void *)(*ptr))) != null) {
-          Entvars *vars = (Entvars *)*ptr;
-          sw.WriteLine("0x{0}: Entvars, Entity({1})", i.ToHex(), en.Classname);
-        }
-      }
-    }
-
-    public static linked_list_node *GetListElement(void *ptr)
+    internal static linked_list_node *linked_list_search(void *ptr)
     {
       for (linked_list_node *iter = **llptr; iter->next != null; iter = iter->next)
       {
@@ -167,7 +67,14 @@ namespace SharpMod.Debug
       return null;
     }
 
-    public static void Print()
+    internal static int linked_list_count()
+    {
+      int i = 0;
+      for (linked_list_node *iter = **llptr; iter->next != null; iter = iter->next) i++;
+      return i;
+    }
+
+    public static void linked_list_print()
     {
       for (linked_list_node *iter = **llptr; iter->next != null; iter = iter->next)
       {
@@ -176,6 +83,182 @@ namespace SharpMod.Debug
                            Convert.ToString((int)iter->caller, 16),
                            iter->size);
       }
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Save and slow function to check a if a pointer is an Entity
+    /// </summary>
+    /// <param name="ptr">
+    /// A void* pointer <see cref="System.Void"/>
+    /// </param>
+    /// <returns>
+    /// A pointer to an Edict or null if not found <see cref="Edict"/>
+    /// </returns>
+    internal static Edict *IsEntity(void *ptr)
+    {
+      for (int i = 0; i < Entity.Count; i++) {
+        Edict *edict = (Edict *)Entity.GetEntity(i).ToPointer();
+        if ((edict != null) && (edict == ptr)) return edict;
+      }
+      return null;
+    }
+    public static Entity IsEntity(IntPtr ptr)
+    {
+      void *edict = (void *)IsEntity(ptr.ToPointer());
+      if (edict != null) return new Entity(new IntPtr(edict));
+      else return null;
+    }
+
+    /// <summary>
+    /// Save and slow function to check if a pointer is a PrivateData set
+    /// </summary>
+    /// <param name="ptr">
+    /// A void* pointer <see cref="System.Void"/>
+    /// </param>
+    /// <returns>
+    /// A pointer to an Edict or null if not found <see cref="Edict"/>
+    /// </returns>
+    internal static Edict *IsPrivateDate(void *ptr)
+    {
+      for (int i = 0; i < Entity.Count; i++)
+      {
+        Edict *edict = (Edict *)Entity.GetEntity(i).ToPointer();
+        if ((edict != null) && (edict->pvPrivateData != null) && (edict->pvPrivateData == ptr)) return edict;
+      }
+      return null;
+    }
+    public static Entity IsPrivateDate(IntPtr ptr)
+    {
+      void *edict = (void *)IsPrivateDate(ptr.ToPointer());
+      if (edict != null) return new Entity(new IntPtr(edict));
+      else return null;
+    }
+
+    /// <summary>
+    /// Save and slow function to check if a pointer is an Entvars struct
+    /// </summary>
+    /// <param name="ptr">
+    /// A void* pointer <see cref="System.Void"/>
+    /// </param>
+    /// <returns>
+    /// A pointer to an Edict or null if not found  <see cref="Edict"/>
+    /// </returns>
+    internal static Edict *IsEntvars(void *ptr)
+    {
+      for (int i = 0; i < Entity.Count; i++)
+      {
+        Edict *edict = (Edict *)Entity.GetEntity(i).ToPointer();
+        Entvars *entvars = &(edict->v);
+        if ((entvars != null) && (entvars == ptr)) return edict;
+      }
+      return null;
+    }
+    public static Entity IsEntvars(IntPtr ptr)
+    {
+      void *edict = (void *)IsEntvars(ptr.ToPointer());
+      if (edict != null) return new Entity(new IntPtr(edict));
+      else return null;
+    }
+
+    public static void PrintHexCode(TextWriter sw, void *ptr, int size, int tab, int columns, int[] extraSpaces)
+    {
+      int i = 0;
+      while (i < size)
+      {
+        sw.WriteBunch(tab);
+        sw.Write("0x{0}: ", i.ToHex());
+        int j = 0;
+        while ((i < size) && (j < columns))
+        {
+          int *offset = (int *)ptr + i;
+          sw.Write("{0} ", (*offset).ToHex());
+          for (int n = 0; n < extraSpaces.Length; n++) {
+            if ((j+1) % extraSpaces[n] == 0) sw.Write(" ");
+          }
+          i++;
+          j++;
+        }
+        sw.WriteLine();
+      }
+    }
+    public static void PrintHexCode(TextWriter sw, void *ptr, int size, int tab)
+    {
+      PrintHexCode(sw, ptr, size, tab, 8, new int[] { 2, 4 });
+    }
+
+    public static void PrintPrivateInfo(TextWriter sw, Entity entity)
+    {
+      PrintPrivateInfo(sw, entity, new List<Entity>(), 0);
+    }
+
+    public static void PrintPrivateInfo(TextWriter sw, Entity entity, List<Entity> list, int tab)
+    {
+      foreach (Entity e in list) {
+        if (e.entity == entity.entity) return;
+      }
+      list.Add(entity);
+      linked_list_node *private_data = linked_list_search(entity.entity->pvPrivateData);
+      if (private_data == null) {
+        sw.WriteBunch(tab);
+        sw.WriteLine ("The allocation size couldn't be found");
+        return;
+      }
+
+
+      sw.WriteBunch(tab);
+      sw.WriteLine ("entity pointer:{0}", private_data->ToString());
+
+      PrintHexCode(sw, entity.entity->pvPrivateData, private_data->size, tab);
+      sw.WriteLine();
+      for (int i = 0; i < private_data->size; i++)
+      {
+        IntPtr ptr = new IntPtr(*((int *)entity.entity->pvPrivateData + i));
+        Entity en;
+        if ((en = IsEntity(ptr)) != null) {
+          sw.WriteBunch(tab);
+          sw.WriteLine ("0x{0}: Entity({1}) ", i.ToHex(), en.Classname);
+          PrintPrivateInfo(sw, en, list, tab+1);
+        } else if ((en = IsPrivateDate(ptr)) != null) {
+          sw.WriteBunch(tab);
+          sw.WriteLine("0x{0}: PrivateData, Entity({1})", i.ToHex(), en.Classname);
+          PrintPrivateInfo(sw, en, list, tab+1);
+        } else if ((en = IsEntvars(ptr)) != null) {
+          sw.WriteBunch(tab);
+          sw.WriteLine("0x{0}: Entvars, Entity({1})", i.ToHex(), en.Classname);
+          PrintPrivateInfo(sw, en, list, tab+1);
+        } else {
+          linked_list_node *node;
+          if ((node = linked_list_search(ptr.ToPointer())) != null) {
+            sw.WriteBunch(tab);
+            sw.WriteLine ("0x{0}: memory:{0}", i.ToHex(), node->ToString());
+          }
+        }
+      }
+    }
+
+    private static string dumpDirectory = @"dump/";
+    public static void DumpPrivateInfo(Entity entity)
+    {
+      #if DEBUG
+      MemoryTracker.PrintPrivateInfo(Console.Out, entity);
+      #endif
+
+      if (!Directory.Exists(dumpDirectory)) Directory.CreateDirectory(dumpDirectory);
+
+      int i = 0;
+      bool done = false;
+      do {
+        string fn = dumpDirectory + i.ToHex() + ".txt";
+        if (!File.Exists(fn)) {
+          StreamWriter sw = new StreamWriter(File.OpenWrite(fn));
+          MemoryTracker.PrintPrivateInfo(sw, entity);
+          sw.Close();
+          done = true;
+        }
+        i++;
+      } while (!done);
     }
   }
 }

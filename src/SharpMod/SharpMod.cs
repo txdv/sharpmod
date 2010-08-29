@@ -66,18 +66,7 @@ namespace SharpMod
 
     static void dump(Player player, Command cmd)
     {
-      int i = 0;
-      while (File.Exists("output" + i.ToHex() + ".txt"))
-      {
-        i++;
-      }
-      string fn = "output" + i.ToHex() + ".txt";
-
-      StreamWriter sw = new StreamWriter(File.OpenWrite(fn));
-      MemoryTracker.PrintPrivateData(player, sw);
-      sw.Close();
-
-      MemoryTracker.PrintPrivateData(player, Console.Out);
+      Debug.MemoryTracker.DumpPrivateInfo(player);
     }
 
     static void sharpHelp()
@@ -101,8 +90,8 @@ namespace SharpMod
         PluginManager.GetInstance().ShowPlugins();
         break;
 
-      case "debug":
-        MemoryTracker.Print();
+      case "memory":
+        MemoryTracker.linked_list_print();
         break;
 
       default:
