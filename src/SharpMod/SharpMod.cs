@@ -61,10 +61,10 @@ namespace SharpMod
       // Initialize plugin system
       PluginManager.GetInstance();
 
-      Player.RegisterCommand("say /blet", blet);
+      Player.RegisterCommand("say /dump", dump);
     }
 
-    static void blet(Player player, Command cmd)
+    static void dump(Player player, Command cmd)
     {
       int i = 0;
       while (File.Exists("output" + i.ToHex() + ".txt"))
@@ -79,6 +79,7 @@ namespace SharpMod
 
       MemoryTracker.PrintPrivateData(player, Console.Out);
     }
+
     static void sharpHelp()
     {
       Console.WriteLine ("Usage: sharp < command > [ argument ]");

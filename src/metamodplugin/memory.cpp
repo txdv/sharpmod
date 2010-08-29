@@ -1,6 +1,8 @@
 #include <malloc.h>
+#include <pthread.h>
 #include "memory.h"
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct linked_list_node {
   void *ptr;
@@ -86,6 +88,7 @@ static void (*old_free_hook)(void *ptr, const void *caller);
 static void *(*old_malloc_hook)(size_t, const void *);
 
 static void *my_malloc_hook (size_t size, const void *caller) {
+  pthread_mutex_lock(&mutex);
   void *result;
   __malloc_hook = old_malloc_hook;
 
@@ -95,11 +98,13 @@ static void *my_malloc_hook (size_t size, const void *caller) {
 
   old_malloc_hook = __malloc_hook;
   __malloc_hook = my_malloc_hook;
+  pthread_mutex_unlock(&mutex);
   return result;
 }
 
 static void my_free_hook(void *ptr, const void *caller)
 {
+  pthread_mutex_lock(&mutex);
   __free_hook = old_free_hook;
 
   free(ptr);
@@ -108,6 +113,7 @@ static void my_free_hook(void *ptr, const void *caller)
 
   old_free_hook = __free_hook;
   __free_hook = my_free_hook;
+  pthread_mutex_unlock(&mutex);
 }
 
 

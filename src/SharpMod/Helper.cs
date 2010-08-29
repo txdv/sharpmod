@@ -150,7 +150,7 @@ namespace SharpMod.Helper
 
     public static string ToHex(this int val)
     {
-      return Convert.ToString(val).PadLeft(8, '0');
+      return Convert.ToString(val, 16).PadLeft(8, '0');
     }
   }
 }

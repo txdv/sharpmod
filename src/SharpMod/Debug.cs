@@ -45,16 +45,70 @@ namespace SharpMod.Debug
       llptr = ll;
     }
 
+    public static Entity IsEntity(void *ptr)
+    {
+      for (int i = 0; i < Entity.Count; i++) {
+        Entity e = new Entity(Entity.GetEntity(i));
+        Edict *edict = e.entity;
+        if (edict != null) {
+          if ((void *)edict == ptr) return e;
+        }
+      }
+      return null;
+    }
 
-    public static bool IsEntity(void *ptr)
+    public static Entity IsPrivateDate(void *ptr)
     {
       for (int i = 0; i < Entity.Count; i++)
       {
 
         Entity e = new Entity(Entity.GetEntity(i));
         Edict *edict = e.entity;
-        if ((int)edict != 0)
-        Console.WriteLine (e.Classname);
+        if (edict != null) {
+          if (edict->pvPrivateData != null) {
+            if (ptr == edict->pvPrivateData) {
+              return e;
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    public static Entity IsEntvars(void *ptr)
+    {
+      for (int i = 0; i < Entity.Count; i++)
+      {
+        Entity e = new Entity(Entity.GetEntity(i));
+
+        Entvars *entvars = &(e.entity->v);
+        if (entvars != null) {
+          if (entvars == ptr) return e;
+        }
+      }
+      return null;
+    }
+
+    public static bool IsEntity2(void *ptr)
+    {
+      for (int i = 0; i < Entity.Count; i++)
+      {
+
+        Entity e = new Entity(Entity.GetEntity(i));
+        Edict *edict = e.entity;
+        if ((int)edict != 0) {
+          if ((void *)edict == ptr) {
+            Console.WriteLine ("its a pointer to an entity");
+
+          }
+          if ((int)edict->pvPrivateData != 0) {
+            if (ptr == edict->pvPrivateData) {
+              if ((void *)edict->pvPrivateData == ptr) {
+                Console.WriteLine ("its a pointer to private data");
+              }
+            }
+          }
+        }
       }
       return false;
     }
@@ -87,27 +141,21 @@ namespace SharpMod.Debug
         sw.WriteLine ();
       }
 
-
-      // doesnt work
-      /*
+      Entity en;
       for (i = 0; i < private_data->size; i++)
       {
         int *ptr = (int *)entity.entity->pvPrivateData + i;
-        Console.WriteLine (Entity.GetIndex((void *)ptr));
-      }
-      */
-
-      for (i = 0; i < private_data->size; i++)
-      {
-        int *ptr = (int *)entity.entity->pvPrivateData + i;
-        //if (IsEntity((void *)ptr))
-        {
-          //Console.WriteLine ("Entity found in: {0}", i);
+        if ((en = IsEntity((void *)(*ptr))) != null) {
+          sw.WriteLine ("0x{0}: Entity({1}) ", i.ToHex(), en.Classname);
         }
-        //Console.WriteLine (Entity.GetIndex((void *)ptr));
+        if ((en = IsPrivateDate((void *)(*ptr))) != null) {
+          sw.WriteLine("0x{0}: PrivateData, Entity({1})", i.ToHex(), en.Classname);
+        }
+        if ((en = IsEntvars((void *)(*ptr))) != null) {
+          Entvars *vars = (Entvars *)*ptr;
+          sw.WriteLine("0x{0}: Entvars, Entity({1})", i.ToHex(), en.Classname);
+        }
       }
-      IsEntity((void *)0);
-
     }
 
     public static linked_list_node *GetListElement(void *ptr)
