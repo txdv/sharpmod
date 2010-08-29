@@ -22,8 +22,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-using SharpMod.Debug;
-using SharpMod.Helper;
+using SharpMod.Menues;
 
 namespace SharpMod
 {
@@ -55,30 +54,35 @@ namespace SharpMod
 
       // load plugins
 
+      PluginManager.GetInstance();
       Server.Print(License);
       Server.RegisterCommand("sharp", sharp);
-
-      // Initialize plugin system
-      PluginManager.GetInstance();
-
-      Player.RegisterCommand("say /blet", blet);
+      Player.RegisterCommand("say /menu", menu);
+      Player.RegisterCommand("say /team", team);
     }
 
-    static void blet(Player player, Command cmd)
+    private static void team(Player player, Command command)
     {
-      int i = 0;
-      while (File.Exists("output" + i.ToHex() + ".txt"))
-      {
-        i++;
-      }
-      string fn = "output" + i.ToHex() + ".txt";
-
-      StreamWriter sw = new StreamWriter(File.OpenWrite(fn));
-      MemoryTracker.PrintPrivateData(player, sw);
-      sw.Close();
-
-      MemoryTracker.PrintPrivateData(player, Console.Out);
+      Console.WriteLine (player.GetPrivateData(CounterStrike.CounterStrikeOffset.team));
     }
+
+    private static void menu(Player player, Command command)
+    {
+      Menu m = new Menu("Nextmap:");
+      m.NumberedItems = true;
+      m.Add(new Item("de_dust"));
+      m.Add(new Item("de_dust2"));
+      m.Add(new Item("de_dust3"));
+      m.Add(new Item("de_dust4"));
+      m.Add(new Item("de_dust5"));
+      m.Add(new Item("de_dust6"));
+      m.Add(new Item("de_inferno"));
+      m.Add(new Item("de_italy"));
+      m.Add(new Item("de_aztec"));
+      m.Add(new Item("cs_office"));
+      m.Show(player, 60);
+    }
+
     static void sharpHelp()
     {
       Console.WriteLine ("Usage: sharp < command > [ argument ]");
@@ -98,10 +102,6 @@ namespace SharpMod
       case "list":
       case "plugins":
         PluginManager.GetInstance().ShowPlugins();
-        break;
-
-      case "debug":
-        MemoryTracker.Print();
         break;
 
       default:

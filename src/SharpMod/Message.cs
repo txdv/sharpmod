@@ -34,8 +34,6 @@ hlsdk/multiplayer/common/const.h:
 #define MSG_SPEC      9   // Sends to all spectator proxies
 */
 
-#define DEBUG
-
 using System;
 using System.Collections.Generic;
 using SharpMod.MetaMod;

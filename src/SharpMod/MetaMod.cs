@@ -7,7 +7,7 @@
 // 
 //     csharpmod is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
+//     the Free Software Foundat2ion, either version 3 of the License, or
 //     (at your option) any later version.
 // 
 //     csharpmod is distributed in the hope that it will be useful,
@@ -18,8 +18,6 @@
 //     You should have received a copy of the GNU General Public License
 //     along with csharpmod.  If not, see <http://www.gnu.org/licenses/>.
 //
-
-#define DEBUG
 
 using System;
 using System.Runtime;
@@ -199,6 +197,7 @@ namespace SharpMod.MetaMod
   internal delegate int AllocStringDelegate(string szValue);
 
   internal unsafe delegate void GetGameDirDelegate(char *directoy);
+  internal delegate int NumberOfEntitiesDelegate();
   internal delegate IntPtr GetInfoKeyBuffer(IntPtr entity);
   internal delegate IntPtr InfoKeyValueDelegate(IntPtr infoBuffer, string key);
   internal delegate void SetServerKeyValueDelegate(IntPtr infoBuffer, string key, string val);
@@ -323,7 +322,7 @@ namespace SharpMod.MetaMod
     IntPtr SetClientMaxspeed;
     IntPtr CreateFakeClient;
     IntPtr RunPlayerMove;
-    IntPtr NumberOfEntities;
+    internal NumberOfEntitiesDelegate  NumberOfEntities;
     internal GetInfoKeyBuffer          GetInfoKeyBuffer;
     internal InfoKeyValueDelegate      InfoKeyValue;
     internal SetServerKeyValueDelegate SetServerKeyValue;

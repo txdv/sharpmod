@@ -518,9 +518,30 @@ namespace SharpMod
 
     #region static methods
 
+    /// <summary>
+    /// Returns the total entity count in the engine
+    /// </summary>
+    public static int Count
+    {
+      get {
+        return MetaModEngine.engineFunctions.NumberOfEntities();
+      }
+    }
+
+    internal static IntPtr GetEntity(int index)
+    {
+      return MetaModEngine.engineFunctions.PEntityOfEntIndex(index);
+    }
+
+
     public static int GetIndex(IntPtr ptr)
     {
        return MetaModEngine.engineFunctions.IndexOfEdict(ptr);
+    }
+
+    internal static int GetIndex(void *ptr)
+    {
+       return MetaModEngine.engineFunctions.IndexOfEdict(new IntPtr(ptr));
     }
 
     public static Entity Find(Entity startSearchAfter, string field, string val)

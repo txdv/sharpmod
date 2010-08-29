@@ -35,7 +35,7 @@ HLSDK= ./../../include/hlsdk/multiplayer
 
 INCLUDEDIRS = -I. -I$(METADIR) -I$(HLSDK)/engine -I$(HLSDK)/common -Ip$(HLSDK)/m_shared -I$(HLSDK)/dlls
 
-OBJ = sdk_util.o mono.o
+OBJ = sdk_util.o memory.o mono.o 
 	
 DOCC = $(COMPILER) $(CFLAGS) $(INCLUDEDIRS) -o $@ -c $<
 DOO = $(LINKER) -o $@ $(OBJ) $(LFLAGS)

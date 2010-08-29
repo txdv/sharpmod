@@ -65,6 +65,7 @@
     <Compile Include="Math.cs" />
     <Compile Include="MessageGeneratedFunctions.cs" />
     <Compile Include="MessageFunctions.cs" />
+    <Compile Include="Debug.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

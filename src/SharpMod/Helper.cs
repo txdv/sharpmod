@@ -142,12 +142,15 @@ namespace SharpMod.Helper
 
     #endregion
 
+
     public static StringBuilder Append(this StringBuilder stringBuilder, string cmd, params object[] paramlist)
     {
       return stringBuilder.Append(String.Format(cmd, paramlist));
     }
 
-
-
+    public static string ToHex(this int val)
+    {
+      return Convert.ToString(val).PadLeft(8, '0');
+    }
   }
 }

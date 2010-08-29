@@ -21,6 +21,8 @@
 
 #define __DEBUG__
 
+#include <malloc.h>
+
 #include <extdll.h>
 #include <sdk_util.h>
 #include <meta_api.h>
@@ -34,6 +36,7 @@
 #include <mono/metadata/debug-helpers.h>
 
 #include "mono.h"
+#include "memory.h"
 
 enginefuncs_t g_engfuncs;
 globalvars_t  *gpGlobals;
@@ -69,9 +72,10 @@ MonoMethod *handlerMeta_Query;
 MonoMethod *handlerMeta_Attach; 
 MonoMethod *handlerGetEntityAPI2;
 
-void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pGlobals)
-{
+MonoMethod *handlerLinkedListPointer;
 
+void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pGlobals)
+{ 
 #ifdef __DEBUG__
   printf(" -- C: GiveFnptrsToDll (%u)\n", sizeof(enginefuncs_t));
 #endif
@@ -86,12 +90,22 @@ void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pG
     //return FALSE;
   }
   image = mono_assembly_get_image(assembly);
-  MonoClass *metamod_class = mono_class_from_name(image,"SharpMod.MetaMod", "MetaModEngine");
+  MonoClass *metamod_class = mono_class_from_name(image, "SharpMod.MetaMod", "MetaModEngine");
 
   handlerGiveFnptrsToDll = search_method(metamod_class, "handlerGiveFnptrsToDll");
   handlerMeta_Attach     = search_method(metamod_class, "handlerMeta_Attach"    );
   handlerMeta_Query      = search_method(metamod_class, "handlerMeta_Query"     );
   handlerGetEntityAPI2   = search_method(metamod_class, "handlerGetEntityAPI2"  );
+  
+  
+  MonoClass *memory_tracker_class = mono_class_from_name(image, "SharpMod.Debug", "MemoryTracker");
+  handlerLinkedListPointer = search_method(memory_tracker_class, "linked_list_pointer");
+  void *args1[1];
+  args1[0] = memory_list();
+  mono_runtime_invoke(handlerLinkedListPointer, NULL, args1, NULL);
+  
+
+  memory_init();
 
   void *args[2];
   args[0] = &pengfuncsFromEngine;
@@ -196,6 +210,7 @@ MonoMethod *search_method(MonoClass *klass, char *methodname)
 C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */, 
 		PL_UNLOAD_REASON /* reason */) 
 {
+  memory_uninit();
   mono_jit_cleanup(domain);
   return(TRUE);
 }
