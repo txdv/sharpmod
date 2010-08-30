@@ -135,8 +135,12 @@ namespace SharpMod
     private PluginManager()
     {
       plugins = new List<IPlugin>();
+    }
+
+    public void LoadPlugins()
+    {
       if (Directory.Exists(pluginDirectory))
-      foreach (string file in Directory.GetFiles(pluginDirectory, "SharpMod*.dll")) Load(file);
+        foreach (string file in Directory.GetFiles(pluginDirectory, "SharpMod*.dll")) Load(file);
     }
 
     public bool Load(string path)
@@ -252,8 +256,6 @@ namespace SharpMod
 
       // Load the current assembly, so we can access all the SharpMod goodies
       engine.Runtime.LoadAssembly(Assembly.LoadFile(Assembly.GetExecutingAssembly().Location));
-
-      foreach (string file in Directory.GetFiles(pluginDirectory, "*.rb")) Load(file);
     }
 
 
@@ -282,6 +284,11 @@ namespace SharpMod
         PluginManager.GetInstance().Load(new RubyPlugin(name, author, description, version, unload));
 
       }
+    }
+
+    public void LoadPlugins()
+    {
+      foreach (string file in Directory.GetFiles(pluginDirectory, "*.rb")) Load(file);
     }
   }
 }

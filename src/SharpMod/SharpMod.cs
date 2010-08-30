@@ -54,16 +54,17 @@ namespace SharpMod
 
 		public static void Init()
 		{
-      Version = new CVar("sharpmod_version", "0.1");
-
-      Server.Print(License);
-
-      // load plugins
+      // Initialize plugin system, but do not load plugins yet
       PluginManager.GetInstance();
       RubyPluginManager.GetInstance();
 
+      Version = new CVar("sharpmod_version", "0.1");
+      Server.Print(License);
+
       // Registering after the plugins, since the DLR goes MAAAD if i do it before
       Server.RegisterCommand("sharp", sharp);
+
+
     }
 
     static void sharpHelp()

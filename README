@@ -5,7 +5,7 @@ sharpmod
 sharpmod is a plugin for metamod which by itself is a pluginsystem for the goldsrc engine (Half-Life, Counter-Strike classic).
 It enables the developer to write plugins for the goldsrc engine in C# or other languages which can be compiled to CIL (the bytecode
 for .NET virtual machines).
-Right now only C# was tested, but there are plans to try out ruby and python plugins (IronRuby, IronPython).
+Right now C# and Ruby are supported, though the Ruby implementation has lesser functionality because of IronRuby.
 
 
 Compiling the modified metamod and the metamod plugin.
@@ -64,7 +64,6 @@ Ruby
 A lot of code is now generated with ruby, so you will need to install ruby, rubygems and erb (with rubygems)
 
 
-
 Plugins
 ---------------
 
@@ -74,8 +73,16 @@ Only the 1.1 introduces the new method extensions loading which is heavily used 
 Just post all IronRuby specific *.dll's (found in the package under /bin) in the bin directory of sharpmod.
 
 
+Known Problems
+---------------
+
+- IronRuby doesn't support overloading of delegates, += is missing
+- IronRuby doesn't support working with the type Delegate
+
+
 Using sharpmod in your counter-strike server
 ---------------
+
 Use the metamod binary in the directory include/metamod/metamod/opt/metamod_i386.so in your server, create a soft link
 ln -s for easier usage. There are plenty of resources which explain how to use the metamod.
 In order to use the sharpmod just create a link from cstrike/addons/sharpmod (or any other mod) to 
@@ -87,7 +94,7 @@ Afterwards just start the server, you should see a lot of debug messages since i
 Directory structure
 ---------------
 
-The downloaded files have to be placed in the folder "include/", the folder structure should look like this:
+The metamod and hlsdk packages have to be placed in the folder "include/", the folder structure should look like this:
 
 include/
   hlsdk/
@@ -105,4 +112,5 @@ include/
     README.txt
     ...
 
-This is only interesting if you are planning to do something by yourself.
+This is only interesting if you are planning to do something by yourself, just use make if you don't want to download
+them manually.
