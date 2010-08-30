@@ -186,7 +186,6 @@ namespace SharpMod
 
     static Message()
     {
-      Tree<MessageHandler> t = new Tree<MessageHandler>();
     }
     /// <summary>
     /// A private count for the arguments send by the function.
@@ -617,7 +616,7 @@ namespace SharpMod
         }
       }
       object ret = handler.Method.Invoke(null, newlist.ToArray());
-      if (ret.GetType() is PluginFunctions) return (PluginFunctions)ret;
+      if (ret is PluginFunctions) return (PluginFunctions)ret;
       else return PluginFunctions.Continue;
     }
 

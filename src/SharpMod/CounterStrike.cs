@@ -300,7 +300,7 @@ namespace SharpMod.CounterStrike
 
         hostagefollow   = 86 + extraOffset;
         hostagenextuse  = 100 + extraOffset;
-        hostagenextuse  = 483 + extraOffset;
+        hostagelastuse  = 483 + extraOffset;
         hostageid       = 487 + extraOffset;
 
         armourytype = 34 + extraOffsetWeapons;

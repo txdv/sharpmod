@@ -220,6 +220,7 @@ namespace SharpMod.MetaMod
   internal delegate IntPtr GetPlayerAuthIdDelegate(IntPtr playerEntity);
 
 
+  #pragma warning disable 169
   // metamod/meta_eiface.h
   [StructLayout (LayoutKind.Sequential)]
   internal struct EngineFunctions
@@ -385,6 +386,7 @@ namespace SharpMod.MetaMod
     IntPtr QueryClientCvarValue;
     IntPtr QueryClientCvarValue2;
   };
+  #pragma warning restore 169
 
   #endregion
 
@@ -402,7 +404,7 @@ namespace SharpMod.MetaMod
   internal delegate void ClientUserInfoChangedDelegate(IntPtr pEntity, string infoBuffer);
   internal delegate void ServerActivateDelegate(IntPtr pEdictList, int edictCount, int clientMax);
 
-
+  #pragma warning disable 169
   [StructLayout (LayoutKind.Sequential)]
   internal struct EntityAPI
   {
@@ -466,6 +468,7 @@ namespace SharpMod.MetaMod
     IntPtr InconsistentFile;
     IntPtr AllowLagCompensation;
   };
+  #pragma warning restore 169
 
   #endregion
 
@@ -654,7 +657,6 @@ typedef struct {
 
     internal static MessageHeader message_header;
     internal static List<object> message_elements;
-    internal static int message_type;
 
     internal static void InvokeFunction(Delegate function, List<object> argList)
     {
@@ -674,7 +676,6 @@ typedef struct {
 
 
       message_header = new MessageHeader(destination, messageType, floatValue, playerEntity);
-
       message_elements = new List<object>();
 
       if (playerEntity.ToInt32() == 0)
@@ -696,7 +697,7 @@ typedef struct {
       Console.WriteLine (messageInformation);
       #endif
 
-      BinaryTree.Node node = Message.TypeNames[message_type];
+      BinaryTree.Node node = Message.TypeNames[message_header.MessageType];
 
       if ((node != null) && (node.invoker != null))
       {
