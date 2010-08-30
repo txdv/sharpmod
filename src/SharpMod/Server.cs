@@ -271,31 +271,17 @@ namespace SharpMod
     }
 
     /// <summary>
-    /// Precache Model
+    /// Precaches sound
     /// </summary>
     /// <param name="filename">
-    /// A filename <see cref="System.String"/>
+    /// A string representing the filename <see cref="System.String"/>
     /// </param>
     /// <returns>
-    /// True for successfull load <see cref="System.Boolean"/>
+    /// Returns sound index <see cref="System.Int32"/>
     /// </returns>
-    public static bool PrecacheModel(string filename)
+    public static int PrecacheSound(string filename)
     {
-      return MetaModEngine.engineFunctions.PrecacheModel(filename) == 1;
-    }
-
-    /// <summary>
-    /// Precache Sound
-    /// </summary>
-    /// <param name="filename">
-    /// The filename of the sound <see cref="System.String"/>
-    /// </param>
-    /// <returns>
-    /// True for successfull load <see cref="System.Boolean"/>
-    /// </returns>
-    public static bool PrecacheSound(string filename)
-    {
-      return MetaModEngine.engineFunctions.PrecacheSound(filename) == 1;
+      return MetaModEngine.engineFunctions.PrecacheSound(filename);
     }
 	}
 }

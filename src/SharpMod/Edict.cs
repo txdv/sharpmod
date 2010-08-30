@@ -533,7 +533,6 @@ namespace SharpMod
       return MetaModEngine.engineFunctions.PEntityOfEntIndex(index);
     }
 
-
     public static int GetIndex(IntPtr ptr)
     {
        return MetaModEngine.engineFunctions.IndexOfEdict(ptr);

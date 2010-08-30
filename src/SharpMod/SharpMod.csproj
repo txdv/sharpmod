@@ -66,6 +66,8 @@
     <Compile Include="MessageGeneratedFunctions.cs" />
     <Compile Include="MessageFunctions.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="CRC32.cs" />
+    <Compile Include="Model.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

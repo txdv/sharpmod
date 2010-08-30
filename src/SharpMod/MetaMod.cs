@@ -150,6 +150,8 @@ namespace SharpMod.MetaMod
   internal delegate int PrecacheModelDelegate(string filename);
   internal delegate int PrecacheSoundDelegate(string filename);
 
+  internal delegate int ModelIndexDelegate(string filename);
+
   internal delegate IntPtr FindEntityByStringDelegate(IntPtr entity, string field, string val);
   internal delegate int GetEntityIllumDelegate(IntPtr entity);
   internal unsafe delegate IntPtr FindEntityInSphereDelegate(IntPtr startSearchAfter, float *org, float rad);
@@ -171,9 +173,15 @@ namespace SharpMod.MetaMod
   internal delegate void ClientPrintfDelegate(IntPtr pEdict, PrintType type, string message);
   internal delegate void ServerPrintDelegate(string message);
   internal delegate void RegUserMsgDelegate(string name, int size);
+  internal delegate IntPtr GetModelPtrDelegate(IntPtr ptr);
   internal delegate IntPtr Cmd_ArgsDelegate();
   internal delegate IntPtr Cmd_ArgvDelegate(int i);
   internal delegate int Cmd_ArgcDelegate();
+
+  internal delegate void CRC32_InitDelegate(IntPtr crc32);
+  internal delegate void CRC32_ProcessBufferDelegate(IntPtr crc32, IntPtr ptr, int size);
+  internal delegate void CRC32_ProcessByteDelegate(IntPtr crc32, char ch);
+  internal delegate long CRC32_FinalDelegate(long crc32);
 
   internal delegate void MessageBeginDelegate(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr playerEntity);
   internal delegate void MessageEndDelegate();
@@ -217,7 +225,7 @@ namespace SharpMod.MetaMod
     internal PrecacheModelDelegate PrecacheModel;
     internal PrecacheSoundDelegate PrecacheSound;
     IntPtr SetModel;
-    IntPtr ModelIndex;
+    internal ModelIndexDelegate ModelIndex;
     IntPtr ModelFrames;
     IntPtr SetSize;
     IntPtr ChangeLevel;
@@ -291,7 +299,7 @@ namespace SharpMod.MetaMod
     internal IndexOfEdictDelegate IndexOfEdict;
     internal PEntityOfEntIndexDelegate PEntityOfEntIndex;
     IntPtr FindEntityByVars;
-    IntPtr GetModelPtr;
+    internal GetModelPtrDelegate GetModelPtr;
     internal RegUserMsgDelegate RegUserMsg;
     IntPtr AnimationAutomove;
     IntPtr GetBonePosition;
@@ -303,10 +311,10 @@ namespace SharpMod.MetaMod
     internal Cmd_ArgvDelegate Cmd_Argv;
     internal Cmd_ArgcDelegate Cmd_Argc;
     IntPtr GetAttachment;
-    IntPtr CRC32_Init;
-    IntPtr CRC32_ProcessBuffer;
-    IntPtr CRC32_ProcessByte;
-    IntPtr CRC32_Final;
+    internal CRC32_InitDelegate          CRC32_Init;
+    internal CRC32_ProcessBufferDelegate CRC32_ProcessBuffer;
+    internal CRC32_ProcessByteDelegate   CRC32_ProcessByte;
+    internal CRC32_FinalDelegate         CRC32_Final;
     IntPtr RandomLong;
     IntPtr RandomFloat;
     IntPtr SetView;
