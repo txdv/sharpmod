@@ -5,7 +5,7 @@ sharpmod
 sharpmod is a plugin for metamod which by itself is a pluginsystem for the goldsrc engine (Half-Life, Counter-Strike classic).
 It enables the developer to write plugins for the goldsrc engine in C# or other languages which can be compiled to CIL (the bytecode
 for .NET virtual machines).
-Right now C# and Ruby are support, though the Ruby implementation has lesser functionality because of IronRuby.
+Right now C# and Ruby are supported, though the Ruby implementation has lesser functionality because of IronRuby.
 
 
 Compiling the modified metamod and the metamod plugin.
@@ -94,7 +94,7 @@ Afterwards just start the server, you should see a lot of debug messages since i
 Directory structure
 ---------------
 
-The downloaded files have to be placed in the folder "include/", the folder structure should look like this:
+The metamod and hlsdk packages have to be placed in the folder "include/", the folder structure should look like this:
 
 include/
   hlsdk/
@@ -112,4 +112,5 @@ include/
     README.txt
     ...
 
-This is only interesting if you are planning to do something by yourself.
+This is only interesting if you are planning to do something by yourself, just use make if you don't want to download
+them manually.
