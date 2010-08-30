@@ -177,6 +177,11 @@ namespace SharpMod.MetaMod
   internal delegate IntPtr Cmd_ArgvDelegate(int i);
   internal delegate int Cmd_ArgcDelegate();
 
+  internal delegate void CRC32_InitDelegate(IntPtr crc32);
+  internal delegate void CRC32_ProcessBufferDelegate(IntPtr crc32, IntPtr ptr, int size);
+  internal delegate void CRC32_ProcessByteDelegate(IntPtr crc32, char ch);
+  internal delegate long CRC32_FinalDelegate(long crc32);
+
   internal delegate void MessageBeginDelegate(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr playerEntity);
   internal delegate void MessageEndDelegate();
 
@@ -304,10 +309,10 @@ namespace SharpMod.MetaMod
     internal Cmd_ArgvDelegate Cmd_Argv;
     internal Cmd_ArgcDelegate Cmd_Argc;
     IntPtr GetAttachment;
-    IntPtr CRC32_Init;
-    IntPtr CRC32_ProcessBuffer;
-    IntPtr CRC32_ProcessByte;
-    IntPtr CRC32_Final;
+    internal CRC32_InitDelegate          CRC32_Init;
+    internal CRC32_ProcessBufferDelegate CRC32_ProcessBuffer;
+    internal CRC32_ProcessByteDelegate   CRC32_ProcessByte;
+    internal CRC32_FinalDelegate         CRC32_Final;
     IntPtr RandomLong;
     IntPtr RandomFloat;
     IntPtr SetView;
