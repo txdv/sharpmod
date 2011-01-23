@@ -5,7 +5,7 @@ sharpmod
 sharpmod is a plugin for metamod which by itself is a pluginsystem for the goldsrc engine (Half-Life, Counter-Strike classic).
 It enables the developer to write plugins for the goldsrc engine in C# or other languages which can be compiled to CIL (the bytecode
 for .NET virtual machines).
-Right only C# is supported, there is a Ruby branch which, but it hasn't all the functionality
+Right now only C# is supported, there is a Ruby branch which, but it hasn't all the functionality
 
 
 Compiling the modified metamod and the metamod plugin.
