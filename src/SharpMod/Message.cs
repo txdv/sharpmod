@@ -548,148 +548,148 @@ namespace SharpMod
     #endregion
 
 
-  enum PluginFunctions
-  {
-    Continue,
-    Handled,
-  }
-
-  /// <summary>
-  /// HudElements enum for use in HideWeapons function
-  /// </summary>
-  public enum HudElements : byte
-  {
-    CrosshairAmmoWeapons = 1 << 0,
-    Flashlight           = 1 << 1,
-    All                  = 1 << 2,
-    RadarHealthArmor     = 1 << 3,
-    Timer                = 1 << 4,
-    Money                = 1 << 5,
-    Crosshair            = 1 << 6,
-    Nothing              = 1 << 7
-  }
-
-  public class MessageHandler : IComparable<MessageHandler>
-  {
-    public string Name { get; protected set; }
-    public int Value { get; protected set; }
-
-    private List<Delegate> handlers;
-    public MessageHandler(string name, int val)
+    enum PluginFunctions
     {
-      Name = name;
-      Value = val;
-      handlers = new List<Delegate>();
+      Continue,
+      Handled,
     }
-
-    public int AddHandler(Delegate handler)
+  
+    /// <summary>
+    /// HudElements enum for use in HideWeapons function
+    /// </summary>
+    public enum HudElements : byte
     {
-      handlers.Add(handler);
-      return handlers.Count-1;
+      CrosshairAmmoWeapons = 1 << 0,
+      Flashlight           = 1 << 1,
+      All                  = 1 << 2,
+      RadarHealthArmor     = 1 << 3,
+      Timer                = 1 << 4,
+      Money                = 1 << 5,
+      Crosshair            = 1 << 6,
+      Nothing              = 1 << 7
     }
-
-    public bool RemoveHandler(Delegate handler)
+  
+    public class MessageHandler : IComparable<MessageHandler>
     {
-      int count = handlers.Count;
-      handlers.Remove(handler);
-      return (count == handlers.Count);
-    }
-    public bool RemoveHandler(int index)
-    {
-      if (index < handlers.Count)
+      public string Name { get; protected set; }
+      public int Value { get; protected set; }
+  
+      private List<Delegate> handlers;
+      public MessageHandler(string name, int val)
       {
-        handlers.RemoveAt(index);
-        return true;
-      }
-      else return false;
-    }
-
-    public void Invoke(object[] list)
-    {
-      foreach (Delegate handler in handlers)
-      {
-        if (Invoke(handler, list) == PluginFunctions.Handled)
-        {
-          return;
-        }
-      }
-    }
-    private PluginFunctions Invoke(Delegate handler, object[] list)
-    {
-      var parameters = handler.Method.GetParameters();
-      int count = list.Length - parameters.Length;
-      List<object> newlist = new List<object>(list);
-      if (count > 0) {
-        // remove some
-        newlist.RemoveRange(parameters.Length, count);
-      } else {
-        // add some
-        for (int i = list.Length; i < parameters.Length; i++)
-        {
-          newlist.Add(parameters[i].DefaultValue);
-        }
-      }
-      object ret = handler.Method.Invoke(null, newlist.ToArray());
-      if (ret is PluginFunctions) return (PluginFunctions)ret;
-      else return PluginFunctions.Continue;
-    }
-
-    #region IComparable<T> implementation
-    public int CompareTo (MessageHandler other)
-    {
-      return this.Name.CompareTo(other.Name);
-    }
-    #endregion
-  }
-
-  public class Tree<T> where T : IComparable<T> {
-    public class Node<T> {
-      public Node<T> left, right;
-      public T Value { get; protected set; }
-      public Node(T val)
-      {
+        Name = name;
         Value = val;
+        handlers = new List<Delegate>();
       }
-    }
-
-    protected Node<T> root = null;
-    protected int count = 0;
-
-    public Tree()
-    {
-    }
-
-    public int Count {
-      get {
-        return count;
-      }
-    }
-
-    public void Add(T val)
-    {
-      Add(new Node<T>(val));
-    }
-
-    public void Add(Node<T> newNode)
-    {
-      Add(ref root, newNode);
-    }
-
-    private void Add(ref Node<T> current, Node<T> newNode)
-    {
-      if (current == null) { current = newNode; count++; return; }
-
-
-      int comparison = current.Value.CompareTo(newNode.Value);
-      if (comparison == 0)
+  
+      public int AddHandler(Delegate handler)
       {
-        throw new ArgumentException("This node already exists");
+        handlers.Add(handler);
+        return handlers.Count-1;
       }
-      else if (comparison < 0) Add(ref current.left,  newNode);
-      else                     Add(ref current.right, newNode);
+  
+      public bool RemoveHandler(Delegate handler)
+      {
+        int count = handlers.Count;
+        handlers.Remove(handler);
+        return (count == handlers.Count);
+      }
+      public bool RemoveHandler(int index)
+      {
+        if (index < handlers.Count)
+        {
+          handlers.RemoveAt(index);
+          return true;
+        }
+        else return false;
+      }
+  
+      public void Invoke(object[] list)
+      {
+        foreach (Delegate handler in handlers)
+        {
+          if (Invoke(handler, list) == PluginFunctions.Handled)
+          {
+            return;
+          }
+        }
+      }
+      private PluginFunctions Invoke(Delegate handler, object[] list)
+      {
+        var parameters = handler.Method.GetParameters();
+        int count = list.Length - parameters.Length;
+        List<object> newlist = new List<object>(list);
+        if (count > 0) {
+          // remove some
+          newlist.RemoveRange(parameters.Length, count);
+        } else {
+          // add some
+          for (int i = list.Length; i < parameters.Length; i++)
+          {
+            newlist.Add(parameters[i].DefaultValue);
+          }
+        }
+        object ret = handler.Method.Invoke(null, newlist.ToArray());
+        if (ret is PluginFunctions) return (PluginFunctions)ret;
+        else return PluginFunctions.Continue;
+      }
+  
+      #region IComparable<T> implementation
+      public int CompareTo (MessageHandler other)
+      {
+        return this.Name.CompareTo(other.Name);
+      }
+      #endregion
     }
-
-  }
+  
+    public class Tree<T> where T : IComparable<T> {
+      public class Node<T> {
+        public Node<T> left, right;
+        public T Value { get; protected set; }
+        public Node(T val)
+        {
+          Value = val;
+        }
+      }
+  
+      protected Node<T> root = null;
+      protected int count = 0;
+  
+      public Tree()
+      {
+      }
+  
+      public int Count {
+        get {
+          return count;
+        }
+      }
+  
+      public void Add(T val)
+      {
+        Add(new Node<T>(val));
+      }
+  
+      public void Add(Node<T> newNode)
+      {
+        Add(ref root, newNode);
+      }
+  
+      private void Add(ref Node<T> current, Node<T> newNode)
+      {
+        if (current == null) { current = newNode; count++; return; }
+  
+  
+        int comparison = current.Value.CompareTo(newNode.Value);
+        if (comparison == 0)
+        {
+          throw new ArgumentException("This node already exists");
+        }
+        else if (comparison < 0) Add(ref current.left,  newNode);
+        else                     Add(ref current.right, newNode);
+      }
+  
+    }
   }
 
   /// <summary>
