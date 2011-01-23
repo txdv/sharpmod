@@ -184,6 +184,20 @@ namespace SharpMod
     private static MessageInformation messageInformation;
     #endif
 
+    /// <summary>
+    /// Calls the Engine to retrieve the User Message ID
+    /// </summary>
+    /// <param name="name">
+    /// The name of the message <see cref="System.String"/>
+    /// </param>
+    /// <returns>
+    /// The ID (type) of the user message.<see cref="System.Int32"/>
+    /// </returns>
+    public static int GetUserMessageID(string name)
+    {
+      return MetaModEngine.metaUtilityFunctions.GetUserMsgID(MetaModEngine.PLID, name, 0);
+    }
+
     static Message()
     {
     }

@@ -134,6 +134,7 @@ namespace SharpMod.MetaMod
   internal delegate void LogErrorDelegate(IntPtr PluginInfo, string text);
   internal delegate void LogDeveloperDelegate(IntPtr PluginInfo, string text);
   internal delegate void CenterSayDelegate(IntPtr PluginInfo, string text);
+  internal delegate int GetUserMsgIDDelegate(IntPtr PluginInfo, string name, int size);
 
   [StructLayout(LayoutKind.Sequential)]
   internal struct MetaUtilityFunctions
@@ -143,6 +144,10 @@ namespace SharpMod.MetaMod
     internal LogErrorDelegate LogError;
     internal LogDeveloperDelegate LogDeveloper;
     internal CenterSayDelegate CenterSay;
+    internal IntPtr CenterSayParams;
+    internal IntPtr CenterSayVarargs;
+    internal IntPtr CallGameEntity;
+    internal GetUserMsgIDDelegate GetUserMsgID;
   }
 
   #endregion
@@ -553,8 +558,14 @@ typedef struct {
   internal class MetaModEngine
   {
 
+    /// <summary>
+    /// Holds the Plugin Info ID of sharpmod, which is the pointer
+    /// to the plugin_info_t struct provided by the plugin
+    /// </summary>
+    internal static IntPtr PLID;
     internal static EngineFunctions engineFunctions;
     internal static EntityAPI dllapiFunctions;
+    internal static MetaUtilityFunctions metaUtilityFunctions;
     unsafe internal static MetaGlobals* globals;
     unsafe internal static GlobalVariables* globalVariables;
 
@@ -597,6 +608,9 @@ typedef struct {
       */
 
       //muf = (MetaUtilityFunctions)Marshal.PtrToStructure(MetaUtilFuncs, typeof(MetaUtilityFunctions));
+      metaUtilityFunctions = (MetaUtilityFunctions)Marshal.PtrToStructure(MetaUtilFuncs, typeof(MetaUtilityFunctions));
+
+      PLID = PluginInfo;
     }
 
     unsafe internal static void handlerMeta_Attach(IntPtr a, MetaFunctions *pFunctionTable, MetaGlobals* pMetaGlobals, IntPtr pGamedllFuncs)
