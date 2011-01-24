@@ -320,5 +320,16 @@ namespace SharpMod
         return MetaModEngine.globalVariables->deathmatch == 1.0f;
       }
     }
+
+    /// <summary>
+    /// Get current map name
+    /// </summary>
+    unsafe public static string ActiveMap {
+      get {
+        int i = MetaModEngine.globalVariables->mapname;
+        IntPtr ptr = MetaModEngine.engineFunctions.SzFromIndex(i);
+        return Mono.Unix.UnixMarshal.PtrToString(ptr);
+      }
+    }
   }
 }
