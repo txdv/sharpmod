@@ -110,11 +110,11 @@ namespace SharpMod
   /// <summary>
   /// A class that represents the running Server
   /// </summary>
-	public class Server
-	{
+  public class Server
+  {
 
-		private static MethodInfo mi = typeof(Server).GetMethod("CommandWrapper", BindingFlags.NonPublic | BindingFlags.Static);
-		private static int maxplayers;
+    private static MethodInfo mi = typeof(Server).GetMethod("CommandWrapper", BindingFlags.NonPublic | BindingFlags.Static);
+    private static int maxplayers;
 
     /// <summary>
     /// Deals with the local information of the server
@@ -131,10 +131,10 @@ namespace SharpMod
       ServerInfo = new BufferInfo(MetaModEngine.engineFunctions.PEntityOfEntIndex(0));
     }
 
-		internal static void SetMaxPlayers(int maxplayers)
-		{
-			Server.maxplayers = maxplayers;
-		}
+    internal static void SetMaxPlayers(int maxplayers)
+    {
+      Server.maxplayers = maxplayers;
+    }
 
     /// <summary>
     /// Gets the 0 directory of the running game server
@@ -162,35 +162,35 @@ namespace SharpMod
     /// Maximum players the server can hold at any time
     /// </summary>
     public static int MaxPlayers
-		{
-			get { return maxplayers; }
-		}
+    {
+      get { return maxplayers; }
+    }
     
-		public static void Print(string message)
-		{
+    public static void Print(string message)
+    {
       MetaModEngine.engineFunctions.ServerPrint(message);
-		}
+    }
 
-		public static void Log(string message)
-		{
-			//EngineInterface.ServerLogMessage(message);
-		}
-		
-		public delegate void CommandDelegate(string [] args);
-		
-		public static void RegisterCommand(string str, CommandDelegate cmd)
-		{
-			Callback cl = (Callback)Delegate.CreateDelegate(typeof(Callback), cmd, mi);
+    public static void Log(string message)
+    {
+      //EngineInterface.ServerLogMessage(message);
+    }
+    
+    public delegate void CommandDelegate(string [] args);
+    
+    public static void RegisterCommand(string str, CommandDelegate cmd)
+    {
+      Callback cl = (Callback)Delegate.CreateDelegate(typeof(Callback), cmd, mi);
       MetaModEngine.engineFunctions.AddServerCommand(str, Marshal.GetFunctionPointerForDelegate(cl));
-	 	}
+    }
 
     // TODO: Surpress warning
-		private static void CommandWrapper(CommandDelegate cmd)
-		{
+    private static void CommandWrapper(CommandDelegate cmd)
+    {
       cmd(Command.EngineArguments);
-		}
-		
-		private delegate void Callback();
+    }
+    
+    private delegate void Callback();
 
     /// <summary>
     /// Enques a command in the server command queue.
