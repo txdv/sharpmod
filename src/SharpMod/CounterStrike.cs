@@ -1153,10 +1153,7 @@ namespace SharpMod.CounterStrike
 
     public static void Init()
     {
-      BinaryTree.Node node = Message.Types.GetNode("StatusIcon");
-      if (node != null) node.invoker = (Action<Player, byte, string>)StatusIcon;
-      node = Message.Types.GetNode("WeaponList");
-      //if (node != null) node.invoker = (Action<string, byte, byte, byte, byte, byte, byte>)WeaponList;
+      Message.Intercept("StatusIcon", (Action<Player, byte, string>)StatusIcon);
     }
 
     internal static void StatusIcon(Player player, byte status, string spriteName)

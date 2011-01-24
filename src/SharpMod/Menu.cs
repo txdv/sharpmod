@@ -89,7 +89,7 @@ namespace SharpMod
 
     public static void ShowMenu (this Player player, short keys, char displaytime, byte multipart, string text)
     {
-      Message.Begin(MessageDestination.OneReliable, Message.Types.GetValue("ShowMenu"), IntPtr.Zero, player.Pointer);
+      Message.Begin(MessageDestination.OneReliable, Message.GetUserMessageID("ShowMenu"), IntPtr.Zero, player.Pointer);
       Message.Write(keys);
       Message.Write(displaytime);
       Message.Write(multipart);

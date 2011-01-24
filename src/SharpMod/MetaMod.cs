@@ -680,15 +680,6 @@ typedef struct {
     internal static MessageHeader message_header;
     internal static List<object> message_elements;
 
-    internal static void InvokeFunction(Delegate function, List<object> argList)
-    {
-      var param = function.Method.GetParameters();
-      object[] argumentList = new object[param.Length];
-      argList.CopyTo(0, argumentList, 0, param.Length);
-      for (int i = argList.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
-      function.Method.Invoke(null, argumentList);
-    }
-
     internal static void MessageBeginPost(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr playerEntity)
     {
       #if DEBUG
@@ -720,12 +711,7 @@ typedef struct {
       Console.WriteLine (messageInformation);
       #endif
 
-      BinaryTree.Node node = Message.TypeNames[message_header.MessageType];
-
-      if ((node != null) && (node.invoker != null))
-      {
-        InvokeFunction(node.invoker, message_elements);
-      }
+      Message.Invoke(message_header.MessageType, message_elements);
 
       Metamod.SetResult(MetaResult.Handled);
     }
@@ -816,10 +802,7 @@ typedef struct {
 
     internal static void RegisterUserMessagePost(string name, int size)
     {
-      int val = Message.Types.Count + 64;
-      BinaryTree.Node node = new BinaryTree.Node(name, val);
-      Message.Types.Add(node);
-      Message.TypeNames[val] = node;
+      Message.Register(name, size);
       #if DEBUG
       Console.WriteLine ("Registering: {0} {1}", name, val);
       #endif

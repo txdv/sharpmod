@@ -117,7 +117,7 @@ namespace SharpMod
       Arguments = new List<MessageArgument>();
     }
 
-    public string MessageName { get { return (MessageType >= 64 ? Message.TypeNames[MessageType].Name : ""); } }
+    public string MessageName { get { return Message.GetUserMessageName(MessageType); } }
 
     /// <summary>
     /// Returns information about the message in one compact string
@@ -154,7 +154,7 @@ namespace SharpMod
     public string VerboseInfo()
     {
       System.Text.StringBuilder sb = new System.Text.StringBuilder();
-      sb.Append("\nMessage: {0}\n", Message.TypeNames[MessageType].Name);
+      sb.Append("\nMessage: {0}\n", MessageName);
       sb.Append("\n\tMessageDestination={0}", MessageDestination);
       sb.Append("\n\tMessageType={0}", MessageType);
       sb.Append("\n\tValue={0}", Value);
@@ -195,6 +195,10 @@ namespace SharpMod
     {
       return MetaModEngine.metaUtilityFunctions.GetUserMsgID(MetaModEngine.PLID, name, 0);
     }
+    public static string GetUserMessageName(int id)
+    {
+      return (id >= 64 ? Message.TypeNames[id].Name : "");
+    }
 
     static Message()
     {
@@ -204,8 +208,8 @@ namespace SharpMod
     /// </summary>
     private static int count = 0;
 
-    public static BinaryTree Types = new BinaryTree();
-    public static BinaryTree.Node[] TypeNames = new BinaryTree.Node[500];
+    private static BinaryTree Types = new BinaryTree();
+    private static BinaryTree.Node[] TypeNames = new BinaryTree.Node[500];
 
     /// <summary>
     /// The maximum length of a message, set by the goldsrc engine.
@@ -545,6 +549,50 @@ namespace SharpMod
 
     #endregion
 
+    public static void Register(string name, int size)
+    {
+      int val = Message.Types.Count + 64;
+      BinaryTree.Node node = new BinaryTree.Node(name, val);
+      Message.Types.Add(node);
+      Message.TypeNames[val] = node;
+
+    }
+
+    public static void Intercept(string name, Delegate del)
+    {
+      BinaryTree.Node node = Message.Types.GetNode(name);
+      if (node != null) {
+        node.invokerlist.Add(del);
+      }
+    }
+
+    internal static void Invoke(string name, List<object> parameters)
+    {
+      BinaryTree.Node node = Message.Types.GetNode(name);
+      if (node != null) {
+        Invoke(node, parameters);
+      }
+    }
+
+    internal static void Invoke(int index, List<object> parameters)
+    {
+      BinaryTree.Node node = Message.TypeNames[index];
+      if (node != null) {
+        Invoke(node, parameters);
+      }
+    }
+
+    private static void Invoke(BinaryTree.Node node, List<object> parameters)
+    {
+      foreach (Delegate del in node.invokerlist) {
+        var param = del.Method.GetParameters();
+        object[] argumentList = new object[param.Length];
+        parameters.CopyTo(0, argumentList, 0, param.Length);
+        // if some of the arguments are missing, just use the default values
+        for (int i = parameters.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
+        del.Method.Invoke(null, argumentList);
+      }
+    }
 
     enum PluginFunctions
     {
@@ -581,7 +629,7 @@ namespace SharpMod
       private int val;
       internal Node left;
       internal Node right;
-      public Delegate invoker;
+      public List<Delegate> invokerlist = new List<Delegate>();
 
       public string Name { get { return name; } }
       public int Value { get { return val; } }
