@@ -99,7 +99,7 @@ namespace SharpMod.Messages
     public static void Send<%= message.name %>Message(MessageDestination destination, IntPtr floatValue, IntPtr playerEntity<% if message.arg_array.size > 0 then %>, <% end %>
       <%= message.function_arguments %>)
     {
-      Message.Begin(destination, Message.Types.GetValue("<%= message.name %>"), floatValue, playerEntity);
+      Message.Begin(destination, Message.GetUserMessageID("<%= message.name %>"), floatValue, playerEntity);
       <% if message.has_message_code then %><%= message.message_code %><% else %><% message.arg_array.each do |arg| %>
       Message.<%= arg.get_write_function_name %>(<%= arg.name %>);<% end %><% end %>
 
