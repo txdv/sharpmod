@@ -283,5 +283,24 @@ namespace SharpMod
     {
       return MetaModEngine.engineFunctions.PrecacheSound(filename);
     }
-	}
+
+    /// <summary>
+    /// The active running server time in a float
+    /// </summary>
+    unsafe public static float TimeFloat {
+      get {
+        return MetaModEngine.globalVariables->time;
+      }
+    }
+
+    /// <summary>
+    /// The active running server time in a TimeSpan struct
+    /// </summary>
+    unsafe public static TimeSpan Time {
+      get {
+        int secs = (int)TimeFloat;
+        return new TimeSpan(0, 0, 0, secs, (int)(TimeFloat*1000) - secs*1000);
+      }
+    }
+  }
 }
