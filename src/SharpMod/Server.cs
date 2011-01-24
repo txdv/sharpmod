@@ -302,5 +302,23 @@ namespace SharpMod
         return new TimeSpan(0, 0, 0, secs, (int)(TimeFloat*1000) - secs*1000);
       }
     }
+
+    unsafe public static bool Teamplay {
+      get {
+        return MetaModEngine.globalVariables->teamplay == 1.0f;
+      }
+    }
+
+    unsafe public static bool Coop {
+      get {
+        return MetaModEngine.globalVariables->coop == 1.0f;
+      }
+    }
+
+    unsafe public static bool DeathMatch {
+      get {
+        return MetaModEngine.globalVariables->deathmatch == 1.0f;
+      }
+    }
   }
 }
