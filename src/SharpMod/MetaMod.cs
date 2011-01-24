@@ -804,7 +804,7 @@ typedef struct {
     {
       Message.Register(name, size);
       #if DEBUG
-      Console.WriteLine ("Registering: {0} {1}", name, val);
+      Console.WriteLine ("Registering: {0} {1}", name, Message.GetUserMessageID(name));
       #endif
       Metamod.SetResult(MetaResult.Handled);
     }
