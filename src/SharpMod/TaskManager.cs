@@ -32,7 +32,7 @@ namespace SharpMod
       public bool     Repeat   { get; set; }
       public float    Time     { get; set; }
       public float    AddTime  { get; set; }
-      public Action   Function { get; set; }
+      public Delegate Function { get; set; }
       public object[] Parameters { get; set; }
 
       public Task() { }
@@ -40,22 +40,22 @@ namespace SharpMod
 
     private static List<Task> list = new List<Task>();
 
-    public static void Join(Action function)
+    public static void Join(Delegate function)
     {
       SetTask(function, 0.0f);
     }
 
-    public static void SetTask(Action function, float time)
+    public static void SetTask(Delegate function, float time)
     {
       SetTask(function, time, false);
     }
 
-    public static void SetTask(Action function, float time, bool repeat)
+    public static void SetTask(Delegate function, float time, bool repeat)
     {
       SetTask(function, time, repeat, new object[] { });
     }
 
-    public static void SetTask(Action function, float time, bool repeat, object[] parameters)
+    public static void SetTask(Delegate function, float time, bool repeat, object[] parameters)
     {
       Task t = new Task() {
         Function = function,
@@ -68,17 +68,17 @@ namespace SharpMod
       list.Add(t);
     }
 
-    public static void SetTask(Action function, TimeSpan time)
+    public static void SetTask(Delegate function, TimeSpan time)
     {
       SetTask(function, time.ToFloat());
     }
 
-    public static void SetTask(Action function, TimeSpan time, bool repeat)
+    public static void SetTask(Delegate function, TimeSpan time, bool repeat)
     {
       SetTask(function, time.ToFloat(), repeat);
     }
 
-    public static void SetTask(Action function, TimeSpan time, bool repeat, object[] parameters)
+    public static void SetTask(Delegate function, TimeSpan time, bool repeat, object[] parameters)
     {
       SetTask(function, time.ToFloat(), repeat, parameters);
     }
