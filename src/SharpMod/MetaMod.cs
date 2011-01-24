@@ -406,6 +406,7 @@ namespace SharpMod.MetaMod
   internal delegate void ClientCommandDelegate(IntPtr entity);
   internal delegate void ClientUserInfoChangedDelegate(IntPtr pEntity, string infoBuffer);
   internal delegate void ServerActivateDelegate(IntPtr pEdictList, int edictCount, int clientMax);
+  internal delegate void StartFrameDelegate();
 
   #pragma warning disable 169
   [StructLayout (LayoutKind.Sequential)]
@@ -441,7 +442,7 @@ namespace SharpMod.MetaMod
     IntPtr PlayerPreThink;
     IntPtr PlayerPostThink;
 
-    IntPtr StartFrame;
+    internal StartFrameDelegate StartFrame;
     IntPtr ParmsNewLevel;
     IntPtr ParmsChangeLevel;
 
@@ -870,6 +871,7 @@ typedef struct {
       functionTable.ClientConnect    = Player.OnConnect;
       functionTable.ClientDisconnect = Player.OnDisconnect;
       functionTable.ServerActivate   = ServerActivatePost;
+      functionTable.StartFrame       = StartFramePost;
       functionTable.ClientCommand    = Player.OnCommand;
       functionTable.PutInServer      = Player.OnPutInServer;
 
@@ -889,6 +891,11 @@ typedef struct {
 
       // TODO: check if it is really counter strike
       if (Server.GameDirectory == "cstrike") CounterStrike.CounterStrike.Init();
+    }
+
+    internal static void StartFramePost()
+    {
+      TaskManager.WorkFrame();
     }
 
     internal static bool spawnInitialized = false;

@@ -67,6 +67,7 @@
     <Compile Include="MessageFunctions.cs" />
     <Compile Include="CRC32.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="TaskManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
