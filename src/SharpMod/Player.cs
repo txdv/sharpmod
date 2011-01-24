@@ -58,6 +58,7 @@ namespace SharpMod
     public static event ConnectHandler Connect;
     protected static void OnConnect(ConnectEventArgs args)
     {
+      Metamod.SetResult(MetaResult.Handled);
       if (Connect != null) Connect(args);
     }
     internal static bool OnConnect(IntPtr entity, string name, string address, string reject_reason) 
@@ -103,6 +104,7 @@ namespace SharpMod
     internal static CommandEventArgs clientCommandEventArgs = null;
     unsafe internal static void OnCommand(IntPtr entity)
     {
+      Metamod.SetResult(MetaResult.Handled);
       Player player = Player.GetPlayer(entity);
       Command cmd = Command.FromGameEngine();
 
@@ -127,6 +129,7 @@ namespace SharpMod
     }
     protected static void OnCommand(CommandEventArgs args)
     {
+      Metamod.SetResult(MetaResult.Handled);
       if (ClientCommand != null) ClientCommand(args);
     }
     #endregion
@@ -153,11 +156,13 @@ namespace SharpMod
     public static event DisconnectHandler Disconnect;
     protected static void OnDisconnect(DisconnectEventArgs args)
     {
+      Metamod.SetResult(MetaResult.Handled);
       if (Disconnect != null) Disconnect(args);
     }
 
     internal static void OnDisconnect(IntPtr entity)
     {
+      Metamod.SetResult(MetaResult.Handled);
       Player player = Player.GetPlayer(entity);
       DisconnectEventArgs args = new DisconnectEventArgs(player);
       OnDisconnect(args);
@@ -191,6 +196,7 @@ namespace SharpMod
     public static event PutInServerHandler PutInServer;
     protected static void OnPutInServer(PutInServerEventArgs args)
     {
+      Metamod.SetResult(MetaResult.Handled);
       if (PutInServer != null) PutInServer(args);
     }
     
