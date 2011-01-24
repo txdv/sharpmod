@@ -19,8 +19,6 @@
 //     along with csharpmod.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#define DEBUG
-
 using System;
 using System.Runtime;
 using System.Runtime.InteropServices;
