@@ -75,6 +75,12 @@ namespace SharpMod
     public int MessageType;
     public IntPtr FloatValue;
     public IntPtr Entity;
+
+    public Player Player {
+      get {
+        return Entity == IntPtr.Zero ? null : Player.GetPlayer(Entity);
+      }
+    }
   }
 
   public class MessageArgument
@@ -566,30 +572,51 @@ namespace SharpMod
       }
     }
 
-    internal static void Invoke(string name, List<object> parameters)
+    internal static void Invoke(MessageHeader message_header, List<object> parameters)
     {
-      BinaryTree.Node node = Message.Types.GetNode(name);
-      if (node != null) {
-        Invoke(node, parameters);
-      }
-    }
 
-    internal static void Invoke(int index, List<object> parameters)
-    {
-      BinaryTree.Node node = Message.TypeNames[index];
-      if (node != null) {
-        Invoke(node, parameters);
-      }
-    }
+      BinaryTree.Node node = Message.TypeNames[message_header.MessageType];
 
-    private static void Invoke(BinaryTree.Node node, List<object> parameters)
-    {
+      if (node == null) {
+        return;
+      }
+
       foreach (Delegate del in node.invokerlist) {
         var param = del.Method.GetParameters();
+
         object[] argumentList = new object[param.Length];
-        parameters.CopyTo(0, argumentList, 0, param.Length);
-        // if some of the arguments are missing, just use the default values
-        for (int i = parameters.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
+
+        int last = 0;
+        for (int i = 0; i < param.Length; i++) {
+          Type t = param[i].ParameterType;
+
+          // handle special arguments first
+          if (t == typeof(MessageHeader)) {
+            argumentList[i] = message_header;
+            last++;
+          } else if (t == typeof(Player)) {
+            argumentList[i] = message_header.Player;
+            last++;
+          } else if (t.IsMessage()) {
+            int j = 0;
+            object o = Activator.CreateInstance(t);
+            foreach (var pi in t.GetFields()) {
+              if (j < parameters.Count) {
+                pi.SetValue(o, parameters[j]);
+              }
+              j++;
+            }
+            argumentList[i] = o;
+            last++;
+          } else {
+            break;
+          }
+        }
+
+        // copy the parameters in order for the rest
+        parameters.CopyTo(0, argumentList, last, param.Length - last);
+        for (int i = last + parameters.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
+
         del.Method.Invoke(null, argumentList);
       }
     }

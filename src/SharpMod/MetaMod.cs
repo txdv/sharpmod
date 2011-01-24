@@ -691,17 +691,6 @@ typedef struct {
       message_header = new MessageHeader(destination, messageType, floatValue, playerEntity);
       message_elements = new List<object>();
 
-      if (playerEntity.ToInt32() == 0)
-      {
-        // message send to all players
-        message_elements.Add(null);
-      }
-      else
-      {
-        // message send to a specific player
-        message_elements.Add(Player.GetPlayer(playerEntity));
-      }
-
       Metamod.SetResult(MetaResult.Handled);
     }
     internal static void MessageEndPost()
@@ -711,7 +700,7 @@ typedef struct {
       Console.WriteLine (messageInformation);
       #endif
 
-      Message.Invoke(message_header.MessageType, message_elements);
+      Message.Invoke(message_header, message_elements);
 
       Metamod.SetResult(MetaResult.Handled);
     }

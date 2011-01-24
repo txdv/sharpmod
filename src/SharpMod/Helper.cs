@@ -158,5 +158,16 @@ namespace SharpMod.Helper
       return (float)timespan.Ticks / TimeSpan.TicksPerSecond;
     }
 
+    public static bool IsStruct(this Type type)
+    {
+      return type.IsValueType && !type.IsPrimitive;
+    }
+
+    public static bool IsMessage(this Type type)
+    {
+      return type.IsStruct()
+        && type.FullName.StartsWith("SharpMod.Message")
+        && type.FullName.EndsWith("Message");
+    }
   }
 }
