@@ -1148,7 +1148,7 @@ namespace SharpMod.CounterStrike
     }
     #endregion
 
-    public delegate void BuyzoneDelegate(bool inzone);
+    public delegate void BuyzoneDelegate(Player player, bool inzone);
     public static event BuyzoneDelegate Buyzone;
 
     public static void Init()
@@ -1158,9 +1158,11 @@ namespace SharpMod.CounterStrike
 
     internal static void StatusIcon(Player player, byte status, string spriteName)
     {
-      if (spriteName == "buyzone")
+      switch (spriteName)
       {
-        if (Buyzone != null) Buyzone(status == 1);
+      case "buyzone":
+        if (Buyzone != null) Buyzone(player, status == 1);
+        break;
       }
     }
   }
