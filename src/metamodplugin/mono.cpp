@@ -55,7 +55,7 @@ plugin_info_t Plugin_info = {
   "sharpmod",// name
   "0.1",  // version
   "2008/01/01", // date
-  "Andrius Bentkus <Andrius.Bentkus@rwth-aaachen.de>",  // author
+  "Andrius Bentkus <andrius.bentkus@gmail.com>",  // author
   "http://www.sharpmod.org/", // url
   "CSHARPMOD",// logtag, all caps please
   PT_ANYTIME, // (when) loadable
