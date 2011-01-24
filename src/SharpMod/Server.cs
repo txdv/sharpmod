@@ -171,11 +171,45 @@ namespace SharpMod
       MetaModEngine.engineFunctions.ServerPrint(message);
     }
 
+    /// <summary>
+    /// Logs a plain message. Doesn't use any decoration.
+    /// </summary>
+    /// <param name="message">
+    /// Log message <see cref="System.String"/>
+    /// </param>
     public static void Log(string message)
     {
-      //EngineInterface.ServerLogMessage(message);
+      MetaMod.MetaModEngine.metaUtilityFunctions.LogMessage(MetaMod.MetaModEngine.PLID, message);
     }
-    
+
+    /// <summary>
+    /// Logs an error message, uses date, mod, Error prefix.
+    /// </summary>
+    /// <param name="message">
+    /// Error message. <see cref="System.String"/>
+    /// </param>
+    public static void LogError(string message)
+    {
+      MetaMod.MetaModEngine.metaUtilityFunctions.LogError(MetaMod.MetaModEngine.PLID, message);
+    }
+
+
+    /// <summary>
+    /// Logs a plain message to the console, not in the files.
+    /// </summary>
+    /// <param name="message">
+    /// A <see cref="System.String"/>
+    /// </param>
+    public static void LogConsole(string message)
+    {
+      MetaMod.MetaModEngine.metaUtilityFunctions.LogConsole(MetaMod.MetaModEngine.PLID, message);
+    }
+
+    public static void LogDeveloper(string message)
+    {
+      MetaMod.MetaModEngine.metaUtilityFunctions.LogDeveloper(MetaMod.MetaModEngine.PLID, message);
+    }
+
     public delegate void CommandDelegate(string [] args);
     
     public static void RegisterCommand(string str, CommandDelegate cmd)
