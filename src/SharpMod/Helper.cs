@@ -147,7 +147,16 @@ namespace SharpMod.Helper
       return stringBuilder.Append(String.Format(cmd, paramlist));
     }
 
+    public static TimeSpan ToTimeSpan(this float time)
+    {
+      long total = (long)(time * TimeSpan.TicksPerSecond);
+      return new TimeSpan(total);
+    }
 
+    public static float ToFloat(this TimeSpan timespan)
+    {
+      return (float)timespan.Ticks / TimeSpan.TicksPerSecond;
+    }
 
   }
 }

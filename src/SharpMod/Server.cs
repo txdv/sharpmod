@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Mono.Unix;
 using SharpMod.MetaMod;
+using SharpMod.Helper;
 
 namespace SharpMod
 {
@@ -298,8 +299,7 @@ namespace SharpMod
     /// </summary>
     unsafe public static TimeSpan Time {
       get {
-        int secs = (int)TimeFloat;
-        return new TimeSpan(0, 0, 0, secs, (int)(TimeFloat*1000) - secs*1000);
+        return TimeFloat.ToTimeSpan();
       }
     }
 
