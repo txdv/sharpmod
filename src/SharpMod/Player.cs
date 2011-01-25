@@ -210,8 +210,6 @@ namespace SharpMod
       OnDisconnect(args);
       player.OnPlayerClientDisconnect(args);
       player.Release();
-     
-
     }
     #endregion
     
@@ -225,7 +223,6 @@ namespace SharpMod
     #endregion
     
     #region PutInServer
-    
     [Serializable]
     public sealed class PutInServerEventArgs : PlayerEventArgs
     {
@@ -249,17 +246,14 @@ namespace SharpMod
       OnPutInServer(args);
       player.OnPlayerPutInServer(args);
     }
-    
     #endregion
     
     #region PlayerPutInServer
-    
     public event PutInServerHandler PlayerPutInServer;
     protected void OnPlayerPutInServer(PutInServerEventArgs args)
     {
       if (PlayerPutInServer != null) PlayerPutInServer(args);
     }
-    
     #endregion
 
     #region ResolvePrivileges

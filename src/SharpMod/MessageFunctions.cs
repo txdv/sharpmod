@@ -201,7 +201,6 @@ namespace SharpMod.Messages
     public static void SendTextMsgMessage(this Player player, TextMsgPosition position, string text)
     {
       player.SendTextMsgMessage((byte)position, text);
-
     }
 
     /// <summary>
