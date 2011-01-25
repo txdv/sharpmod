@@ -555,13 +555,13 @@ namespace SharpMod
 
     #endregion
 
-    public static void Register(string name, int size)
+    public static int Register(string name, int size)
     {
       int val = Message.Types.Count + 64;
       BinaryTree.Node node = new BinaryTree.Node(name, val);
       Message.Types.Add(node);
       Message.TypeNames[val] = node;
-
+      return val;
     }
 
     public static void Intercept(string name, Delegate del)

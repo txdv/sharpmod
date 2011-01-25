@@ -806,9 +806,9 @@ typedef struct {
 
     internal static void RegisterUserMessagePost(string name, int size)
     {
-      Message.Register(name, size);
+      int id = Message.Register(name, size);
       #if DEBUG
-      Console.WriteLine ("Registering: {0} {1}", name, Message.GetUserMessageID(name));
+      Console.WriteLine ("Registering: {0} {1}", name, id);
       #endif
       Metamod.SetResult(MetaResult.Handled);
     }
