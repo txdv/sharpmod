@@ -508,12 +508,12 @@ namespace SharpMod
 
     public void Use(Entity entity)
     {
-      MetaModEngine.dllapiFunctions.Use(entity.Pointer, this.Pointer);
+      MetaModEngine.dllapiFunctions.Use(this.Pointer, entity.Pointer);
     }
 
     public void Touch(Entity entity)
     {
-      MetaModEngine.dllapiFunctions.Touch(entity.Pointer, this.Pointer);
+      MetaModEngine.dllapiFunctions.Touch(this.Pointer, entity.Pointer);
     }
 
     #region static methods
