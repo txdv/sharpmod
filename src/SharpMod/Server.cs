@@ -182,6 +182,11 @@ namespace SharpMod
       MetaMod.MetaModEngine.metaUtilityFunctions.LogMessage(MetaMod.MetaModEngine.PLID, message);
     }
 
+    public static void Log(string message, params object[] param)
+    {
+      Log(String.Format(message, param));
+    }
+
     /// <summary>
     /// Logs an error message, uses date, mod, Error prefix.
     /// </summary>
@@ -193,6 +198,10 @@ namespace SharpMod
       MetaMod.MetaModEngine.metaUtilityFunctions.LogError(MetaMod.MetaModEngine.PLID, message);
     }
 
+    public static void LogError(string message, params object[] param)
+    {
+      LogError(String.Format(message, param));
+    }
 
     /// <summary>
     /// Logs a plain message to the console, not in the files.
@@ -208,6 +217,11 @@ namespace SharpMod
     public static void LogDeveloper(string message)
     {
       MetaMod.MetaModEngine.metaUtilityFunctions.LogDeveloper(MetaMod.MetaModEngine.PLID, message);
+    }
+
+    public static void LogDeveloper(string message, params object[] param)
+    {
+      LogDeveloper(String.Format(message, param));
     }
 
     public delegate void CommandDelegate(string [] args);
