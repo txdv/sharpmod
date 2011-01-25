@@ -70,7 +70,7 @@ namespace SharpMod.Messages
     /// </param>
     public static void ClientPrint(this Player player, string text)
     {
-      player.SendTextMsgMessage((byte)3, text);
+      player.SendTextMsgMessage(TextMsgPosition.Chat, text);
     }
 
     /// <summary>
