@@ -679,9 +679,24 @@ typedef struct {
 
     internal static MessageHeader message_header;
     internal static List<object> message_elements;
+    internal static bool firstMessage = true;
 
     internal static void MessageBeginPost(MessageDestination destination, int messageType, IntPtr floatValue, IntPtr playerEntity)
     {
+      if (firstMessage) {
+        // there is no event which intercepts between
+        // the registering part and the first message (weaponlist in cstrike case)
+        // so we need to initialize the game mode before the first message so we can
+        // intercept this valuable information
+        switch (Server.GameDirectory)
+        {
+        case "cstrike":
+          CounterStrike.CounterStrike.Init();
+          break;
+        }
+        firstMessage = false;
+      }
+
       #if DEBUG
       messageInformation = new MessageInformation(destination, messageType, floatValue, playerEntity);
       messageInformation.CallTimeBegin = DateTime.Now;
@@ -883,8 +898,6 @@ typedef struct {
       // Load plugins here
       PluginManager.GetInstance().LoadPlugins();
 
-      // TODO: check if it is really counter strike
-      if (Server.GameDirectory == "cstrike") CounterStrike.CounterStrike.Init();
       Metamod.SetResult(MetaResult.Handled);
     }
 
