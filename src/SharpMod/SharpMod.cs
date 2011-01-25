@@ -47,8 +47,8 @@ namespace SharpMod
       }
     }
 
-		public static void Init()
-		{
+    public static void Init()
+    {
       Version = new CVar("sharpmod_version", "0.1");
 
       // load plugins
