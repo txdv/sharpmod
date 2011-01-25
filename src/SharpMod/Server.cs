@@ -258,6 +258,33 @@ namespace SharpMod
     }
 
     /// <summary>
+    /// Enques and executes a command.
+    /// </summary>
+    /// <param name="command">
+    /// The command to be executed <see cref="System.String"/>
+    /// </param>
+    public static void ExecuteCommand(string command)
+    {
+      EnqueueCommand(command);
+      ExecuteEnqueuedCommands();
+    }
+
+    /// <summary>
+    /// Eneques and executes a command.
+    /// </summary>
+    /// <param name="command">
+    /// The command to be exuted <see cref="System.String"/>
+    /// </param>
+    /// <param name="objs">
+    /// A list of objects to use in the formater. <see cref="System.Object[]"/>
+    /// </param>
+    public static void ExecuteCommand(string command, params object[] objs)
+    {
+      EnqueueCommand(command, objs);
+      ExecuteEnqueuedCommands();
+    }
+
+    /// <summary>
     /// Executes all enqueued commands.
     /// </summary>
     public static void ExecuteEnqueuedCommands()
