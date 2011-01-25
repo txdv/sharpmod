@@ -61,6 +61,7 @@ namespace SharpMod
       Metamod.SetResult(MetaResult.Handled);
       if (Connect != null) Connect(args);
     }
+    internal static List<Player> pendingAuthPlayers = new List<Player>();
     internal static bool OnConnect(IntPtr entity, string name, string address, string reject_reason) 
     {
       Player player = Player.GetPlayer(entity);
@@ -68,6 +69,12 @@ namespace SharpMod
       string[] addressinformation = address.Split(new char[] { ':' });
       player.IPAddress = IPAddress.Parse(addressinformation[0]);
       player.Port = Convert.ToInt32(addressinformation[1]);
+
+      if (player.PendingAuth) {
+        pendingAuthPlayers.Add(player);
+      } else {
+        Player.OnAuthorize(player);
+      }
       
       ConnectEventArgs connectEventArgs = new ConnectEventArgs(player, reject_reason);
       OnConnect(connectEventArgs);
@@ -81,6 +88,37 @@ namespace SharpMod
     protected void OnPlayerConnect(ConnectEventArgs args)
     {
       if (PlayerConnect != null) PlayerConnect(args);
+    }
+    #endregion
+
+    #region Authorize
+    [Serializable]
+    public sealed class AuthorizeEventArgs : PlayerEventArgs
+    {
+      public AuthorizeEventArgs(Player player)
+        : base(player)
+      {
+      }
+    }
+    public delegate void AuthorizeHandler(AuthorizeEventArgs args);
+    public static event AuthorizeHandler Authorize;
+    protected static void OnAuthorize(AuthorizeEventArgs args)
+    {
+      if (Authorize != null) Authorize(args);
+    }
+    internal static void OnAuthorize(Player player)
+    {
+      AuthorizeEventArgs auth = new AuthorizeEventArgs(player);
+      OnAuthorize(auth);
+      player.OnPlayerAuthorize(auth);
+    }
+    #endregion
+
+    #region PlayerAuthorize
+    public event AuthorizeHandler PlayerAuthorize;
+    protected void OnPlayerAuthorize(AuthorizeEventArgs args)
+    {
+      if (PlayerAuthorize != null) PlayerAuthorize(args);
     }
     #endregion
 
@@ -273,6 +311,12 @@ namespace SharpMod
     /// Returns the AuthID which might be a STEAMI ID
     /// </summary>
     public string AuthID {  get { return Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.GetPlayerAuthId(Pointer)); } }
+
+    public bool PendingAuth {
+      get {
+        return AuthID == "STEAM_ID_PENDING";
+      }
+    }
     /// <summary>
     /// Gets the Ping of the Player
     /// </summary>

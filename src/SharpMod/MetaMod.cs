@@ -903,6 +903,17 @@ typedef struct {
 
     internal static void StartFramePost()
     {
+      // Check for the unauth players, if they have
+      // already authed or not
+      // TODO: hook some function in the engine in order
+      // to avoid constant cpu usage
+      foreach (Player player in Player.pendingAuthPlayers) {
+        if (!player.PendingAuth) {
+          Player.pendingAuthPlayers.Remove(player);
+          Player.OnAuthorize(player);
+        }
+      }
+
       TaskManager.WorkFrame();
       Metamod.SetResult(MetaResult.Handled);
     }
