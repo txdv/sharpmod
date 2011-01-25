@@ -310,7 +310,7 @@ namespace SharpMod
     /// <summary>
     /// Returns the AuthID which might be a STEAMI ID
     /// </summary>
-    public string AuthID {  get { return Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.GetPlayerAuthId(Pointer)); } }
+    public string AuthID { get { return Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.GetPlayerAuthId(Pointer)); } }
 
     public bool PendingAuth {
       get {
