@@ -65,7 +65,9 @@ namespace SharpMod
         Parameters = parameters
       };
 
-      list.Add(t);
+      lock (list) {
+        list.Add(t);
+      }
     }
 
     public static void SetTask(Delegate function, TimeSpan time)
@@ -85,24 +87,26 @@ namespace SharpMod
 
     internal static void WorkFrame()
     {
-      List<Task> delete = new List<Task>();
-      foreach (Task task in list) {
-        float exectime = task.AddTime + task.Time;
-        if (exectime <= Server.TimeFloat) {
+      lock (list) {
+        List<Task> delete = new List<Task>();
+        foreach (Task task in list) {
+          float exectime = task.AddTime + task.Time;
+          if (exectime <= Server.TimeFloat) {
 
-          task.Function.DynamicInvoke(task.Parameters);
+            task.Function.DynamicInvoke(task.Parameters);
 
-          if (task.Repeat) {
-            task.AddTime = exectime;
-          } else {
-            delete.Add(task);
+            if (task.Repeat) {
+              task.AddTime = exectime;
+            } else {
+              delete.Add(task);
+            }
+
           }
-
         }
-      }
 
-      foreach (Task task in delete) {
-        list.Remove(task);
+        foreach (Task task in delete) {
+          list.Remove(task);
+        }
       }
     }
   }
