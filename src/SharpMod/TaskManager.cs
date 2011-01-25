@@ -45,6 +45,11 @@ namespace SharpMod
       SetTask(function, 0.0f);
     }
 
+    public static void Join(Delegate function, object[] parameters)
+    {
+      SetTask(function, 0.0f, false, parameters);
+    }
+
     public static void SetTask(Delegate function, float time)
     {
       SetTask(function, time, false);
