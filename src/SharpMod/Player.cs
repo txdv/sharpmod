@@ -66,7 +66,7 @@ namespace SharpMod
     {
       Player player = Player.GetPlayer(entity);
       player.Name = name;
-      string[] addressinformation = address.Split(new char[] { ':' });
+      string[] addressinformation = address.Split(':');
       player.IPAddress = IPAddress.Parse(addressinformation[0]);
       player.Port = Convert.ToInt32(addressinformation[1]);
 
