@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Net;
 using SharpMod.MetaMod;
+using System.Threading;
 
 namespace SharpMod
 {
@@ -111,6 +112,9 @@ namespace SharpMod
       AuthorizeEventArgs auth = new AuthorizeEventArgs(player);
       OnAuthorize(auth);
       player.OnPlayerAuthorize(auth);
+
+      ResolvePrivilegesDelegate m = new ResolvePrivilegesDelegate(ResolvePrivileges);
+      m.BeginInvoke(player.AuthID, null, null);
     }
     #endregion
 
@@ -258,6 +262,57 @@ namespace SharpMod
     
     #endregion
 
+    #region ResolvePrivileges
+    [Serializable]
+    public sealed class AssignPrivilegesEventArgs : PlayerEventArgs
+    {
+      public AssignPrivilegesEventArgs(Player player)
+        : base(player)
+      {
+      }
+    }
+    public delegate void AssignPrivilegesHandler(AssignPrivilegesEventArgs args);
+    public static event AssignPrivilegesHandler AssignPrivileges;
+    protected static void OnAssignPrivileges(AssignPrivilegesEventArgs args)
+    {
+      if (AssignPrivileges != null) AssignPrivileges(args);
+    }
+    internal static void OnAssignPrivileges(Player player, Privileges privileges)
+    {
+      player.Privileges = privileges;
+      var args = new AssignPrivilegesEventArgs(player);
+      OnAssignPrivileges(args);
+      player.OnPlayerAssignPrivileges(args);
+    }
+    #endregion
+
+    #region PlayerAssignPrivileges
+    public event AssignPrivilegesHandler PlayerAssignPrivileges;
+    protected void OnPlayerAssignPrivileges(AssignPrivilegesEventArgs args)
+    {
+      if (PlayerAssignPrivileges != null) PlayerAssignPrivileges(args);
+    }
+    #endregion
+
+    public delegate void ResolvePrivilegesDelegate(string auth);
+    public static void ResolvePrivileges(string auth)
+    {
+      TaskManager.Join((Action<string, Privileges>)ResolvedPrivileges,
+                       new object[] { auth, SharpMod.Database.LoadPrivileges(auth) });
+    }
+
+    public static void ResolvedPrivileges(string auth, Privileges priv)
+    {
+      foreach (Player player in Player.Players) {
+        // go through the player list, maybe the player with the newly assigned
+        // privileges is not online anymore
+        if (player.AuthID == auth) {
+          OnAssignPrivileges(player, priv == null ? player.Privileges : priv);
+          break;
+        }
+      }
+    }
+
     // TODO: create an interface for information saving
     // in the menu
     internal Menues.SimpleMenu  menu;
@@ -311,6 +366,12 @@ namespace SharpMod
     /// Returns the AuthID which might be a STEAMI ID
     /// </summary>
     public string AuthID { get { return Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.GetPlayerAuthId(Pointer)); } }
+    /// <summary>
+    /// Returns the Privileges of the player, which are determined by external resources
+    /// like databases, privilege files. In other words, holds stuff like if the user
+    /// can kick or ban etc.
+    /// </summary>
+    public Privileges Privileges { get; protected set; }
 
     public bool PendingAuth {
       get {
@@ -383,6 +444,7 @@ namespace SharpMod
     internal Player (IntPtr entity)
       : base(entity)
     {
+      Privileges = new Privileges("");
     }
 
     /// <summary>

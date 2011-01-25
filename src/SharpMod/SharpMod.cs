@@ -47,6 +47,8 @@ namespace SharpMod
       }
     }
 
+    internal static DefaultDatabase Database { get; set; }
+
     public static void Init()
     {
       Version = new CVar("sharpmod_version", "0.1");
@@ -58,6 +60,15 @@ namespace SharpMod
 
       // Initialize plugin system
       PluginManager.GetInstance();
+
+      try {
+        var doc = new System.Xml.XmlDocument();
+        doc.Load(Server.ModDirectory + "cfg/databases.xml");
+        Database = new MysqlDatabase(doc);
+      } catch (Exception e) {
+        Server.LogError("AdminInterface failed to load, using default: {0}", e.Message);
+        Database = new DefaultDatabase();
+      }
 
     }
 

@@ -158,6 +158,12 @@ namespace SharpMod
       }
     }
 
+    public static string ModDirectory {
+      get {
+        return Server.GameDirectory + "/addons/sharpmod/";
+      }
+    }
+
     /// <summary>
     /// Maximum players the server can hold at any time
     /// </summary>

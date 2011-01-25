@@ -21,6 +21,7 @@
 
 using System;
 using System.Text;
+using System.Xml;
 
 namespace SharpMod.Helper
 {
@@ -169,5 +170,41 @@ namespace SharpMod.Helper
         && type.FullName.StartsWith("SharpMod.Message")
         && type.FullName.EndsWith("Message");
     }
+
+    public static bool TableExists(this System.Data.Common.DbConnection con, string table)
+    {
+      System.Data.Common.DbDataReader reader = null;
+      try {
+        var cmd = con.CreateCommand();
+        cmd.CommandText = String.Format("SHOW TABLES LIKE '{0}'", table);
+        reader = cmd.ExecuteReader();
+        return reader.Read();
+      } catch {
+        return false;
+      } finally {
+        if (reader != null) reader.Close();
+      }
+    }
+
+    public static string GetInnerText(this XmlDocument doc, string tag)
+    {
+      return doc.GetElementsByTagName(tag).Item(0).InnerText;
+    }
+
+    public static string GetInnerText(this XmlElement element, string tag)
+    {
+      return element.GetElementsByTagName(tag).Item(0).InnerText;
+    }
+
+    public static XmlElement GetXmlElement(this XmlDocument xmldoc, string name)
+    {
+      return xmldoc.GetElementsByTagName(name).Item(0) as XmlElement;
+    }
+
+    public static XmlElement GetXmlElement(this XmlNode xmlnode, string name)
+    {
+      return (xmlnode as XmlElement).GetElementsByTagName(name).Item(0) as XmlElement;
+    }
+
   }
 }
