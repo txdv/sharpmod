@@ -564,12 +564,16 @@ namespace SharpMod
       return val;
     }
 
-    public static void Intercept(string name, Delegate del)
+    public static bool Intercept(string name, Delegate del)
     {
       BinaryTree.Node node = Message.Types.GetNode(name);
-      if (node != null) {
-        node.invokerlist.Add(del);
+
+      if (node == null) {
+        return false;
       }
+
+      node.invokerlist.Add(del);
+      return true;
     }
 
     internal static void Invoke(MessageHeader message_header, List<object> parameters)
