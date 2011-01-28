@@ -554,17 +554,12 @@ typedef struct {
     internal PluginLoadTime unloadable;
   };
 
-  public class Metamod
-  {
-    unsafe public static void SetResult(MetaResult result)
-    {
-      MetaModEngine.globals->mres = result;
-
-    }
-  }
-
   internal class MetaModEngine
   {
+    unsafe internal static void SetResult(MetaResult result)
+    {
+      globals->mres = result;
+    }
 
     /// <summary>
     /// Holds the Plugin Info ID of sharpmod, which is the pointer
@@ -706,7 +701,7 @@ typedef struct {
       message_header = new MessageHeader(destination, messageType, floatValue, playerEntity);
       message_elements = new List<object>();
 
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
     internal static void MessageEndPost()
     {
@@ -717,7 +712,7 @@ typedef struct {
 
       Message.Invoke(message_header, message_elements);
 
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     internal static void WriteBytePost(int val)
@@ -726,7 +721,7 @@ typedef struct {
       messageInformation.Arguments.Add(new MessageArgument(typeof(byte), (byte)val));
       #endif
       message_elements.Add((byte)val);
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
     internal static void WriteCharPost(int val)
     {
@@ -734,7 +729,7 @@ typedef struct {
       messageInformation.Arguments.Add(new MessageArgument(typeof(char), (char)val));
       #endif
       message_elements.Add((char)val);
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
     internal static void WriteShortPost(int val)
     {
@@ -742,7 +737,7 @@ typedef struct {
       messageInformation.Arguments.Add(new MessageArgument(typeof(short), (short)val));
       #endif
       message_elements.Add((short)val);
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
     internal static void WriteLongPost(int val)
     {
@@ -750,14 +745,14 @@ typedef struct {
       messageInformation.Arguments.Add(new MessageArgument(typeof(long), (long)val));
       #endif
       message_elements.Add((long)val);
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     internal static void WriteAnglePost(int val)
     {
       // TODO: get an idea of what is past with this function
       Console.WriteLine("WriteAnglePost");
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     internal static int writeCoordCount = 0;
@@ -785,7 +780,7 @@ typedef struct {
         writeCoordCount = 0;
       } else { writeCoordCount++; }
       // TODO: get an idea of what is past with this function, floats maybe?
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
     internal static void WriteStringPost(string val)
     {
@@ -793,7 +788,7 @@ typedef struct {
       messageInformation.Arguments.Add(new MessageArgument(typeof(string), (string)val));
       #endif
       message_elements.Add(val);
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
     internal static void WriteEntityPost(int entity)
     {
@@ -801,7 +796,7 @@ typedef struct {
       messageInformation.Arguments.Add(new MessageArgument(typeof(Entity), new Entity(new IntPtr(entity))));
       #endif
       message_elements.Add(entity);
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     internal static void RegisterUserMessagePost(string name, int size)
@@ -810,7 +805,7 @@ typedef struct {
       #if DEBUG
       Console.WriteLine ("Registering: {0} {1}", name, id);
       #endif
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
     #endregion
 
@@ -861,7 +856,7 @@ typedef struct {
     public static void RemoveEntityPost(IntPtr entity)
     {
       Entity.RemoveEntity(entity);
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     #endregion
@@ -884,7 +879,7 @@ typedef struct {
       functionTable.PutInServer      = Player.OnPutInServer;
 
       Server.Init();
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
       return 0;
     }
 
@@ -898,7 +893,9 @@ typedef struct {
       // Load plugins here
       PluginManager.GetInstance().LoadPlugins();
 
-      Metamod.SetResult(MetaResult.Handled);
+      PluginManager.GetInstance().ShowPlugins();
+
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     internal static void StartFramePost()
@@ -915,13 +912,13 @@ typedef struct {
       }
 
       TaskManager.WorkFrame();
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     internal static bool spawnInitialized = false;
     internal static void Spawn(IntPtr pent)
     {
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
       if (spawnInitialized) return;
       spawnInitialized = true;
       // TODO: call precache method for plugins
@@ -929,7 +926,7 @@ typedef struct {
     internal static void UsePost(IntPtr pentUsed, IntPtr pentOther)
     {
       // TODO: do something in here
-      Metamod.SetResult(MetaResult.Handled);
+      MetaModEngine.SetResult(MetaResult.Handled);
     }
 
     #endregion
