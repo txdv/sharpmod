@@ -27,6 +27,7 @@
 #include <h_export.h>
 #include <enginecallback.h>
 
+#include <glib.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/object.h>
 #include <mono/metadata/environment.h>

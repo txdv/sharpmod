@@ -24,11 +24,11 @@ else
 	DLLNAME  = sharpmod_mm_i686.so
 endif
 
-
+MONOFLAGS = `pkg-config --cflags glib-2.0` -lm `pkg-config --cflags --libs mono-2`
 OFLAGS  = -march=i686 -mcpu=i686 -O2 -ffast-math
-CFLAGS += $(OFLAGS) -g0 -fno-exceptions -fno-rtti `pkg-config --cflags --libs mono` -lm
+CFLAGS += $(OFLAGS) -g0 -fno-exceptions -fno-rtti $(MONOFLAGS)
 LFLAGS += -s
-LFLAGS += `pkg-config --cflags --libs mono` -lm
+LFLAGS += $(MONOFLAGS)
 
 METADIR = ./../../include/metamod/metamod
 HLSDK= ./../../include/hlsdk/multiplayer
