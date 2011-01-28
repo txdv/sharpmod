@@ -206,9 +206,6 @@ namespace SharpMod
       return (id >= 64 ? Message.TypeNames[id].Name : "");
     }
 
-    static Message()
-    {
-    }
     /// <summary>
     /// A private count for the arguments send by the function.
     /// </summary>
