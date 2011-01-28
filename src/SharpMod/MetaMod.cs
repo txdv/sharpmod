@@ -813,39 +813,30 @@ typedef struct {
 
     unsafe internal static IntPtr CmdArgs()
     {
-      if (Command.overrideArguments && Command.instance != null)
-      {
+      if (Command.overrideArguments && Command.instance != null) {
         SetResult(MetaResult.Supercede);
         return UnixMarshal.StringToHeap(Command.instance.Arguments[1]);
-      }
-      else
-      {
+      } else {
         SetResult(MetaResult.Ignore);
         return IntPtr.Zero;
       }
     }
     unsafe internal static int CmdArgc()
     {
-      if (Command.overrideArguments && Command.instance != null)
-      {
+      if (Command.overrideArguments && Command.instance != null) {
         SetResult(MetaResult.Supercede);
         return Command.instance.Arguments.Length;
-      }
-      else
-      {
+      } else {
         SetResult(MetaResult.Ignore);
         return 0;
       }
     }
     unsafe internal static IntPtr CmdArgv(int i)
     {
-      if (Command.overrideArguments && Command.instance != null)
-      {
+      if (Command.overrideArguments && Command.instance != null) {
         SetResult(MetaResult.Supercede);
         return UnixMarshal.StringToHeap(Command.instance.Arguments[i]);
-      }
-      else
-      {
+      } else {
         SetResult(MetaResult.Ignore);
         return IntPtr.Zero;
       }
