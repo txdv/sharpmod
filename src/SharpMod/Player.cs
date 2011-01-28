@@ -20,11 +20,11 @@
 //
 
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Net;
 using SharpMod.MetaMod;
-using System.Threading;
 
 namespace SharpMod
 {
@@ -113,8 +113,11 @@ namespace SharpMod
       OnAuthorize(auth);
       player.OnPlayerAuthorize(auth);
 
-      ResolvePrivilegesDelegate m = new ResolvePrivilegesDelegate(ResolvePrivileges);
-      m.BeginInvoke(player.AuthID, null, null);
+      string authid = player.AuthID;
+
+      Task.Factory.StartNew(delegate {
+        TaskManager.Join<string, Privileges>(ResolvedPrivileges, authid, SharpMod.Database.LoadPrivileges(authid));
+      });
     }
     #endregion
 
@@ -286,13 +289,6 @@ namespace SharpMod
       if (PlayerAssignPrivileges != null) PlayerAssignPrivileges(args);
     }
     #endregion
-
-    public delegate void ResolvePrivilegesDelegate(string auth);
-    public static void ResolvePrivileges(string auth)
-    {
-      TaskManager.Join((Action<string, Privileges>)ResolvedPrivileges,
-                       new object[] { auth, SharpMod.Database.LoadPrivileges(auth) });
-    }
 
     public static void ResolvedPrivileges(string auth, Privileges priv)
     {
