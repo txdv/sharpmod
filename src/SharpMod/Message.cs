@@ -283,8 +283,7 @@ namespace SharpMod
       #if DEBUG
       messageInformation.Arguments.Add(new MessageArgument(typeof(byte), (byte)val));
       #endif
-      if (count+sizeof(byte) < MaxLength)
-      {
+      if (count+sizeof(byte) < MaxLength) {
         MetaModEngine.engineFunctions.WriteByte((int)val);
         count += sizeof(byte);
       }
@@ -317,8 +316,7 @@ namespace SharpMod
       #if DEBUG
       messageInformation.Arguments.Add(new MessageArgument(typeof(char), (char)val));
       #endif
-      if (count+sizeof(char) < MaxLength)
-      {
+      if (count+sizeof(char) < MaxLength) {
         MetaModEngine.engineFunctions.WriteChar((int)val);
         count += sizeof(char);
       }
@@ -351,8 +349,7 @@ namespace SharpMod
       #if DEBUG
       messageInformation.Arguments.Add(new MessageArgument(typeof(short), (short)val));
       #endif
-      if (count+sizeof(short) < MaxLength)
-      {
+      if (count+sizeof(short) < MaxLength) {
         MetaModEngine.engineFunctions.WriteShort(val);
         count += sizeof(short);
       }
@@ -385,8 +382,7 @@ namespace SharpMod
       #if DEBUG
       messageInformation.Arguments.Add(new MessageArgument(typeof(long), (long)val));
       #endif
-      if (count+sizeof(long) < MaxLength)
-      {
+      if (count+sizeof(long) < MaxLength) {
         MetaModEngine.engineFunctions.WriteLong((int)val);
         count += sizeof(long);
       }
@@ -429,8 +425,7 @@ namespace SharpMod
 
       // TODO: check if this really what the WriteAngle functions sends
 
-      if (count+sizeof(int) < MaxLength)
-      {
+      if (count+sizeof(int) < MaxLength) {
         MetaModEngine.engineFunctions.WriteAngle(val);
         count += sizeof(int);
       }
@@ -499,12 +494,9 @@ namespace SharpMod
       #if DEBUG
       messageInformation.Arguments.Add(new MessageArgument(typeof(string), (string)val));
       #endif
-      if (count+val.Length >= MaxLength)
-      {
+      if (count+val.Length >= MaxLength) {
         MetaModEngine.engineFunctions.WriteString(val.Substring(0, count+val.Length-MaxLength-1));
-      }
-      else
-      {
+      } else {
         MetaModEngine.engineFunctions.WriteString(val);
       }
     }
@@ -532,8 +524,7 @@ namespace SharpMod
 
       // TODO: check if this really what the WriteEntity functions sends
 
-      if (count+sizeof(int) < MaxLength)
-      {
+      if (count+sizeof(int) < MaxLength) {
         MetaModEngine.engineFunctions.WriteEntity((int)entity);
         count += sizeof(int);
       }
@@ -578,7 +569,6 @@ namespace SharpMod
 
     internal static void Invoke(MessageHeader message_header, List<object> parameters)
     {
-
       BinaryTree.Node node = Message.TypeNames[message_header.MessageType];
 
       if (node == null) {

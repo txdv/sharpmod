@@ -41,11 +41,9 @@ namespace SharpMod
     /// </summary>
     public static string[] EngineArguments
     {
-     get
-      {
+     get {
         string[] args = new string[MetaModEngine.engineFunctions.Cmd_Argc()];
-        for (int i = 0; i < args.Length; i++)
-        {
+        for (int i = 0; i < args.Length; i++) {
           args[i] = Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.Cmd_Argv(i));
         }
         return args;
@@ -68,15 +66,11 @@ namespace SharpMod
     /// </summary>
     public string[] Arguments { set; get; }
 
-
     private string Escape(string text)
     {
-      if (text.Contains(" "))
-      {
+      if (text.Contains(" ")) {
         return String.Format("\"{0}\"", text);
-      }
-      else
-      {
+      } else {
         return text;
       }
     }
@@ -145,8 +139,7 @@ namespace SharpMod
     /// </summary>
     public static CommandManager Client
     {
-      get
-      {
+      get {
         if (client == null) client = new CommandManager();
         return client;
       }
@@ -163,8 +156,7 @@ namespace SharpMod
     /// </param>
     public void Register(string str, ClientCommandDelegate handler)
     {
-      if (events.ContainsKey(str))
-      {
+      if (events.ContainsKey(str)) {
         ClientCommandDelegate cmddelegate = events[str];
         if (cmddelegate != null) cmddelegate += handler;
         else cmddelegate = handler;
@@ -184,10 +176,8 @@ namespace SharpMod
     /// </param>
     internal void Execute(Player player, Command cmd)
     {
-      foreach (KeyValuePair<string, ClientCommandDelegate> keyval in events)
-      {
-        if (cmd.ToString().StartsWith(keyval.Key))
-        {
+      foreach (KeyValuePair<string, ClientCommandDelegate> keyval in events) {
+        if (cmd.ToString().StartsWith(keyval.Key)) {
           if (keyval.Value != null) keyval.Value(player, cmd);
         }
       }

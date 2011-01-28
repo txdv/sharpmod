@@ -215,8 +215,7 @@ namespace TextTools
     protected string Trim(Align alignment, string text, int length)
     {
       if (text.Length <= length) {
-        switch (alignment)
-        {
+        switch (alignment) {
         case Align.Left:
           return text + new string(' ', length - text.Length);
         case Align.Right:
@@ -287,8 +286,7 @@ namespace TextTools
       foreach (IList<object> obj in data)
       {
         sb = new StringBuilder();
-        for (int i = 0; i < lengths.Length; i++)
-        {
+        for (int i = 0; i < lengths.Length; i++) {
           sb.Append(Trim(Header[i].CellAlignment, obj[i].ToString(), lengths[i]));
           sb.Append(" ");
         }

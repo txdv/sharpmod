@@ -38,8 +38,7 @@ namespace SharpMod
     /// </summary>
     public static string License
     {
-      get
-      {
+      get {
         StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("sharpmod.gpl.txt"));
         string ret = sr.ReadToEnd();
         sr.Close();
@@ -82,8 +81,7 @@ namespace SharpMod
     static void sharp(string[] args)
     {
       if (args.Length > 1)
-      switch (args[1])
-      {
+      switch (args[1]) {
       case "gpl":
         Server.Print(License);
         break;

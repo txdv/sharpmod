@@ -219,7 +219,6 @@ namespace SharpMod
     {
       if (PlayerDisconnect != null) PlayerDisconnect(args);
     }
-    
     #endregion
     
     #region PutInServer
@@ -464,8 +463,7 @@ namespace SharpMod
     /// </summary>
     public static IEnumerable<Player> Players
     {
-      get
-      {
+      get {
         for (int i = 0; i < playerlist.Length; i++)
           if (playerlist[i] != null) yield return playerlist[i];
       }

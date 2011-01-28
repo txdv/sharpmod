@@ -44,21 +44,16 @@ namespace SwearFilter
 
     public static string Join(this string[] stringarray, char c)
     {
-      if (stringarray.Length != 0)
-      {
+      if (stringarray.Length != 0) {
         StringBuilder sb = new StringBuilder(stringarray[0]);
-        if (stringarray.Length > 1)
-        {
-          for (int i = 1; i < stringarray.Length; i++)
-          {
+        if (stringarray.Length > 1) {
+          for (int i = 1; i < stringarray.Length; i++) {
             sb.Append(c);
             sb.Append(stringarray[i]);
           }
         }
         return sb.ToString();
-      }
-      else
-      {
+      } else {
         return string.Empty;
       }
     }
@@ -187,12 +182,9 @@ namespace SwearFilter
     protected string IgnoreChars(string text)
     {
       StringBuilder sb = new StringBuilder(text);
-      for (int i = 0; i < sb.Length; i++)
-      {
-        foreach (char ignoreChar in ignoreChars)
-        {
-          if (ignoreChar == sb[i])
-          {
+      for (int i = 0; i < sb.Length; i++) {
+        foreach (char ignoreChar in ignoreChars) {
+          if (ignoreChar == sb[i]) {
             sb.Remove(i, 1);
             i--;
           }
@@ -203,8 +195,7 @@ namespace SwearFilter
     
     protected bool CheckLongSwearWords(string text)
     {
-      foreach (LongSwearWord lsw in longSwearWordList)
-      {
+      foreach (LongSwearWord lsw in longSwearWordList) {
         if (text.IndexOf(lsw.Word) > -1) return true;
       }
       return false;
@@ -212,11 +203,9 @@ namespace SwearFilter
     
     protected bool CheckShortSwearWords(string text)
     {
-      foreach (string token in text.Split(' '))
-      {
+      foreach (string token in text.Split(' ')) {
         string lowercasetoken = token.ToLower();
-        foreach (ShortSwearWord ssw in shortSwearWordList)
-        {
+        foreach (ShortSwearWord ssw in shortSwearWordList) {
           if (ssw.Word.ToLower() == lowercasetoken) return true;
         }
       }

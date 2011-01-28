@@ -378,8 +378,7 @@ namespace SharpMod
         if (index >= 1 && index <= Server.MaxPlayers) return RegisterEntity(index, new Player(entityPointer));
         string classname = GetClassName(edict);
         if (classname.StartsWith("weapon_")) return RegisterEntity(index, new CounterStrike.Weapon(edict));
-        switch (classname)
-        {
+        switch (classname) {
         case "player":
           return RegisterEntity(index, new Player(entityPointer));
         default:

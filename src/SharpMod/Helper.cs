@@ -62,13 +62,11 @@ namespace SharpMod.Helper
 
     public static string Join(this string[] stringarray, char c)
     {
-      if (stringarray.Length != 0)
-      {
+      if (stringarray.Length != 0) {
         System.Text.StringBuilder sb = new System.Text.StringBuilder(stringarray[0]);
         if (stringarray.Length > 1)
         {
-          for (int i = 1; i < stringarray.Length; i++)
-          {
+          for (int i = 1; i < stringarray.Length; i++) {
             sb.Append(c);
             sb.Append(stringarray[i]);
           }

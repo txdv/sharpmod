@@ -73,10 +73,8 @@ namespace SharpMod
     {
       int count = text.Length / defaultShowMenuTextLength;
       if (count == 0) ShowMenu(player, keys, displaytime, 0, text);
-      else
-      {
-        for (int i = 0; i <  count; i++)
-        {
+      else {
+        for (int i = 0; i <  count; i++) {
           ShowMenu(player, keys, displaytime, (byte)(i == count-1 ? 0 : 1), text.Substring(i * defaultShowMenuTextLength, defaultShowMenuTextLength));
         }
       }
@@ -112,12 +110,9 @@ namespace SharpMod
       if (dict.ContainsKey(player))
       {
         MenuTime mt = dict[player];
-        if (DateTime.Now <= mt.start.Add(mt.timeSpan))
-        {
+        if (DateTime.Now <= mt.start.Add(mt.timeSpan)) {
           mt.menu.DoSelect(player, index);
-        }
-        else
-        {
+        } else {
           // TODO: random menuselect, make a log entry for abusive behaviour?
         }
         dict.Remove(player);
@@ -236,17 +231,13 @@ namespace SharpMod.Menues
         int index = -1;
         StringBuilder sb = new StringBuilder();
         if (Values != null)
-        for (int i = 0; i < Values.Length; i++)
-        {
-          if (Values[i].ToLower() == cvar.String.ToLower())
-          {
+        for (int i = 0; i < Values.Length; i++) {
+          if (Values[i].ToLower() == cvar.String.ToLower()) {
             sb.Append(MenuColor.Red);
             sb.Append(Values[i]);
             sb.Append(MenuColor.White);
             index = i;
-          }
-          else
-          {
+          } else {
             sb.Append(Values[i]);
           }
           if (i != Values.Length-1) sb.Append(", ");
@@ -262,10 +253,8 @@ namespace SharpMod.Menues
 
     public int Index
     {
-      get
-      {
-        if (Values != null)
-        {
+      get {
+        if (Values != null) {
           for (int i = 0; i < Values.Length; i++)
             if (Values[i].ToLower() == cvar.String.ToLower()) return i;
         }
@@ -275,8 +264,7 @@ namespace SharpMod.Menues
 
     public int NextItem
     {
-      get
-      {
+      get {
         if (Index == -1) return 0;
         else             return (Index%Values.Length);
       }
@@ -319,7 +307,6 @@ namespace SharpMod.Menues
       }
     }
 
-
     protected void AddItemText(StringBuilder sb, int index, Item item)
     {
       if (NumberedItems) {
@@ -338,7 +325,6 @@ namespace SharpMod.Menues
     {
       StringBuilder sb = new StringBuilder();
       List<Item> acc = new List<Item>();
-
 
       int i = 0, j = 0;
       short keys = 0;
@@ -368,15 +354,15 @@ namespace SharpMod.Menues
     #endregion
 
     #region IList<Item> implementation
-    public int IndexOf (Item item)
+    public int IndexOf(Item item)
     {
       return list.IndexOf(item);
     }
-    public void Insert (int index, Item item)
+    public void Insert(int index, Item item)
     {
       list.Insert(index, item);
     }
-    public void RemoveAt (int index)
+    public void RemoveAt(int index)
     {
       list.RemoveAt(index);
     }
@@ -391,14 +377,14 @@ namespace SharpMod.Menues
     #endregion
 
     #region IEnumerable<Item> implementation
-    public IEnumerator<Item> GetEnumerator ()
+    public IEnumerator<Item> GetEnumerator()
     {
       return list.GetEnumerator();
     }
     #endregion
 
     #region IEnumerable implementation
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
     {
       return list.GetEnumerator();
     }
@@ -406,27 +392,27 @@ namespace SharpMod.Menues
 
     #region ICollection<Item> implementation
 
-    public void Add (Item item)
+    public void Add(Item item)
     {
       list.Add(item);
     }
 
-    public void Clear ()
+    public void Clear()
     {
       list.Clear();
     }
 
-    public bool Contains (Item item)
+    public bool Contains(Item item)
     {
       return list.Contains(item);
     }
 
-    public void CopyTo (Item[] array, int arrayIndex)
+    public void CopyTo(Item[] array, int arrayIndex)
     {
       list.CopyTo(array, arrayIndex);
     }
 
-    public bool Remove (Item item)
+    public bool Remove(Item item)
     {
       return list.Remove(item);
     }
@@ -517,8 +503,7 @@ namespace SharpMod.Menues
       sb.Append(Text);
       sb.Append(String.Format(" ({0}/{1})\n\n", page+1, GetPageCount(i)+1));
 
-      foreach (Item item in acc)
-      {
+      foreach (Item item in acc) {
         AddItemText(sb, j, item);
         if (item.Enabled) keys |= (short)(1 << j);
         if (item.Selectable) j++;

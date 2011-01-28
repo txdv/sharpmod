@@ -133,7 +133,6 @@ namespace SharpMod
       MetaModEngine.engineFunctions.CVarSetFloat(name, value);
     }
 
-
     /// <summary>
     /// Name of an instance of a CVariable
     /// </summary>
@@ -186,6 +185,7 @@ namespace SharpMod
     {
       return (cvar->flags & field) > 0;
     }
+
     unsafe void SetFlag(int field, bool val)
     {
       if (val)
@@ -275,8 +275,7 @@ namespace SharpMod
 
     public void Dispose ()
     {
-      unsafe
-      {
+      unsafe {
         // TODO: Do we really need to cleanup the cvars?
         //Mono.Unix.UnixMarshal.FreeHeap(new IntPtr(cvar->name));
         //Mono.Unix.UnixMarshal.FreeHeap(new IntPtr(cvar->str));
