@@ -5,7 +5,7 @@ sharpmod
 sharpmod is a plugin for metamod which by itself is a pluginsystem for the goldsrc engine (Half-Life, Counter-Strike classic).
 It enables the developer to write plugins for the goldsrc engine in C# or other languages which can be compiled to CIL (the bytecode
 for .NET virtual machines).
-Right now only C# is supported, there is a Ruby branch which, but it hasn't all the functionality
+Right now only plugins written with C# have full support, though an experimental Ruby branch exists.
 
 
 Compiling the modified metamod and the metamod plugin.
@@ -61,17 +61,17 @@ Now you are running your custom mono version.
 Ruby
 ---------------
 
-A lot of code is now generated with ruby, so you will need to install ruby, rubygems and erb (with rubygems)
+A lot of code is now generated with ruby, so you will need to install ruby along with eruby.
 
 
 Using sharpmod in your counter-strike server
 ---------------
-Use the metamod binary in the directory include/metamod/metamod/opt/metamod_i386.so in your server, create a soft link
+Use the metamod binary in the directory include/metamod/metamod/opt.linux/metamod_i386.so in your server, create a soft link
 ln -s for easier usage. There are plenty of resources which explain how to use the metamod.
 In order to use the sharpmod just create a link from cstrike/addons/sharpmod (or any other mod) to 
 bin/ (the bin/ in the sharpmod compiling directory) and add the sharpmod binary to addons/metamod/plugins.ini.
 The entry should look like this: "linux addons/sharpmod/sharpmod_mm_i686.so"
-Afterwards just start the server, you should see a lot of debug messages since it is in an early development fase.
+Afterwards just start the server, you should see a lot of debug messages since it is in an early development phase.
 
 
 Directory structure
