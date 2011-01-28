@@ -168,9 +168,9 @@ namespace SharpMod
       player.OnPlayerCommand(clientCommandEventArgs);
 
       if (clientCommandEventArgs.Override)
-          MetaModEngine.globals->mres = MetaResult.Supercede;
+        MetaModEngine.SetResult(MetaResult.Supercede);
       else
-          MetaModEngine.globals->mres = MetaResult.Handled;
+        MetaModEngine.SetResult(MetaResult.Handled);
     }
     protected static void OnCommand(CommandEventArgs args)
     {

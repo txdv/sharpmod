@@ -815,12 +815,12 @@ typedef struct {
     {
       if (Command.overrideArguments && Command.instance != null)
       {
-        globals->mres = MetaResult.Supercede;
+        SetResult(MetaResult.Supercede);
         return UnixMarshal.StringToHeap(Command.instance.Arguments[1]);
       }
       else
       {
-        globals->mres = MetaResult.Ignore;
+        SetResult(MetaResult.Ignore);
         return IntPtr.Zero;
       }
     }
@@ -828,12 +828,12 @@ typedef struct {
     {
       if (Command.overrideArguments && Command.instance != null)
       {
-        globals->mres = MetaResult.Supercede;
+        SetResult(MetaResult.Supercede);
         return Command.instance.Arguments.Length;
       }
       else
       {
-        globals->mres = MetaResult.Ignore;
+        SetResult(MetaResult.Ignore);
         return 0;
       }
     }
@@ -841,12 +841,12 @@ typedef struct {
     {
       if (Command.overrideArguments && Command.instance != null)
       {
-        globals->mres = MetaResult.Supercede;
+        SetResult(MetaResult.Supercede);
         return UnixMarshal.StringToHeap(Command.instance.Arguments[i]);
       }
       else
       {
-        globals->mres = MetaResult.Ignore;
+        SetResult(MetaResult.Ignore);
         return IntPtr.Zero;
       }
     }
