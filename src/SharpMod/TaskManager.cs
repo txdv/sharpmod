@@ -29,10 +29,10 @@ namespace SharpMod
   {
     class Task
     {
-      public bool     Repeat   { get; set; }
-      public float    Time     { get; set; }
-      public float    AddTime  { get; set; }
-      public Delegate Function { get; set; }
+      public bool     Repeat     { get; set; }
+      public float    Time       { get; set; }
+      public float    AddTime    { get; set; }
+      public Delegate Function   { get; set; }
       public object[] Parameters { get; set; }
 
       public Task() { }
