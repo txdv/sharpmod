@@ -20,6 +20,7 @@ download:
 
 includedir: download
 	mkdir include
+	mv $(DOWNLOAD_DIR)/download $(DOWNLOAD_DIR)/metamod-1.19-linux.src.tar.gz
 	tar xzvf $(DOWNLOAD_DIR)/metamod-1.19-linux.src.tar.gz --directory include/
 	mv include/metamod-1.19 include/metamod
 	tar xzvf $(DOWNLOAD_DIR)/hlsdk-2.3-p3.tar.gz --directory include/
