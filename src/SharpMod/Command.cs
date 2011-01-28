@@ -79,7 +79,7 @@ namespace SharpMod
     /// Constructor of the class
     /// </summary>
     /// <param name="arguments">
-    /// A C# array with the arguments <see cref="System.String[]"/>
+    /// A managed array with the arguments <see cref="System.String[]"/>
     /// </param>
     public Command(string[] arguments)
     {
