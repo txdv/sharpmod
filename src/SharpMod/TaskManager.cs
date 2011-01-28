@@ -242,6 +242,7 @@ namespace SharpMod
     }
 
     #endregion
+
     public static void SetTask(Delegate function, TimeSpan time)
     {
       SetTask(function, time.ToFloat());

@@ -611,6 +611,7 @@ typedef struct {
       */
 
       //muf = (MetaUtilityFunctions)Marshal.PtrToStructure(MetaUtilFuncs, typeof(MetaUtilityFunctions));
+
       metaUtilityFunctions = (MetaUtilityFunctions)Marshal.PtrToStructure(MetaUtilFuncs, typeof(MetaUtilityFunctions));
 
       PLID = PluginInfo;
@@ -696,7 +697,6 @@ typedef struct {
       messageInformation = new MessageInformation(destination, messageType, floatValue, playerEntity);
       messageInformation.CallTimeBegin = DateTime.Now;
       #endif
-
 
       message_header = new MessageHeader(destination, messageType, floatValue, playerEntity);
       message_elements = new List<object>();
