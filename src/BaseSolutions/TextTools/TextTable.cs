@@ -42,11 +42,11 @@ namespace TextTools
   /// </summary>
   public class Header
   {
-    public string Name { get; set; }
-    public Align Alignment { get; set; }
+    public string Name         { get; set; }
+    public Align Alignment     { get; set; }
     public Align CellAlignment { get; set; }
-    public int MinimumLength { get; set; }
-    public int MaximumLength { get; set; }
+    public int MinimumLength   { get; set; }
+    public int MaximumLength   { get; set; }
     
     public Header(string name, Align alignment, Align cellAlignment, int minimumLength, int maximumLength)
     {
@@ -139,7 +139,6 @@ namespace TextTools
       Header[] headerlist = new Header[header.Count];
       for (int i = 0; i < header.Count; i++) {
         headerlist[i] = new Header(header[i]);
-
       }
       return headerlist;
     }
