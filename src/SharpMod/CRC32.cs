@@ -88,7 +88,9 @@ namespace SharpMod
     public void Process(int i)
     {
       Process((char)i);
+      Process((char)(i >>  8));
       Process((char)(i >> 16));
+      Process((char)(i >> 24));
     }
 
     /// <summary>
@@ -99,10 +101,8 @@ namespace SharpMod
     /// </param>
     public void Process(long l)
     {
-      Process((char)l);
-      Process((char)(l >> 16));
-      Process((char)(l >> 32));
-      Process((char)(l >> 48));
+      Process((int)l);
+      Process((int)(l >> 32));
     }
 
     public void Process(string str)
