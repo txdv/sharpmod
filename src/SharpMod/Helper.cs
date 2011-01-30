@@ -169,21 +169,6 @@ namespace SharpMod.Helper
         && type.FullName.EndsWith("Message");
     }
 
-    public static bool TableExists(this System.Data.Common.DbConnection con, string table)
-    {
-      System.Data.Common.DbDataReader reader = null;
-      try {
-        var cmd = con.CreateCommand();
-        cmd.CommandText = String.Format("SHOW TABLES LIKE '{0}'", table);
-        reader = cmd.ExecuteReader();
-        return reader.Read();
-      } catch {
-        return false;
-      } finally {
-        if (reader != null) reader.Close();
-      }
-    }
-
     public static string GetInnerText(this XmlDocument doc, string tag)
     {
       return doc.GetElementsByTagName(tag).Item(0).InnerText;
