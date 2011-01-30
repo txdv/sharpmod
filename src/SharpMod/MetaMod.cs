@@ -801,7 +801,9 @@ typedef struct {
 
     internal static void RegisterUserMessagePost(string name, int size)
     {
+      #pragma warning disable 219
       int id = Message.Register(name, size);
+      #pragma warning restore 219
       #if DEBUG
       Console.WriteLine ("Registering: {0} {1}", name, id);
       #endif
