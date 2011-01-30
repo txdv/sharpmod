@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMod.DProto", "Extensions\dproto\SharpMod.DProto.csproj", "{B3A157A1-64E0-4A67-A4D6-FE3F63FD2323}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Databases", "Databases", "{5D876F74-8FBC-45CD-82FA-909FCDE54334}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMod.Database.MySql", "SharpMod.Database.MySql\SharpMod.Database.MySql.csproj", "{4DAEB79F-DA1F-45DA-A031-F3D8E9ED664A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,10 @@ Global
 		{BADBD373-6538-4F67-92AC-BA43F89CC440}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BADBD373-6538-4F67-92AC-BA43F89CC440}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BADBD373-6538-4F67-92AC-BA43F89CC440}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDDB8BD0-4911-45D8-BD51-0CD9D6BBD19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDDB8BD0-4911-45D8-BD51-0CD9D6BBD19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDDB8BD0-4911-45D8-BD51-0CD9D6BBD19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDDB8BD0-4911-45D8-BD51-0CD9D6BBD19D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA7994EC-F092-4A21-AE72-CC775053017C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA7994EC-F092-4A21-AE72-CC775053017C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA7994EC-F092-4A21-AE72-CC775053017C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -84,6 +92,7 @@ Global
 		{BADBD373-6538-4F67-92AC-BA43F89CC440} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
 		{23166914-04AB-40EC-8780-8028A2CBD5A3} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
 		{B3A157A1-64E0-4A67-A4D6-FE3F63FD2323} = {A8E60C42-0DF0-43EE-BEBE-C69CD2AE487C}
+		{4DAEB79F-DA1F-45DA-A031-F3D8E9ED664A} = {5D876F74-8FBC-45CD-82FA-909FCDE54334}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SharpMod\SharpMod.csproj

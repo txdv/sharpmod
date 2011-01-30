@@ -22,91 +22,73 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Net;
+using System.Reflection;
 using System.Collections.Generic;
 using SharpMod.Helper;
-using MySql.Data.MySqlClient;
 
-namespace SharpMod
+namespace SharpMod.Database
 {
-  public class DefaultDatabase
+  public class BanInformation
   {
-    public virtual Privileges LoadPrivileges(string playerauth)
+    public DateTime Date       { get; set; }
+    public TimeSpan Duration   { get; set; }
+    public string AdminAuthId  { get; set; }
+    public string PlayerAuthId { get; set; }
+    public string Reason       { get; set; }
+  }
+
+  public interface IDatabase
+  {
+    bool Load(XmlDocument doc);
+
+    Privileges LoadPrivileges(string authId);
+    bool SavePrivileges(string authId, string access);
+
+    BanInformation GetActiveBan(string authId);
+    bool AddBan(BanInformation bi);
+  }
+
+  public class DefaultDatabase : IDatabase
+  {
+
+    public static IDatabase Load(string filename)
+    {
+      return Load(new FileInfo(filename));
+    }
+
+    public static IDatabase Load(FileInfo fi)
+    {
+      Assembly asm = Assembly.LoadFile(fi.FullName);
+      foreach (Type type in asm.GetTypes()) {
+        if (type.GetInterface("IDatabase") != null) {
+          return (IDatabase)Activator.CreateInstance(type);
+        }
+      }
+      return null;
+    }
+
+    public bool Load(XmlDocument doc)
+    {
+      return false;
+    }
+
+    public Privileges LoadPrivileges(string authId)
     {
       return null;
     }
 
-    public virtual bool SavePrivileges(string playerauth, string privileges)
+    public bool SavePrivileges(string authId, string access)
     {
       return false;
     }
-  }
 
-  public class MysqlDatabase : DefaultDatabase
-  {
-
-    public string Hostname  { get; protected set; }
-    public string Username  { get; protected set; }
-    public string Password  { get; protected set; }
-    public string Database  { get; protected set; }
-    public string Tablename { get; protected set; }
-
-    protected string ConnectionString {
-      get {
-        return String.Format("server={0};database={1};uid={2};password={3}",
-                             Hostname, Database, Username, Password);
-      }
-    }
-
-    public MysqlDatabase(XmlDocument doc)
+    public BanInformation GetActiveBan(string authId)
     {
-
-      var config = doc.GetXmlElement("mysql");
-
-      Hostname  = config.GetInnerText("hostname");
-      Username  = config.GetInnerText("username");
-      Password  = config.GetInnerText("password");
-      Database  = config.GetInnerText("database");
-      Tablename = config.GetInnerText("tablename");
-
+      return null;
     }
 
-    public override Privileges LoadPrivileges(string playerauth)
-    {
-      var con = new MySqlConnection(ConnectionString);
-      var cmd = con.CreateCommand();
-      cmd.CommandText = "SELECT auth, access FROM users";
-      MySqlDataReader reader = null;
-
-      try {
-        con.Open();
-
-        if (!con.TableExists("users")) {
-          var tcmd = con.CreateCommand();
-          tcmd.CommandText = "CREATE TABLE users (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, auth varchar(255), access varchar(255));";
-          tcmd.ExecuteNonQuery();
-        }
-
-        reader = cmd.ExecuteReader();
-        while (reader.Read()) {
-
-          string auth   = reader.GetValue(0) as string;
-          string access = reader.GetValue(1) as string;
-
-          if (auth == playerauth) {
-            return new Privileges(access);
-          }
-        }
-        return null;
-      } catch (Exception e) {
-        Server.LogError("MySql error while reading admin privileges: {0}", e.Message);
-        return null;
-      } finally {
-        if (reader != null) reader.Close();
-        con.Close();
-      }
-    }
-
-    public override bool SavePrivileges(string playerauth, string privileges)
+    public bool AddBan(BanInformation bi)
     {
       return false;
     }
@@ -119,7 +101,6 @@ namespace SharpMod
     public Privileges(string priv)
     {
       privileges = new List<string>(priv.Split(' '));
-
     }
 
     public bool HasPrivileges {

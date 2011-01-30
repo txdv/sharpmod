@@ -22,6 +22,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using SharpMod.Database;
 
 namespace SharpMod
 {
@@ -45,7 +46,7 @@ namespace SharpMod
       }
     }
 
-    internal static DefaultDatabase Database { get; set; }
+    internal static IDatabase Database { get; set; }
 
     public static void Init()
     {
@@ -62,12 +63,17 @@ namespace SharpMod
       try {
         var doc = new System.Xml.XmlDocument();
         doc.Load(Server.ModDirectory + "cfg/databases.xml");
-        Database = new MysqlDatabase(doc);
+        try {
+          Database = DefaultDatabase.Load(@"cstrike/addons/sharpmod/SharpMod.Database.MySql.dll");
+          Database.Load(doc);
+        } catch (Exception e) {
+          Server.LogError("Database Interface failed to load, using default: {0}", e.Message);
+          Database = new DefaultDatabase();
+          Database.Load(doc);
+        }
       } catch (Exception e) {
-        Server.LogError("AdminInterface failed to load, using default: {0}", e.Message);
-        Database = new DefaultDatabase();
+        Server.LogError("Failed to load cfg/databases.xml: {0}", e.Message);
       }
-
     }
 
     static void sharpHelp()
