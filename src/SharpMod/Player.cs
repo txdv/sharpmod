@@ -369,8 +369,7 @@ namespace SharpMod
     /// <summary>
     /// Gets the Ping of the Player
     /// </summary>
-    public int Ping
-    {
+    public int Ping {
       get {
         int ping = 0, packet_loss = 0;
         MetaModEngine.engineFunctions.GetPlayerStats(Pointer, ref ping, ref packet_loss);
@@ -381,8 +380,7 @@ namespace SharpMod
     /// Gets the lost packet count of the player.
     /// All packets which are send to the client and back during communication are counted in.
     /// </summary>
-    public int PacketLoss
-    {
+    public int PacketLoss {
       get {
         int ping = 0, packet_loss = 0;
         MetaModEngine.engineFunctions.GetPlayerStats(Pointer, ref ping, ref packet_loss);
