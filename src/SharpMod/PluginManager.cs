@@ -36,10 +36,10 @@ namespace SharpMod
   public interface IPlugin
   {
 
-    string Name { get; }
-    string Author { get; }
-    string Description { get; }
-    Version Version { get; }
+    string Name         { get; }
+    string Author       { get; }
+    string Description  { get; }
+    Version Version     { get; }
     string ShortVersion { get; }
 
     void Load();
@@ -49,38 +49,33 @@ namespace SharpMod
   public class BasicPlugin : IPlugin
   {
 
-    internal Assembly Image
-    {
-      get { return Assembly.GetAssembly(this.GetType()); }
+    internal Assembly Image {
+      get {
+        return Assembly.GetAssembly(this.GetType());
+      }
     }
 
     /// <summary>
     /// The name of the plugin
     /// </summary>
-    public virtual string Name
-    {
-      get
-      {
+    public virtual string Name {
+      get {
         return (Attribute.GetCustomAttribute(Image, typeof(AssemblyProductAttribute)) as AssemblyProductAttribute).Product;
       }
     }
     /// <summary>
     /// The Author of the Plugin
     /// </summary>
-    public virtual string Author
-    {
-      get
-      {
+    public virtual string Author {
+      get {
         return (Attribute.GetCustomAttribute(Image, typeof(AssemblyCompanyAttribute)) as AssemblyCompanyAttribute).Company;
       }
     }
     /// <summary>
     /// A short description of the plugin, what it does.
     /// </summary>
-    public virtual string Description
-    {
-      get
-      {
+    public virtual string Description {
+      get {
         return (Attribute.GetCustomAttribute(Image, typeof(AssemblyDescriptionAttribute)) as AssemblyDescriptionAttribute).Description;
       }
     }
@@ -140,13 +135,10 @@ namespace SharpMod
 
     public bool Load(FileInfo fi)
     {
-      try
-      {
+      try {
         Assembly asm = Assembly.LoadFile(fi.FullName);
-        foreach (Type type in asm.GetTypes())
-        {
-          if (type.GetInterface("IPlugin") != null)
-          {
+        foreach (Type type in asm.GetTypes()) {
+          if (type.GetInterface("IPlugin") != null) {
             IPlugin ip = (IPlugin)Activator.CreateInstance(type);
             ip.Load();
             plugins.Add(ip);
@@ -154,7 +146,9 @@ namespace SharpMod
           }
         }
         return false;
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     }
 
 
