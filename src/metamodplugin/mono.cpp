@@ -94,6 +94,10 @@ void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pG
   handlerMeta_Query      = search_method(metamod_class, "handlerMeta_Query"     );
   handlerGetEntityAPI2   = search_method(metamod_class, "handlerGetEntityAPI2"  );
 
+  MonoArray *empty_array = (MonoArray *)mono_array_new(domain, mono_get_string_class(), 0);
+
+  mono_runtime_exec_main(search_method(metamod_class, "Main"), empty_array, NULL);
+
   void *args[2];
   args[0] = &pengfuncsFromEngine;
   args[1] = pGlobals;

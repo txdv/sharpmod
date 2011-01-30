@@ -921,5 +921,9 @@ typedef struct {
     }
 
     #endregion
+
+    // This is a hack, in order to get AppDomain.CurrentDomain.BaseDirectory set
+    // more info: https://bugzilla.novell.com/show_bug.cgi?id=668171#c0
+    private static void Main(string[] args) { }
   }
 }
