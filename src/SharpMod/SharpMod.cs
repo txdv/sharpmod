@@ -36,8 +36,7 @@ namespace SharpMod
     /// <summary>
     /// Returns the License text of SharpMod (GPL3)
     /// </summary>
-    public static string License
-    {
+    public static string License {
       get {
         StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("sharpmod.gpl.txt"));
         string ret = sr.ReadToEnd();
