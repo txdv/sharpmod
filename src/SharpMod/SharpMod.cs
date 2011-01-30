@@ -57,8 +57,6 @@ namespace SharpMod
       Server.Print(License);
       Server.RegisterCommand("sharp", sharp);
 
-      // Initialize plugin system
-      PluginManager.GetInstance();
 
       try {
         var doc = new System.Xml.XmlDocument();
@@ -93,7 +91,7 @@ namespace SharpMod
 
       case "list":
       case "plugins":
-        PluginManager.GetInstance().ShowPlugins();
+        PluginManager.ShowPlugins();
         break;
 
       default:

@@ -884,9 +884,9 @@ typedef struct {
       Server.SetMaxPlayers(clientMax);
 
       // Load plugins here
-      PluginManager.GetInstance().LoadPlugins();
+      PluginManager.LoadPlugins();
 
-      PluginManager.GetInstance().ShowPlugins();
+      PluginManager.ShowPlugins();
 
       MetaModEngine.SetResult(MetaResult.Handled);
     }

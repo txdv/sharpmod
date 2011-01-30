@@ -104,36 +104,21 @@ namespace SharpMod
   /// </summary>
   public class PluginManager
   {
-    #region Static code
-    // some nice singleton pattern
-    internal static PluginManager pm = null;
-    public static PluginManager GetInstance()
-    {
-      if (pm == null) pm = new PluginManager();
-      return pm;
-    }
-    #endregion
+    private static string pluginDirectory = @"cstrike/addons/sharpmod/plugins/";
+    private static List<IPlugin> plugins = new List<IPlugin>();
 
-    private string pluginDirectory = @"cstrike/addons/sharpmod/plugins/";
-    private List<IPlugin> plugins = null;
-
-    internal PluginManager()
-    {
-      plugins = new List<IPlugin>();
-    }
-
-    public void LoadPlugins()
+    public static void LoadPlugins()
     {
       if (Directory.Exists(pluginDirectory))
         foreach (string file in Directory.GetFiles(pluginDirectory, "SharpMod*.dll")) Load(file);
     }
 
-    public bool Load(string path)
+    public static bool Load(string path)
     {
       return Load(new FileInfo(path));
     }
 
-    public bool Load(FileInfo fi)
+    public static bool Load(FileInfo fi)
     {
       try {
         Assembly asm = Assembly.LoadFile(fi.FullName);
@@ -152,14 +137,14 @@ namespace SharpMod
     }
 
 
-    protected int numberFormatCounter = 0;
-    protected string NumberFormat(int pluginCount)
+    protected static int numberFormatCounter = 0;
+    protected static string NumberFormat(int pluginCount)
     {
       numberFormatCounter++;
       return " [ " + new string(' ', pluginCount.ToString().Length - numberFormatCounter.ToString().Length) + numberFormatCounter + "]";
     }
 
-    public void ShowPlugins()
+    public static void ShowPlugins()
     {
       int pluginCount = plugins.Count;
       TextTools.TextTable tt = new TextTools.TextTable(new string[] { "# ", "name", "author", "version" });
