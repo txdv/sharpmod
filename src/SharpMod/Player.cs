@@ -336,7 +336,6 @@ namespace SharpMod
     public static void RegisterCommand(string str, ClientCommandDelegate handler)
     {
       CommandManager.Client.Register(str, handler);
-
     }
 
     /// <summary>
@@ -372,8 +371,7 @@ namespace SharpMod
     /// </summary>
     public int Ping
     {
-      get
-      {
+      get {
         int ping = 0, packet_loss = 0;
         MetaModEngine.engineFunctions.GetPlayerStats(Pointer, ref ping, ref packet_loss);
         return ping;
@@ -385,8 +383,7 @@ namespace SharpMod
     /// </summary>
     public int PacketLoss
     {
-      get
-      {
+      get {
         int ping = 0, packet_loss = 0;
         MetaModEngine.engineFunctions.GetPlayerStats(Pointer, ref ping, ref packet_loss);
         return packet_loss;
