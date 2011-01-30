@@ -454,8 +454,7 @@ namespace SharpMod
     /// <summary>
     /// Returns an enumerator for Players
     /// </summary>
-    public static IEnumerable<Player> Players
-    {
+    public static IEnumerable<Player> Players {
       get {
         for (int i = 0; i < playerlist.Length; i++)
           if (playerlist[i] != null) yield return playerlist[i];
@@ -544,8 +543,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets the health of a player
     /// </summary>
-    public unsafe float Health
-    {
+    public unsafe float Health {
       get { return entity->v.health; }
       set { entity->v.health = value; }
     }
@@ -553,8 +551,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets the fov of a player
     /// </summary>
-    public unsafe float FOV
-    {
+    public unsafe float FOV {
       get { return entity->v.fov; }
       set { entity->v.fov = value; }
     }
@@ -562,8 +559,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets the fragcount of a player
     /// </summary>
-    public unsafe float Frags
-    {
+    public unsafe float Frags {
       get { return entity->v.frags; }
       set { entity->v.frags = value; }
     }
@@ -571,8 +567,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets the Armor of a player
     /// </summary>
-    public unsafe float Armor
-    {
+    public unsafe float Armor {
       get { return entity->v.armorvalue; }
       set { entity->v.armorvalue = value; }
     }
@@ -580,8 +575,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets the Gravity of a player
     /// </summary>
-    public unsafe float Gravity
-    {
+    public unsafe float Gravity {
       get { return entity->v.gravity; }
       set { entity->v.gravity = value; }
     }
@@ -589,8 +583,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets the maximum moving speed of a player
     /// </summary>
-    public unsafe float MaxSpeed
-    {
+    public unsafe float MaxSpeed {
       get { return entity->v.maxspeed; }
       set { entity->v.maxspeed = value; }
     }
@@ -599,8 +592,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets the multiplier of the damage, default is Player.defaultTakeDamage = 2.0f
     /// </summary>
-    public unsafe float TakeDamage
-    {
+    public unsafe float TakeDamage {
       get { return entity->v.takedamage; }
       set { entity->v.takedamage = value; }
     }
@@ -608,8 +600,7 @@ namespace SharpMod
     /// <summary>
     /// Sets or gets wether the godmode is activated (wrapper methdo for TakeDamage)
     /// </summary>
-    public unsafe bool GodMode
-    {
+    public unsafe bool GodMode {
       get { return (entity->v.takedamage == 0.0f); }
       set {
         if (value) entity->v.takedamage = 0.0f;
@@ -646,14 +637,9 @@ namespace SharpMod
       Kick(message);
     }
 
-    unsafe public int WeaponAnimation
-    {
-      get {
-        return entity->v.weaponanim;
-      }
-      set {
-        entity->v.weaponanim = value;
-      }
+    unsafe public int WeaponAnimation {
+      get { return entity->v.weaponanim; }
+      set { entity->v.weaponanim = value; }
     }
 
     public void UpdateUserInfo(string infoString)
