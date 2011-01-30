@@ -87,7 +87,7 @@ void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pG
     //return FALSE;
   }
   image = mono_assembly_get_image(assembly);
-  MonoClass *metamod_class = mono_class_from_name(image,"SharpMod.MetaMod", "MetaModEngine");
+  MonoClass *metamod_class = mono_class_from_name(image, "SharpMod.MetaMod", "MetaModEngine");
 
   handlerGiveFnptrsToDll = search_method(metamod_class, "handlerGiveFnptrsToDll");
   handlerMeta_Attach     = search_method(metamod_class, "handlerMeta_Attach"    );
