@@ -436,6 +436,12 @@ namespace SharpMod
       }
     }
 
+    public bool IsNull {
+      get {
+        return (Pointer == IntPtr.Zero) && (Offset == 0);
+      }
+    }
+
     // TODO: rewrite this function
     public EdictFlags Flags {
       get {
@@ -505,6 +511,11 @@ namespace SharpMod
      return *((int *)this.entity->pvPrivateData + offset);
     }
 
+    public void Spawn()
+    {
+      MetaModEngine.dllapiFunctions.Spawn(this.Pointer);
+    }
+
     public void Use(Entity entity)
     {
       MetaModEngine.dllapiFunctions.Use(this.Pointer, entity.Pointer);
@@ -513,6 +524,11 @@ namespace SharpMod
     public void Touch(Entity entity)
     {
       MetaModEngine.dllapiFunctions.Touch(this.Pointer, entity.Pointer);
+    }
+
+    public void Remove()
+    {
+      Entity.Remove(Pointer);
     }
 
     #region static methods
@@ -564,6 +580,28 @@ namespace SharpMod
 
       IntPtr ptr = MetaModEngine.engineFunctions.SzFromIndex(entity->v.classname);
       return Mono.Unix.UnixMarshal.PtrToString(ptr);
+    }
+
+    #endregion
+
+    #region Entity Entvar Fields
+    
+    public Vector3f Origin {
+      get {
+        return entity->v.origin;
+      }
+      set {
+        entity->v.origin = value;
+      }
+    }
+
+    public int Spawnflags {
+      get {
+        return entity->v.spawnflags;
+      }
+      set {
+        entity->v.spawnflags = value;
+      }
     }
 
     #endregion
