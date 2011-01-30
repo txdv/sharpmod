@@ -68,7 +68,7 @@ namespace SharpMod.Database.MySql
 
       source.Add(typeof(ActiveRecordBase), properties);
 
-      ActiveRecordStarter.Initialize(source, typeof(User), typeof(Ban));
+      ActiveRecordStarter.Initialize(source, typeof(User), typeof(Ban), typeof(Kick));
 
       ActiveRecordStarter.CreateSchema();
 
@@ -133,6 +133,18 @@ namespace SharpMod.Database.MySql
         return false;
       }
     }
+
+    public bool AddKick(KickInformation ki)
+    {
+      try {
+        Kick kick = new Kick(ki);
+        kick.Save();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
   }
 }
 

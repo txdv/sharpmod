@@ -49,6 +49,49 @@ namespace SharpMod.Database.MySql
   }
 
   [ActiveRecord]
+  public class Kick : ActiveRecordBase
+  {
+    public Kick()
+    {
+    }
+
+    public Kick(KickInformation ki)
+    {
+      Date         = ki.Date;
+      AdminAuthId  = ki.AdminAuthId;
+      PlayerAuthId = ki.PlayerAuthId;
+      Reason       = ki.Reason;
+    }
+    
+    [PrimaryKey]
+    public int Id { get; set; }
+
+    [Property]
+    public DateTime Date { get; set; }
+
+    [Property]
+    public string AdminAuthId { get; set; }
+
+    [Property]
+    public string PlayerAuthId { get; set; }
+
+    [Property]
+    public string Reason { get; set; }
+
+    public BanInformation GetBanInformation()
+    {
+      BanInformation bi = new BanInformation();
+
+      bi.Date         = Date;
+      bi.AdminAuthId  = AdminAuthId;
+      bi.PlayerAuthId = PlayerAuthId;
+      bi.Reason       = Reason;
+
+      return bi;
+    }
+  }
+
+  [ActiveRecord]
   public class Ban : ActiveRecordBase
   {
     public Ban()

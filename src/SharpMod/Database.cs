@@ -58,6 +58,34 @@ namespace SharpMod.Database
     }
   }
 
+  public class KickInformation
+  {
+    public DateTime Date       { get; set; }
+    public string AdminAuthId  { get; set; }
+    public string PlayerAuthId { get; set; }
+    public string Reason       { get; set; }
+
+    /// <summary>
+    /// Searches by PlayerAuthId for the actual Player
+    /// in the server
+    /// </summary>
+    public Player Player {
+      get {
+        return Player.FindByAuthId(PlayerAuthId);
+      }
+    }
+
+    /// <summary>
+    /// Searches by AdminAuthId for the actual Admin
+    /// in the server
+    /// </summary>
+    public Player Admin {
+      get {
+        return Player.FindByAuthId(AdminAuthId);
+      }
+    }
+  }
+
   public interface IDatabase
   {
     bool Load(XmlDocument doc);
@@ -67,6 +95,8 @@ namespace SharpMod.Database
 
     BanInformation GetActiveBan(string authId);
     bool AddBan(BanInformation bi);
+
+    bool AddKick(KickInformation ki);
   }
 
   public class DefaultDatabase : IDatabase
@@ -112,6 +142,12 @@ namespace SharpMod.Database
     {
       return false;
     }
+
+    public bool AddKick(KickInformation ki)
+    {
+      return false;
+    }
+
   }
 
   public class Privileges
