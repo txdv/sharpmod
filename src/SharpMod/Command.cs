@@ -343,8 +343,6 @@ namespace SharpMod
     public KickCommand(string[] arguments)
       : base(arguments)
     {
-      if (arguments[0] != "kick") throw new Exception();
-      if (arguments.Length < 2) throw new Exception();
     }
 
     public KickCommand(string target)
