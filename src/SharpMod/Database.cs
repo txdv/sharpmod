@@ -36,6 +36,26 @@ namespace SharpMod.Database
     public string AdminAuthId  { get; set; }
     public string PlayerAuthId { get; set; }
     public string Reason       { get; set; }
+
+    /// <summary>
+    /// Searches by PlayerAuthId for the actual Player
+    /// in the server
+    /// </summary>
+    public Player Player {
+      get {
+        return Player.FindByAuthId(PlayerAuthId);
+      }
+    }
+
+    /// <summary>
+    /// Searches by AdminAuthId for the actual Admin
+    /// in the server
+    /// </summary>
+    public Player Admin {
+      get {
+        return Player.FindByAuthId(AdminAuthId);
+      }
+    }
   }
 
   public interface IDatabase

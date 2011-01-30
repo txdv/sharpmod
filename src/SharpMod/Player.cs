@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Net;
 using SharpMod.MetaMod;
+using SharpMod.Database;
 
 namespace SharpMod
 {
@@ -38,6 +39,7 @@ namespace SharpMod
       public PlayerEventArgs (Player player)
       {
         Player = player;
+        Override = false;
       }
 
       public virtual bool Overridable { get { return false; } }
@@ -119,6 +121,16 @@ namespace SharpMod
         TaskManager.Join<string, Privileges>(ResolvedPrivileges, authid, SharpMod.Database.LoadPrivileges(authid));
       });
     }
+    private static void ResolvedPrivileges(string auth, Privileges priv)
+    {
+      Player player = Player.FindByAuthId(auth);
+
+      // Player isn't in the server any more, just stop it.
+      if (player == null)
+        return;
+
+      OnAssignPrivileges(player, priv == null ? player.Privileges : priv);
+    }
     #endregion
 
     #region PlayerAuthorize
@@ -133,14 +145,12 @@ namespace SharpMod
     [Serializable]
     public sealed class CommandEventArgs : PlayerEventArgs
     {
-      public string[] Arguments { get; set; }
-      public override bool Overridable { get { return true; } }
+      public Command Command { get; set; }
 
-      public CommandEventArgs(Player player, string[] arguments)
+      public CommandEventArgs(Player player, Command command)
           : base(player)
       {
-        Arguments = arguments;
-        Override = false;
+        Command = command;
       }
     }
     public delegate void CommandHandler(CommandEventArgs args);
@@ -151,7 +161,7 @@ namespace SharpMod
     {
       MetaModEngine.SetResult(MetaResult.Handled);
       Player player = Player.GetPlayer(entity);
-      Command cmd = Command.FromGameEngine();
+      Command cmd = CommandManager.CreateCommandFromGameEngine();
 
       switch (cmd.Arguments[0])
       {
@@ -159,11 +169,11 @@ namespace SharpMod
         player.SelectMenu(Convert.ToInt32(cmd.Arguments[1]));
         break;
       default:
-        CommandManager.Client.Execute(player, cmd);
+        CommandManager.Execute(player, cmd);
         break;
       }
 
-      clientCommandEventArgs = new CommandEventArgs(player, Command.EngineArguments);
+      clientCommandEventArgs = new CommandEventArgs(player, cmd);
       OnCommand(clientCommandEventArgs);
       player.OnPlayerCommand(clientCommandEventArgs);
 
@@ -279,6 +289,13 @@ namespace SharpMod
       var args = new AssignPrivilegesEventArgs(player);
       OnAssignPrivileges(args);
       player.OnPlayerAssignPrivileges(args);
+
+      string authid = player.AuthID;
+
+      Task.Factory.StartNew(delegate {
+        TaskManager.Join(ResolvedBans, SharpMod.Database.GetActiveBan(authid));
+      });
+
     }
     #endregion
 
@@ -290,16 +307,17 @@ namespace SharpMod
     }
     #endregion
 
-    public static void ResolvedPrivileges(string auth, Privileges priv)
+    private static void ResolvedBans(BanInformation information)
     {
-      foreach (Player player in Player.Players) {
-        // go through the player list, maybe the player with the newly assigned
-        // privileges is not online anymore
-        if (player.AuthID == auth) {
-          OnAssignPrivileges(player, priv == null ? player.Privileges : priv);
-          break;
-        }
-      }
+      if (information == null)
+        return;
+
+      Player target = information.Player;
+
+      if (target == null)
+        return;
+
+      target.Kick(information.Reason);
     }
 
     // TODO: create an interface for information saving
@@ -335,7 +353,7 @@ namespace SharpMod
 
     public static void RegisterCommand(string str, ClientCommandDelegate handler)
     {
-      CommandManager.Client.Register(str, handler);
+      CommandManager.RegisterCommandHandler(str, handler);
     }
 
     /// <summary>
@@ -633,6 +651,53 @@ namespace SharpMod
       Server.EnqueueCommand("addip {0} {1}", IPAddress, minutes);
       Server.EnqueueCommand("writeip");
       Kick(message);
+    }
+
+    public static Player Find(string target)
+    {
+      Player player = null;
+      player = FindByAuthId(target);
+      if (player != null) return player;
+      player = FindByName(target);
+      if (player != null) return player;
+      return player;
+
+    }
+
+    /// <summary>
+    /// Finds an active Player by authid.
+    /// </summary>
+    /// <param name="authId">
+    /// AuthId to search by <see cref="System.String"/>
+    /// </param>
+    /// <returns>
+    /// The player if found, null if not <see cref="Player"/>
+    /// </returns>
+    public static Player FindByAuthId(string authId)
+    {
+      foreach (Player player in Player.Players) {
+        if (player.AuthID == authId)
+          return player;
+      }
+      return null;
+    }
+
+    /// <summary>
+    /// Finds an active Player by name
+    /// </summary>
+    /// <param name="name">
+    /// Name to search by <see cref="System.String"/>
+    /// </param>
+    /// <returns>
+    /// A player if found, null if not <see cref="Player"/>
+    /// </returns>
+    public static Player FindByName(string name)
+    {
+      foreach (Player player in Player.Players) {
+        if (player.Name == name)
+          return player;
+      }
+      return null;
     }
 
     unsafe public int WeaponAnimation {

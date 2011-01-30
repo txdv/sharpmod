@@ -22,11 +22,43 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using SharpMod.Commands;
 using SharpMod.MetaMod;
 using SharpMod.Helper;
 
 namespace SharpMod
 {
+  public class CommandInformation
+  {
+    public int MinimumArguments { get; set; }
+
+    public int MaximumArguments { get; set; }
+
+    public string CommandString { get; set; }
+
+    public Type Type { get; protected set; }
+
+    public string HelpString { get; set; }
+
+    public bool ValidArgumentCount(string[] args)
+    {
+      return (MinimumArguments <= args.Length) && (args.Length <= MaximumArguments);
+    }
+
+    public Command GetInstance(string[] args)
+    {
+      return (Command)Activator.CreateInstance(Type, new object[] { args });
+    }
+
+    public CommandInformation(Type type)
+    {
+      if (!type.IsSubclassOf(typeof(Command))) {
+        throw new ArgumentException("Argument is not of subclass of Command");
+      }
+      Type = type;
+      HelpString = string.Empty;
+    }
+ }
 
   /// <summary>
   /// A class for handling commands send by the players
@@ -39,9 +71,8 @@ namespace SharpMod
     /// <summary>
     /// Calls the GoldSrc engine (Cmd_Argc, Cmd_Argv) and returns the values as a C# array
     /// </summary>
-    public static string[] EngineArguments
-    {
-     get {
+    public static string[] EngineArguments {
+      get {
         string[] args = new string[MetaModEngine.engineFunctions.Cmd_Argc()];
         for (int i = 0; i < args.Length; i++) {
           args[i] = Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.Cmd_Argv(i));
@@ -50,16 +81,11 @@ namespace SharpMod
       }
     }
 
-    /// <summary>
-    /// Creates a command class instance using the gameengine command calls
-    /// </summary>
-    /// <returns>
-    /// A command class instance with the original gameengine commadn values <see cref="Command"/>
-    /// </returns>
-    public static Command FromGameEngine()
-    {
-      return new Command(Command.EngineArguments);
-    }
+    public virtual bool Success { get; protected set; }
+
+    public virtual bool Override { get; protected set; }
+
+    public virtual bool Valid { get; protected set; }
 
     /// <summary>
     /// The arguments of the specific Command instance
@@ -84,6 +110,9 @@ namespace SharpMod
     public Command(string[] arguments)
     {
       Arguments = arguments;
+      Success = false;
+      Override = false;
+      Valid = false;
     }
 
     /// <summary>
@@ -110,13 +139,29 @@ namespace SharpMod
     /// </returns>
     public override string ToString()
     {
+      if (Arguments == null) return string.Empty;
+
       StringBuilder sb = new StringBuilder(Arguments[0]);
       for (int i = 1; i < Arguments.Length; i++)
-        // sb.Append(String.Format(" {0}", Escape(Arguments[i])));
-        sb.Append(String.Format(" {0}", Arguments[i]));
+        sb.Append(String.Format(" \"{0}\"", Arguments[i]));
       return sb.ToString();
     }
 
+    public virtual void Execute(Player player)
+    {
+      Server.LogDeveloper("Command executed: {0}", Arguments.Join(' '));
+      OnFailure();
+    }
+
+    protected virtual void OnSuccess()
+    {
+      Server.LogDeveloper("Command successful: {0}", Arguments.Join(' '));
+    }
+
+    protected virtual void OnFailure()
+    {
+      Server.LogDeveloper("Command failed: {0}", Arguments.Join(' '));
+    }
   }
 
   public delegate void ClientCommandDelegate(Player player, Command cmd);
@@ -124,25 +169,40 @@ namespace SharpMod
   /// <summary>
   /// A class for managing all the command associations
   /// </summary>
-  internal class CommandManager
+  public class CommandManager
   {
-    private Dictionary<string, ClientCommandDelegate>events;
+    private static Dictionary<string, ClientCommandDelegate> events = new Dictionary<string, ClientCommandDelegate>();
+    private static List<CommandInformation> commandInformationList = new List<CommandInformation>();
 
-    private static CommandManager client = null;
-      private CommandManager()
+    static CommandManager()
     {
-      events = new Dictionary<string, ClientCommandDelegate>();
-    }
+      RegisterCommand(new CommandInformation(typeof(SayCommand)) {
+        CommandString = "say",
+        MinimumArguments = 2,
+        MaximumArguments = 2,
+        HelpString = "<text> - will enter a message in the global chat"
+      });
 
-    /// <summary>
-    /// Singleton, the only way to get one instance
-    /// </summary>
-    public static CommandManager Client
-    {
-      get {
-        if (client == null) client = new CommandManager();
-        return client;
-      }
+      RegisterCommand(new CommandInformation(typeof(SayCommand)) {
+        CommandString = "say_team",
+        MinimumArguments = 2,
+        MaximumArguments = 2,
+        HelpString = "<text> - will enter a message in the team chat"
+      });
+
+      RegisterCommand(new CommandInformation(typeof(Kick)) {
+        CommandString = "smod_kick",
+        MinimumArguments = 2,
+        MaximumArguments = 3,
+        HelpString = "<target> [reason] - kicks a target by partial steamid, nick or ip with the reason"
+      });
+
+      RegisterCommand(new CommandInformation(typeof(Ban)) {
+        CommandString = "smod_ban",
+        MinimumArguments = 3,
+        MaximumArguments = 4,
+        HelpString = "<target> <duration> [reason] - bans a target by partial steamid, nick or ip with optional reason for duration"
+      });
     }
 
     /// <summary>
@@ -154,7 +214,7 @@ namespace SharpMod
     /// <param name="handler">
     /// A handler which to invoke if command occures <see cref="ClientCommandDelegate"/>
     /// </param>
-    public void Register(string str, ClientCommandDelegate handler)
+    public static void RegisterCommandHandler(string str, ClientCommandDelegate handler)
     {
       if (events.ContainsKey(str)) {
         ClientCommandDelegate cmddelegate = events[str];
@@ -162,6 +222,36 @@ namespace SharpMod
         else cmddelegate = handler;
       }
       else events.Add(str, handler);
+    }
+
+    public static void RegisterCommand(CommandInformation commandInformation) {
+      commandInformationList.Add(commandInformation);
+    }
+
+    public static Command CreateCommand(string[] arguments) {
+      // special case, if the arguments string is empty
+      if (arguments.Length < 1) {
+        return new Command(arguments);
+      }
+
+      foreach (CommandInformation ci in commandInformationList) {
+        if (arguments[0] == ci.CommandString) {
+          return (Command)Activator.CreateInstance(ci.Type, new object[] { arguments });
+        }
+      }
+
+      return new Command(arguments);
+    }
+
+    /// <summary>
+    /// Creates a command class instance using the gameengine command calls
+    /// </summary>
+    /// <returns>
+    /// A command class instance with the original gameengine commadn values <see cref="Command"/>
+    /// </returns>
+    internal static Command CreateCommandFromGameEngine()
+    {
+      return CreateCommand(Command.EngineArguments);
     }
 
     /// <summary>
@@ -174,19 +264,17 @@ namespace SharpMod
     /// <param name="cmd">
     /// A <see cref="Command"/>
     /// </param>
-    internal void Execute(Player player, Command cmd)
+    internal static void Execute(Player player, Command cmd)
     {
       foreach (KeyValuePair<string, ClientCommandDelegate> keyval in events) {
         if (cmd.ToString().StartsWith(keyval.Key)) {
           if (keyval.Value != null) keyval.Value(player, cmd);
         }
       }
+
+      cmd.Execute(player);
     }
   }
-
-
-  // TODO: Move specific commands which belong to specific mods to specific extenion files
-  // very SPECIFIC
 
   /// <summary>
   /// A special class for handling SayCommand (say, say_team)
@@ -216,7 +304,11 @@ namespace SharpMod
     public SayCommand(string[] arguments)
       : base(arguments)
     {
-      if (arguments[0] != "say") throw new Exception();
+    }
+
+    public SayCommand(string message)
+      : base(new string[] { "say", message })
+    {
     }
   }
 
@@ -225,8 +317,54 @@ namespace SharpMod
     public SayTeamCommand(string[] arguments)
       : base(arguments)
     {
-      if (arguments[0] != "say") throw new Exception();
+    }
+
+    public SayTeamCommand(string message)
+      : base(new string[] { "say_team", message })
+    {
     }
   }
 
+  public class KickCommand : Command
+  {
+    public string Target {
+      get {
+        return Arguments[1];
+      }
+    }
+
+    public string Reason {
+      get {
+        if (Arguments.Length < 2) return string.Empty;
+        return Arguments[2];
+      }
+    }
+
+    public KickCommand(string[] arguments)
+      : base(arguments)
+    {
+      if (arguments[0] != "kick") throw new Exception();
+      if (arguments.Length < 2) throw new Exception();
+    }
+
+    public KickCommand(string target)
+      : this(new string[] { "kick", target })
+    {
+    }
+
+    public KickCommand(string target, string reason)
+      : this(new string[] { "kick", target, reason })
+    {
+    }
+
+    public KickCommand(Player player)
+      : this(player.Name)
+    {
+    }
+
+    public KickCommand(Player player, string reason)
+      : this(player.Name, reason)
+    {
+    }
+  }
 }
