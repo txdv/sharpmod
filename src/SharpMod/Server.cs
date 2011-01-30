@@ -88,7 +88,6 @@ namespace SharpMod
     public void Set(string key, string val)
     {
         MetaModEngine.engineFunctions.SetServerKeyValue(MetaModEngine.engineFunctions.GetInfoKeyBuffer(Pointer), key, val);
-
     }
 
     /// <summary>
