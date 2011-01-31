@@ -61,7 +61,7 @@ namespace SharpMod.Commands
     }
 
     public Kick(Player player, string reason)
-      : this(new string[] { "smod_kick", player.Name, reason })
+      : this(new string[] { "smod_kick", string.Format("#{0}", player.UserID), reason })
     {
     }
 
