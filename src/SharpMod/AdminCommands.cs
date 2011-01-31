@@ -20,9 +20,10 @@
 //
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using SharpMod.Helper;
 using SharpMod.Database;
-using System.Threading.Tasks;
 
 namespace SharpMod.Commands
 {
@@ -216,6 +217,20 @@ namespace SharpMod.Commands
 
   public class Who : Command
   {
+    private static Player playerInstance = null;
+    private static TextTools.TextTable table = new TextTools.TextTable(new string[] { "# ", "nick", "authid", "userid", "privileges" });
+
+    static Who()
+    {
+      table.Header[0].Alignment = TextTools.Align.Right;
+      table.Header[3].Alignment = TextTools.Align.Right;
+    }
+
+    private static void write(string text)
+    {
+      Write(playerInstance, text);
+    }
+
     public Who(string[] arguments)
       : base(arguments)
     {
@@ -233,16 +248,19 @@ namespace SharpMod.Commands
         return;
       }
 
-      WriteLine(player, " # nick\tauthid\tuserid\tprivileges");
-
-      foreach (Player p in Player.Players) {
-        WriteLine(player, "{0:00} {1}\t{2}\t#{3}\t{4}",
-                          p.Index,
+      var data = from p in Player.Players
+                 select new string [] {
+                          p.Index.ToString(),
                           p.Name,
                           p.AuthID,
-                          p.UserID,
-                          p.Privileges.PrivilegesString);
-      }
+                          string.Format("#{0}", p.UserID),
+                          p.Privileges.PrivilegesString
+                        };
+
+      // TODO: do something about this hack
+      playerInstance = player;
+      table.Render(data.ToArray(), write, Console.WindowWidth);
+
     }
   }
 
