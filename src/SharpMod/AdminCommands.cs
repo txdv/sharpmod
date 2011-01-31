@@ -36,8 +36,7 @@ namespace SharpMod.Commands
 
     public string Reason {
       get {
-        if (Arguments.Length < 3) return string.Empty;
-        return Arguments[2];
+        return Arguments.Join(2, ' ');
       }
     }
 
@@ -156,8 +155,7 @@ namespace SharpMod.Commands
 
     public string Reason {
       get {
-        if (Arguments.Length < 3) return string.Empty;
-        return Arguments[3];
+        return Arguments.Join(3, ' ');
       }
     }
 

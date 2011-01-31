@@ -229,7 +229,7 @@ namespace SharpMod
         CommandType = CommandType.Both,
         CommandString = "smod_kick",
         MinimumArguments = 2,
-        MaximumArguments = 3,
+        MaximumArguments = -1,
         HelpString = "<target> [reason] - kicks a target by partial steamid, nick or ip with the reason"
       });
 
@@ -237,7 +237,7 @@ namespace SharpMod
         CommandType = CommandType.Both,
         CommandString = "smod_ban",
         MinimumArguments = 3,
-        MaximumArguments = 4,
+        MaximumArguments = -1,
         HelpString = "<target> <duration> [reason] - bans a target by partial steamid, nick or ip with optional reason for duration"
       });
 
