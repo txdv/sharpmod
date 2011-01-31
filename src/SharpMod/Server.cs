@@ -113,7 +113,11 @@ namespace SharpMod
   public class Server
   {
 
-    private static MethodInfo mi = typeof(Server).GetMethod("CommandWrapper", BindingFlags.NonPublic | BindingFlags.Static);
+    private static Delegate del = Delegate.CreateDelegate(typeof(Callback), null,
+                                                          typeof(Server).GetMethod("CommandWrapper", BindingFlags.NonPublic | BindingFlags.Static));
+
+    private static Dictionary<string, CommandDelegate> serverCommands = new Dictionary<string, CommandDelegate>();
+
     private static int maxplayers;
 
     /// <summary>
@@ -234,17 +238,26 @@ namespace SharpMod
     }
 
     public delegate void CommandDelegate(string [] args);
-    
-    public static void RegisterCommand(string str, CommandDelegate cmd)
+
+    public static bool RegisterCommand(string str, CommandDelegate cmd)
     {
-      Callback cl = (Callback)Delegate.CreateDelegate(typeof(Callback), cmd, mi);
-      MetaModEngine.engineFunctions.AddServerCommand(str, Marshal.GetFunctionPointerForDelegate(cl));
+      if (serverCommands.ContainsKey(str)) {
+        return false;
+      }
+
+      MetaModEngine.engineFunctions.AddServerCommand(str, Marshal.GetFunctionPointerForDelegate(del));
+      serverCommands[str] = cmd;
+      return true;
     }
 
-    // TODO: Surpress warning
-    private static void CommandWrapper(CommandDelegate cmd)
+    private static void CommandWrapper()
     {
-      cmd(Command.EngineArguments);
+      string[] args = Command.EngineArguments;
+      string command = args[0];
+      if (serverCommands.ContainsKey(command)) {
+        // call the callback function
+        serverCommands[command](args);
+      }
     }
     
     private delegate void Callback();
