@@ -90,11 +90,7 @@ namespace SharpMod.Commands
         return;
       }
 
-      KickInformation ki = new KickInformation();
-      ki.AdminAuthId  = (player == null ? "server" : player.AuthID);
-      ki.PlayerAuthId = target.AuthID;
-      ki.Reason       = Reason;
-      ki.Date         = DateTime.Now;
+      KickInformation ki = new KickInformation(player, target, Reason);
 
       target.Kick(Reason);
 
@@ -142,6 +138,22 @@ namespace SharpMod.Commands
       }
     }
 
+    public string Duration {
+      get {
+        return Arguments[2];
+      }
+    }
+
+    public bool TryParseDuration(out TimeSpan timespan) {
+      int hours;
+      if (int.TryParse(Arguments[2], out hours)) {
+        timespan = TimeSpan.FromMinutes(hours);
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     public string Reason {
       get {
         if (Arguments.Length < 3) return string.Empty;
@@ -173,12 +185,12 @@ namespace SharpMod.Commands
         return;
       }
 
-      BanInformation bi = new BanInformation();
-      bi.AdminAuthId  = (player == null ? "server" : player.AuthID);
-      bi.PlayerAuthId = target.AuthID;
-      bi.Reason       = Reason;
-      bi.Date         = DateTime.Now;
-      bi.Duration     = TimeSpan.FromSeconds(int.Parse(Arguments[2]));
+      TimeSpan duration;
+      if (!TryParseDuration(out duration)) {
+        WriteLine(player, "Duration was misformed");
+      }
+
+      BanInformation bi = new BanInformation(player, target, duration, Reason);
 
       int userid = Player.GetUserID(player);
 
@@ -295,10 +307,7 @@ namespace SharpMod.Commands
         return;
       }
 
-      MapChangeInformation mc = new MapChangeInformation();
-      mc.Date        = DateTime.Now;
-      mc.AdminAuthId = player == null ? "server" : player.AuthID;
-      mc.Map         = Map;
+      MapChangeInformation mc = new MapChangeInformation(player, Map);
 
       Task.Factory.StartNew(delegate {
         try {

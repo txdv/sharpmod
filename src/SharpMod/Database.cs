@@ -31,6 +31,17 @@ namespace SharpMod.Database
 {
   public abstract class AdminCommandInformation
   {
+    public AdminCommandInformation()
+    {
+      Date = DateTime.Now;
+    }
+
+    public AdminCommandInformation(Player admin)
+      : this()
+    {
+      AdminAuthId = admin == null ? "server" : admin.AuthID;
+    }
+
     public DateTime Date       { get; set; }
     public string AdminAuthId  { get; set; }
 
@@ -44,8 +55,22 @@ namespace SharpMod.Database
       }
     }
   }
+
   public class BanInformation : AdminCommandInformation
   {
+    public BanInformation()
+      : base()
+    {
+    }
+
+    public BanInformation(Player admin, Player target, TimeSpan duration, string reason)
+      : base(admin)
+    {
+      PlayerAuthId = target.AuthID;
+      Duration     = duration;
+      Reason       = reason;
+    }
+
     public TimeSpan Duration   { get; set; }
     public string PlayerAuthId { get; set; }
     public string Reason       { get; set; }
@@ -64,6 +89,18 @@ namespace SharpMod.Database
 
   public class KickInformation : AdminCommandInformation
   {
+    public KickInformation()
+      : base()
+    {
+    }
+
+    public KickInformation(Player admin, Player target, string reason)
+      : base(admin)
+    {
+      PlayerAuthId = target.AuthID;
+      Reason       = reason;
+    }
+
     public string PlayerAuthId { get; set; }
     public string Reason       { get; set; }
 
@@ -80,6 +117,17 @@ namespace SharpMod.Database
 
   public class MapChangeInformation : AdminCommandInformation
   {
+    public MapChangeInformation()
+      : base()
+    {
+    }
+
+    public MapChangeInformation(Player admin, string map)
+      : base(admin)
+    {
+      Map = map;
+    }
+
     public string Map { get; set; }
   }
 
