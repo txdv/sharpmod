@@ -184,7 +184,7 @@ namespace SharpMod
     protected void WriteLine(Player player, string format, params object[] param)
     {
       if (player == null) {
-        Server.Print(format, param);
+        Server.Print(format + "\n", param);
       } else {
         player.PrintConsole(format + "\n", param);
       }
