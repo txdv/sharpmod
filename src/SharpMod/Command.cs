@@ -203,6 +203,13 @@ namespace SharpMod
         MaximumArguments = 4,
         HelpString = "<target> <duration> [reason] - bans a target by partial steamid, nick or ip with optional reason for duration"
       });
+
+      RegisterCommand(new CommandInformation(typeof(Who)) {
+        CommandString = "smod_who",
+        MinimumArguments = 1,
+        MaximumArguments = 1,
+        HelpString = "- shows the active player list with the according privileges"
+      });
     }
 
     /// <summary>

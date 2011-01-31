@@ -203,5 +203,37 @@ namespace SharpMod.Commands
       target.Kick(Reason);
     }
   }
+
+  public class Who : Command
+  {
+    public Who(string[] arguments)
+      : base(arguments)
+    {
+    }
+
+    public Who()
+      : this(new string[] { "smod_who" })
+    {
+    }
+
+    public override void Execute(Player player)
+    {
+      if (!player.Privileges.HasPrivilege("status")) {
+        player.PrintConsole("You have no status privileges");
+        return;
+      }
+
+      player.PrintConsole(" # nick\tauthid\tuserid\tprivileges\n");
+
+      foreach (Player p in Player.Players) {
+        player.PrintConsole("{0:00} {1}\t{2}\t#{3}\t{4}\n",
+                            p.Index,
+                            p.Name,
+                            p.AuthID,
+                            p.UserID,
+                            p.Privileges.PrivilegesString);
+      }
+    }
+  }
 }
 
