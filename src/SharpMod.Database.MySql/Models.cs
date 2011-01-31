@@ -26,7 +26,7 @@ using NHibernate.Criterion;
 
 namespace SharpMod.Database.MySql
 {
-  [ActiveRecord("User")]
+  [ActiveRecord]
   public class User : ActiveRecordBase
   {
     public User()
@@ -48,21 +48,20 @@ namespace SharpMod.Database.MySql
     }
   }
 
-  [ActiveRecord]
-  public class Kick : ActiveRecordBase
+
+  public abstract class AdminCommand : ActiveRecordBase
   {
-    public Kick()
+    public AdminCommand()
     {
     }
 
-    public Kick(KickInformation ki)
+    public AdminCommand(AdminCommandInformation aci)
     {
-      Date         = ki.Date;
-      AdminAuthId  = ki.AdminAuthId;
-      PlayerAuthId = ki.PlayerAuthId;
-      Reason       = ki.Reason;
+      Date        = aci.Date;
+      Date        = aci.Date;
+      AdminAuthId = aci.AdminAuthId;
     }
-    
+
     [PrimaryKey]
     public int Id { get; set; }
 
@@ -71,7 +70,22 @@ namespace SharpMod.Database.MySql
 
     [Property]
     public string AdminAuthId { get; set; }
+  }
 
+  [ActiveRecord]
+  public class Kick : AdminCommand
+  {
+    public Kick()
+    {
+    }
+
+    public Kick(KickInformation ki)
+      : base(ki)
+    {
+      PlayerAuthId = ki.PlayerAuthId;
+      Reason       = ki.Reason;
+    }
+    
     [Property]
     public string PlayerAuthId { get; set; }
 
@@ -82,8 +96,6 @@ namespace SharpMod.Database.MySql
     {
       BanInformation bi = new BanInformation();
 
-      bi.Date         = Date;
-      bi.AdminAuthId  = AdminAuthId;
       bi.PlayerAuthId = PlayerAuthId;
       bi.Reason       = Reason;
 
@@ -92,32 +104,22 @@ namespace SharpMod.Database.MySql
   }
 
   [ActiveRecord]
-  public class Ban : ActiveRecordBase
+  public class Ban : AdminCommand
   {
     public Ban()
     {
     }
 
     public Ban(BanInformation bi)
+      : base(bi)
     {
-      Date         = bi.Date;
       Duration     = bi.Duration;
-      AdminAuthId  = bi.AdminAuthId;
       PlayerAuthId = bi.PlayerAuthId;
       Reason       = bi.Reason;
     }
 
-    [PrimaryKey]
-    public int Id { get; set; }
-
-    [Property]
-    public DateTime Date { get; set; }
-
     [Property]
     public TimeSpan Duration { get; set; }
-
-    [Property]
-    public string AdminAuthId { get; set; }
 
     [Property]
     public string PlayerAuthId { get; set; }
@@ -146,6 +148,23 @@ namespace SharpMod.Database.MySql
 
       return bi;
     }
+  }
+
+  [ActiveRecord]
+  public class MapChange : AdminCommand
+  {
+    public MapChange()
+    {
+    }
+
+    public MapChange(MapChangeInformation mi)
+      : base(mi)
+    {
+      Map = mi.Map;
+    }
+
+    [Property]
+    public string Map { get; set; }
   }
 }
 

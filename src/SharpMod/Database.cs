@@ -29,23 +29,10 @@ using SharpMod.Helper;
 
 namespace SharpMod.Database
 {
-  public class BanInformation
+  public abstract class AdminCommandInformation
   {
     public DateTime Date       { get; set; }
-    public TimeSpan Duration   { get; set; }
     public string AdminAuthId  { get; set; }
-    public string PlayerAuthId { get; set; }
-    public string Reason       { get; set; }
-
-    /// <summary>
-    /// Searches by PlayerAuthId for the actual Player
-    /// in the server
-    /// </summary>
-    public Player Player {
-      get {
-        return Player.FindByAuthId(PlayerAuthId);
-      }
-    }
 
     /// <summary>
     /// Searches by AdminAuthId for the actual Admin
@@ -57,11 +44,9 @@ namespace SharpMod.Database
       }
     }
   }
-
-  public class KickInformation
+  public class BanInformation : AdminCommandInformation
   {
-    public DateTime Date       { get; set; }
-    public string AdminAuthId  { get; set; }
+    public TimeSpan Duration   { get; set; }
     public string PlayerAuthId { get; set; }
     public string Reason       { get; set; }
 
@@ -75,15 +60,27 @@ namespace SharpMod.Database
       }
     }
 
+  }
+
+  public class KickInformation : AdminCommandInformation
+  {
+    public string PlayerAuthId { get; set; }
+    public string Reason       { get; set; }
+
     /// <summary>
-    /// Searches by AdminAuthId for the actual Admin
+    /// Searches by PlayerAuthId for the actual Player
     /// in the server
     /// </summary>
-    public Player Admin {
+    public Player Player {
       get {
-        return Player.FindByAuthId(AdminAuthId);
+        return Player.FindByAuthId(PlayerAuthId);
       }
     }
+  }
+
+  public class MapChangeInformation : AdminCommandInformation
+  {
+    public string Map { get; set; }
   }
 
   public interface IDatabase
@@ -97,6 +94,8 @@ namespace SharpMod.Database
     bool AddBan(BanInformation bi);
 
     bool AddKick(KickInformation ki);
+
+    bool AddMapChange(MapChangeInformation mi);
   }
 
   public class DefaultDatabase : IDatabase
@@ -148,6 +147,10 @@ namespace SharpMod.Database
       return false;
     }
 
+    public bool AddMapChange(MapChangeInformation mi)
+    {
+      return false;
+    }
   }
 
   public class Privileges

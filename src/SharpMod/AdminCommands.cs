@@ -295,6 +295,18 @@ namespace SharpMod.Commands
         return;
       }
 
+      MapChangeInformation mc = new MapChangeInformation();
+      mc.Date        = DateTime.Now;
+      mc.AdminAuthId = player == null ? "server" : player.AuthID;
+      mc.Map         = Map;
+
+      Task.Factory.StartNew(delegate {
+        try {
+          SharpMod.Database.AddMapChange(mc);
+        } catch {
+        }
+      });
+
       Server.ExecuteCommand("changelevel {0}", Map);
 
       // TODO: make this beautiful, 30 == SVC_INTERMISSSION

@@ -68,7 +68,7 @@ namespace SharpMod.Database.MySql
 
       source.Add(typeof(ActiveRecordBase), properties);
 
-      ActiveRecordStarter.Initialize(source, typeof(User), typeof(Ban), typeof(Kick));
+      ActiveRecordStarter.Initialize(source, typeof(User), typeof(Ban), typeof(Kick), typeof(MapChange));
 
       ActiveRecordStarter.CreateSchema();
 
@@ -139,6 +139,17 @@ namespace SharpMod.Database.MySql
       try {
         Kick kick = new Kick(ki);
         kick.Save();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    public bool AddMapChange(MapChangeInformation mi)
+    {
+      try {
+        MapChange mc = new MapChange(mi);
+        mc.Save();
         return true;
       } catch {
         return false;
