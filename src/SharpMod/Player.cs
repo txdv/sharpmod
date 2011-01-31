@@ -498,6 +498,10 @@ namespace SharpMod
     {
       MetaModEngine.engineFunctions.ClientPrintf(Pointer, PrintType.Console, text);
     }
+    public void PrintConsole(string text, params object[] param)
+    {
+      PrintConsole(string.Format(text, param));
+    }
     /// <summary>
     /// Prints some text to the Player central screen
     /// </summary>
@@ -508,6 +512,10 @@ namespace SharpMod
     {
       MetaModEngine.engineFunctions.ClientPrintf(Pointer, PrintType.Center, text);
     }
+    public void PrintCenter(string text, params object[] param)
+    {
+      PrintCenter(string.Format(text, param));
+    }
     /// <summary>
     /// Prints some text to the players text in one color.
     /// </summary>
@@ -517,6 +525,10 @@ namespace SharpMod
     public void PrintChat(string text)
     {
       MetaModEngine.engineFunctions.ClientPrintf(Pointer, PrintType.Chat, text);
+    }
+    public void PrintChat(string text, params object[] param)
+    {
+      PrintChat(string.Format(text, param));
     }
 
     /// <summary>
