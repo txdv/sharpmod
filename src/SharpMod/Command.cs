@@ -180,22 +180,28 @@ namespace SharpMod
       Server.LogDeveloper("Command failed: {0}", Arguments.Join(' '));
     }
 
-    protected void Write(Player player, string format, params object[] param)
+    protected static void Write(Player player, string text)
     {
       if (player == null) {
-        Server.Print(format, param);
-      } else {
-        player.PrintConsole(format, param);
+        Server.Print(text);
+      } else  {
+        player.PrintConsole(text);
       }
     }
 
-    protected void WriteLine(Player player, string format, params object[] param)
+    protected static void Write(Player player, string format, params object[] param)
     {
-      if (player == null) {
-        Server.Print(format + "\n", param);
-      } else {
-        player.PrintConsole(format + "\n", param);
-      }
+      Write(player, string.Format(format, param));
+    }
+
+    protected static void WriteLine(Player player, string text)
+    {
+      Write(player, text + '\n');
+    }
+
+    protected static void WriteLine(Player player, string format, params object[] param)
+    {
+      WriteLine(player, string.Format(format, param));
     }
   }
 
