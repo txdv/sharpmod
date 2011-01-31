@@ -256,6 +256,14 @@ namespace SharpMod
         MaximumArguments = 1,
         HelpString = "- reloads the admins"
       });
+
+      RegisterCommand(new CommandInformation(typeof(ChangeMap)) {
+        CommandType = CommandType.Both,
+        CommandString = "smod_map",
+        MinimumArguments = 2,
+        MaximumArguments = 2,
+        HelpString = "<map> - changes the active map to"
+      });
     }
 
     /// <summary>

@@ -259,5 +259,50 @@ namespace SharpMod.Commands
       Player.ReloadAllPrivileges();
     }
   }
+
+  public class ChangeMap : Command
+  {
+    public ChangeMap(string[] arguments)
+      : base(arguments)
+    {
+    }
+
+    public ChangeMap(string map)
+      : this(new string[] { "smod_map", map })
+    {
+    }
+
+    public string Map {
+      get {
+        return Arguments[1];
+      }
+    }
+
+    public override void Execute(Player player)
+    {
+      int userid = Player.GetUserID(player);
+
+      if (player != null && !player.Privileges.HasPrivilege("map")) {
+        WriteLine(player, "You have no map privileges");
+        OnFailure(userid);
+        return;
+      }
+
+
+      if (!Server.IsMapValid(Map)) {
+        WriteLine(player, "invalid map provided");
+        OnFailure(userid);
+        return;
+      }
+
+      Server.ExecuteCommand("changelevel {0}", Map);
+
+      // TODO: make this beautiful, 30 == SVC_INTERMISSSION
+      Message.Begin(MessageDestination.AllReliable, 30, IntPtr.Zero, IntPtr.Zero);
+      Message.End();
+
+      OnSuccess(userid);
+    }
+  }
 }
 
