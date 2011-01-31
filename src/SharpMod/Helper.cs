@@ -112,8 +112,7 @@ namespace SharpMod.Helper
       if (c == ' ') return @" "; // because its < 32
       if (c == '"') return "\\\""; // special escape
       if (c > 32)   return string.Format("{0}", c);
-      switch (c)
-      {
+      switch (c) {
       case '\a':
         return @"\a";
       case '\b':
