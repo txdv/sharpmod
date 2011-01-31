@@ -210,6 +210,13 @@ namespace SharpMod
         MaximumArguments = 1,
         HelpString = "- shows the active player list with the according privileges"
       });
+
+      RegisterCommand(new CommandInformation(typeof(AdminReload)) {
+        CommandString = "smod_reloadadmins",
+        MinimumArguments = 1,
+        MaximumArguments = 1,
+        HelpString = "- reloads the admins"
+      });
     }
 
     /// <summary>

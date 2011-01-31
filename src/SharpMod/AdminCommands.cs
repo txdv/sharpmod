@@ -235,5 +235,29 @@ namespace SharpMod.Commands
       }
     }
   }
+
+  public class AdminReload : Command
+  {
+    public AdminReload(string[] arguments)
+      : base(arguments)
+    {
+    }
+
+    public AdminReload()
+      : this(new string[]  { "smod_reload" })
+    {
+    }
+
+    public override void Execute(Player player)
+    {
+      if (player == null || !player.Privileges.HasPrivileges) {
+        player.PrintConsole("You have to have at least on privilege to use this command");
+        return;
+      }
+
+      player.PrintConsole("Reloading all admin privileges");
+      Player.ReloadAllPrivileges();
+    }
+  }
 }
 

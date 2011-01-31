@@ -115,11 +115,7 @@ namespace SharpMod
       OnAuthorize(auth);
       player.OnPlayerAuthorize(auth);
 
-      string authid = player.AuthID;
-
-      Task.Factory.StartNew(delegate {
-        TaskManager.Join<string, Privileges>(ResolvedPrivileges, authid, SharpMod.Database.LoadPrivileges(authid));
-      });
+      player.ReloadPrivileges();
     }
     private static void ResolvedPrivileges(string auth, Privileges priv)
     {
@@ -721,6 +717,21 @@ namespace SharpMod
           return player;
       }
       return null;
+    }
+
+    public void ReloadPrivileges()
+    {
+      string authid = AuthID;
+
+      Task.Factory.StartNew(delegate {
+        TaskManager.Join<string, Privileges>(ResolvedPrivileges, authid, SharpMod.Database.LoadPrivileges(authid));
+      });
+    }
+
+    public static void ReloadAllPrivileges()
+    {
+      foreach (Player player in Players)
+        player.ReloadPrivileges();
     }
 
     unsafe public int WeaponAnimation {
