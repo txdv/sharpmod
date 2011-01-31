@@ -216,6 +216,7 @@ namespace SharpMod.MetaMod
   internal delegate void SetServerKeyValueDelegate(IntPtr infoBuffer, string key, string val);
   internal delegate void SetClientKeyValueDelegate(int clientIndex, IntPtr infoBuffer, string key, string val);
   internal delegate int IsMapValidDelegate(string filename);
+  internal delegate int GetPlayerUserId(IntPtr playerEntity);
   internal delegate int IsDedicatedServerDelegate();
   internal delegate IntPtr CVarGetPointerDelegate(string cvarname);
   internal delegate void GetPlayerStatsDelegate(IntPtr playerEntity, ref int ping, ref int packet_loss);
@@ -344,7 +345,7 @@ namespace SharpMod.MetaMod
     internal IsMapValidDelegate IsMapValid;
     IntPtr StaticDecal;
     IntPtr PrecacheGeneric;
-    IntPtr GetPlayerUserId;
+    internal GetPlayerUserId GetPlayerUserId;
     IntPtr BuildSoundMsg;
     internal IsDedicatedServerDelegate IsDedicatedServer;
     internal CVarGetPointerDelegate CVarGetPointer;

@@ -378,6 +378,17 @@ namespace SharpMod
     /// can kick or ban etc.
     /// </summary>
     public Privileges Privileges { get; protected set; }
+    /// <summary>
+    /// Returns the UserId of the player.
+    /// It is unique per connection, therefore good for logging purposes.
+    /// The UserId is equal 1 for the first player and +1 for all subsequent.
+    /// Count startsfrom 1 on every server start/restart, but not mapchange/
+    /// </summary>
+    public int UserID {
+      get {
+        return MetaModEngine.engineFunctions.GetPlayerUserId(Pointer);
+      }
+    }
 
     public bool PendingAuth {
       get {
