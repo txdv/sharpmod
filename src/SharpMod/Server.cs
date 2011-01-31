@@ -139,10 +139,8 @@ namespace SharpMod
     /// Gets the 0 directory of the running game server
     /// 512 is the limit size of the returned name
     /// </summary>
-    unsafe public static string GameDirectory
-    {
-      get
-      {
+    unsafe public static string GameDirectory {
+      get {
         int length = 0;
         foreach (DirectoryInfo di in (new DirectoryInfo("./")).GetDirectories())
         {
