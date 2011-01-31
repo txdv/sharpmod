@@ -128,7 +128,7 @@ namespace SharpMod.Database.MySql
     public static Ban FindActiveBan(string authId)
     {
       var query = from ban in (Ban[])FindAll(typeof(Ban), Expression.Eq("PlayerAuthId", authId))
-                  where ban.Date + ban.Duration < DateTime.Now
+                  where ban.Date + ban.Duration >= DateTime.Now
                   select ban;
 
       return query.First();
