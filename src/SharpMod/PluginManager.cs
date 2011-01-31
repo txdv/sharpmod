@@ -154,9 +154,9 @@ namespace SharpMod
       var data = from h in plugins
                  select new string [] { NumberFormat(pluginCount),  h.Name, h.Author, h.Version.ToString() };
 
-      Console.WriteLine ("Currently loaded plugins:");
+      Server.Print("Currently loaded plugins:\n");
       tt.Render(data.ToArray(), Server.Print, Console.WindowWidth);
-      Console.WriteLine ("{0} Plugins", plugins.Count);
+      Server.Print("{0} Plugins\n", plugins.Count);
     }
 
   }
