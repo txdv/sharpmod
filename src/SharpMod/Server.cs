@@ -169,9 +169,9 @@ namespace SharpMod
       get { return maxplayers; }
     }
     
-    public static void Print(string message)
+    public static void Print(string message, params object[] param)
     {
-      MetaModEngine.engineFunctions.ServerPrint(message);
+      MetaModEngine.engineFunctions.ServerPrint(string.Format(message, param));
     }
 
     /// <summary>

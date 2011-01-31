@@ -162,6 +162,24 @@ namespace SharpMod
     {
       Server.LogDeveloper("Command failed: {0}", Arguments.Join(' '));
     }
+
+    protected void Write(Player player, string format, params object[] param)
+    {
+      if (player == null) {
+        Server.Print(format, param);
+      } else {
+        player.PrintConsole(format, param);
+      }
+    }
+
+    protected void WriteLine(Player player, string format, params object[] param)
+    {
+      if (player == null) {
+        Server.Print(format, param);
+      } else {
+        player.PrintConsole(format + "\n", param);
+      }
+    }
   }
 
   public delegate void ClientCommandDelegate(Player player, Command cmd);
