@@ -68,25 +68,25 @@ namespace SharpMod.Commands
 
     public override void Execute(Player player)
     {
-      if (!player.Privileges.HasPrivilege("kick")) {
-        player.PrintConsole("You have no kick privileges");
+      if (player != null && !player.Privileges.HasPrivilege("kick")) {
+        player.PrintConsole("You have no kick privileges\n");
         return;
       }
-
+      
       Player target = Player.Find(Target);
 
       if (target == null) {
-        target.PrintConsole("Couldn't find target player");
+        player.PrintConsole("Couldn't find target player\n");
         return;
       }
 
       if (target.Privileges.HasPrivilege("immunity")) {
-        player.PrintConsole("Target has general immunity");
+        player.PrintConsole("Target has general immunity\n");
         return;
       }
 
       if (target.Privileges.HasPrivilege("nokick")) {
-        player.PrintConsole("Target has kick immunity");
+        player.PrintConsole("Target has kick immunity\n");
         return;
       }
 
@@ -153,25 +153,25 @@ namespace SharpMod.Commands
 
     public override void Execute(Player player)
     {
-      if (!player.Privileges.HasPrivilege("ban")) {
-        player.PrintConsole("You have no ban privileges");
+      if (player != null && !player.Privileges.HasPrivilege("ban")) {
+        player.PrintConsole("You have no ban privileges\n");
         return;
       }
 
       Player target = Player.Find(Target);
 
       if (target == null) {
-        target.PrintConsole("Couldn't find target player");
+        target.PrintConsole("Couldn't find target player\n");
         return;
       }
 
       if (target.Privileges.HasPrivilege("immunity")) {
-        player.PrintConsole("Target has general immunity");
+        player.PrintConsole("Target has general immunity\n");
         return;
       }
 
       if (target.Privileges.HasPrivilege("noban")) {
-        player.PrintConsole("Target has ban immunity");
+        player.PrintConsole("Target has ban immunity\n");
         return;
       }
 
@@ -219,7 +219,7 @@ namespace SharpMod.Commands
     public override void Execute(Player player)
     {
       if (!player.Privileges.HasPrivilege("status")) {
-        player.PrintConsole("You have no status privileges");
+        player.PrintConsole("You have no status privileges\n");
         return;
       }
 
@@ -250,12 +250,12 @@ namespace SharpMod.Commands
 
     public override void Execute(Player player)
     {
-      if (player == null || !player.Privileges.HasPrivileges) {
-        player.PrintConsole("You have to have at least on privilege to use this command");
+      if (player != null && !player.Privileges.HasPrivileges) {
+        player.PrintConsole("You have to have at least on privilege to use this command\n");
         return;
       }
 
-      player.PrintConsole("Reloading all admin privileges");
+      player.PrintConsole("Reloading all admin privileges\n");
       Player.ReloadAllPrivileges();
     }
   }
