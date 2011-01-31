@@ -91,7 +91,7 @@ namespace SharpMod.Commands
       }
 
       KickInformation ki = new KickInformation();
-      ki.AdminAuthId  = player.AuthID;
+      ki.AdminAuthId  = (player == null ? "server" : player.AuthID);
       ki.PlayerAuthId = target.AuthID;
       ki.Reason       = Reason;
       ki.Date         = DateTime.Now;
@@ -176,7 +176,7 @@ namespace SharpMod.Commands
       }
 
       BanInformation bi = new BanInformation();
-      bi.AdminAuthId  = player.AuthID;
+      bi.AdminAuthId  = (player == null ? "server" : player.AuthID);
       bi.PlayerAuthId = target.AuthID;
       bi.Reason       = Reason;
       bi.Date         = DateTime.Now;
@@ -218,7 +218,7 @@ namespace SharpMod.Commands
 
     public override void Execute(Player player)
     {
-      if (!player.Privileges.HasPrivilege("status")) {
+      if (player != null && !player.Privileges.HasPrivilege("status")) {
         WriteLine(player, "You have no status privileges");
         return;
       }
@@ -244,7 +244,7 @@ namespace SharpMod.Commands
     }
 
     public AdminReload()
-      : this(new string[]  { "smod_reload" })
+      : this(new string[] { "smod_reload" })
     {
     }
 

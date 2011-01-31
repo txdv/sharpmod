@@ -158,7 +158,7 @@ namespace SharpMod
     {
       MetaModEngine.SetResult(MetaResult.Handled);
       Player player = Player.GetPlayer(entity);
-      Command cmd = CommandManager.CreateCommandFromGameEngine();
+      Command cmd = CommandManager.CreateCommandFromGameEngine(CommandType.Player);
 
       switch (cmd.Arguments[0])
       {

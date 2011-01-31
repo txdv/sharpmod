@@ -28,6 +28,13 @@ using SharpMod.Helper;
 
 namespace SharpMod
 {
+  public enum CommandType
+  {
+    Player = (1 << 0),
+    Server = (1 << 1),
+    Both   = (Player | Server)
+  }
+
   public class CommandInformation
   {
     public int MinimumArguments { get; set; }
@@ -39,6 +46,8 @@ namespace SharpMod
     public Type Type { get; protected set; }
 
     public string HelpString { get; set; }
+
+    public CommandType CommandType { get; set; }
 
     public bool ValidArgumentCount(string[] args)
     {
@@ -195,6 +204,7 @@ namespace SharpMod
     static CommandManager()
     {
       RegisterCommand(new CommandInformation(typeof(SayCommand)) {
+        CommandType = CommandType.Both,
         CommandString = "say",
         MinimumArguments = 2,
         MaximumArguments = 2,
@@ -202,6 +212,7 @@ namespace SharpMod
       });
 
       RegisterCommand(new CommandInformation(typeof(SayCommand)) {
+        CommandType = CommandType.Both,
         CommandString = "say_team",
         MinimumArguments = 2,
         MaximumArguments = 2,
@@ -209,6 +220,7 @@ namespace SharpMod
       });
 
       RegisterCommand(new CommandInformation(typeof(Kick)) {
+        CommandType = CommandType.Both,
         CommandString = "smod_kick",
         MinimumArguments = 2,
         MaximumArguments = 3,
@@ -216,6 +228,7 @@ namespace SharpMod
       });
 
       RegisterCommand(new CommandInformation(typeof(Ban)) {
+        CommandType = CommandType.Both,
         CommandString = "smod_ban",
         MinimumArguments = 3,
         MaximumArguments = 4,
@@ -223,6 +236,7 @@ namespace SharpMod
       });
 
       RegisterCommand(new CommandInformation(typeof(Who)) {
+        CommandType = CommandType.Both,
         CommandString = "smod_who",
         MinimumArguments = 1,
         MaximumArguments = 1,
@@ -230,6 +244,7 @@ namespace SharpMod
       });
 
       RegisterCommand(new CommandInformation(typeof(AdminReload)) {
+        CommandType = CommandType.Both,
         CommandString = "smod_reloadadmins",
         MinimumArguments = 1,
         MaximumArguments = 1,
@@ -258,16 +273,25 @@ namespace SharpMod
 
     public static void RegisterCommand(CommandInformation commandInformation) {
       commandInformationList.Add(commandInformation);
+      if ((commandInformation.CommandType & CommandType.Server) > 0) {
+        Server.RegisterCommand(commandInformation.CommandString, ServerCommandHandler);
+      }
     }
 
-    public static Command CreateCommand(string[] arguments) {
+    private static void ServerCommandHandler(string[] arguments)
+    {
+      Command cmd = CreateCommand(CommandType.Server, arguments);
+      cmd.Execute(null);
+    }
+
+    public static Command CreateCommand(CommandType type, string[] arguments) {
       // special case, if the arguments string is empty
       if (arguments.Length < 1) {
         return new Command(arguments);
       }
 
       foreach (CommandInformation ci in commandInformationList) {
-        if (arguments[0] == ci.CommandString) {
+        if ((arguments[0] == ci.CommandString) && ((ci.CommandType & type) > 0)) {
           return (Command)Activator.CreateInstance(ci.Type, new object[] { arguments });
         }
       }
@@ -281,9 +305,9 @@ namespace SharpMod
     /// <returns>
     /// A command class instance with the original gameengine commadn values <see cref="Command"/>
     /// </returns>
-    internal static Command CreateCommandFromGameEngine()
+    internal static Command CreateCommandFromGameEngine(CommandType type)
     {
-      return CreateCommand(Command.EngineArguments);
+      return CreateCommand(type, Command.EngineArguments);
     }
 
     /// <summary>
