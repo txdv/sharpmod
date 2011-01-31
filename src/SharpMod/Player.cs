@@ -388,6 +388,11 @@ namespace SharpMod
       }
     }
 
+    public static int GetUserID(Player player)
+    {
+      return player == null ? 0 : player.UserID;
+    }
+
     public bool PendingAuth {
       get {
         return AuthID == "STEAM_ID_PENDING";
