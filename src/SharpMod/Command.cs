@@ -245,7 +245,6 @@ namespace SharpMod
         CommandType = CommandType.Both,
         CommandString = "smod_who",
         MinimumArguments = 1,
-        MaximumArguments = 1,
         HelpString = "- shows the active player list with the according privileges"
       });
 
@@ -253,7 +252,6 @@ namespace SharpMod
         CommandType = CommandType.Both,
         CommandString = "smod_reloadadmins",
         MinimumArguments = 1,
-        MaximumArguments = 1,
         HelpString = "- reloads the admins"
       });
 
@@ -261,7 +259,6 @@ namespace SharpMod
         CommandType = CommandType.Both,
         CommandString = "smod_map",
         MinimumArguments = 2,
-        MaximumArguments = 2,
         HelpString = "<map> - changes the active map to"
       });
 
