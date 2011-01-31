@@ -60,23 +60,33 @@ namespace SharpMod.Helper
       return text.Split(new char[] { c });
     }
 
-    public static string Join(this string[] stringarray, char c)
+    public static string Join(this string[] stringArray, char c)
     {
-      if (stringarray.Length != 0) {
-        System.Text.StringBuilder sb = new System.Text.StringBuilder(stringarray[0]);
-        if (stringarray.Length > 1)
-        {
-          for (int i = 1; i < stringarray.Length; i++) {
-            sb.Append(c);
-            sb.Append(stringarray[i]);
-          }
-        }
-        return sb.ToString();
-      }
-      else
-      {
+      return stringArray.Join(new string(new char[] { c }));
+    }
+
+    public static string Join(this string[] stringArray, string delimeter)
+    {
+      return stringArray.Join(0, delimeter);
+    }
+
+    public static string Join(this string[] stringArray, int startIndex, char c)
+    {
+      return stringArray.Join(startIndex, new string(new char[] { c }));
+    }
+
+    public static string Join(this string[] stringArray, int startIndex, string delimeter)
+    {
+      if (stringArray.Length < startIndex)
         return string.Empty;
+
+      System.Text.StringBuilder sb = new System.Text.StringBuilder(stringArray[startIndex]);
+      for (int i = startIndex + 1; i < stringArray.Length; i++) {
+        sb.Append(delimeter);
+        sb.Append(stringArray[i]);
       }
+
+      return sb.ToString();
     }
 
     public static string[] Shift(this string[] arr)
