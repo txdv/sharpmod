@@ -159,15 +159,23 @@ namespace SharpMod
     public virtual void Execute(Player player)
     {
       Server.LogDeveloper("Command executed: {0}", Arguments.Join(' '));
-      OnFailure();
+      OnFailure(player.UserID);
     }
 
-    protected virtual void OnSuccess()
+    protected void OnSuccess(int userid)
+    {
+      OnSuccess(Player.FindByUserId(userid));
+    }
+    protected virtual void OnSuccess(Player player)
     {
       Server.LogDeveloper("Command successful: {0}", Arguments.Join(' '));
     }
 
-    protected virtual void OnFailure()
+    protected virtual void OnFailure(int userid)
+    {
+      OnFailure(Player.FindByUserId(userid));
+    }
+    protected virtual void OnFailure(Player player)
     {
       Server.LogDeveloper("Command failed: {0}", Arguments.Join(' '));
     }

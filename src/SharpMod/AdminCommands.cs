@@ -101,8 +101,6 @@ namespace SharpMod.Commands
       Task.Factory.StartNew(delegate {
         SharpMod.Database.AddKick(ki);
       });
-
-      OnSuccess();
     }
   }
 
@@ -182,17 +180,19 @@ namespace SharpMod.Commands
       bi.Date         = DateTime.Now;
       bi.Duration     = TimeSpan.FromSeconds(int.Parse(Arguments[2]));
 
+      int userid = Player.GetUserID(player);
+
       Task.Factory.StartNew(delegate {
         try {
           SharpMod.Database.AddBan(bi);
-          TaskManager.Join((Action)OnSuccess);
+          TaskManager.Join(OnSuccess, userid);
         } catch {
-          TaskManager.Join((Action)OnFailure);
+          TaskManager.Join(OnFailure, userid);
         }
       });
     }
 
-    protected override void OnSuccess()
+    protected override void OnSuccess(Player player)
     {
       Player target = Player.Find(Target);
 
