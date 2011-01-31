@@ -204,15 +204,13 @@ namespace SharpMod
     static CommandManager()
     {
       RegisterCommand(new CommandInformation(typeof(SayCommand)) {
-        CommandType = CommandType.Both,
         CommandString = "say",
         MinimumArguments = 2,
         MaximumArguments = 2,
         HelpString = "<text> - will enter a message in the global chat"
       });
 
-      RegisterCommand(new CommandInformation(typeof(SayCommand)) {
-        CommandType = CommandType.Both,
+      RegisterCommand(new CommandInformation(typeof(SayTeamCommand)) {
         CommandString = "say_team",
         MinimumArguments = 2,
         MaximumArguments = 2,
