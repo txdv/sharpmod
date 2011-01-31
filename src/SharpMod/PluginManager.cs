@@ -104,7 +104,7 @@ namespace SharpMod
   /// </summary>
   public class PluginManager
   {
-    private static string pluginDirectory = @"cstrike/addons/sharpmod/plugins/";
+    private static string pluginDirectory = Path.Combine(Server.ModDirectory, "plugins");
     private static List<IPlugin> plugins = new List<IPlugin>();
 
     public static void LoadPlugins()

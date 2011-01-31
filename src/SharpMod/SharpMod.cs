@@ -60,9 +60,9 @@ namespace SharpMod
 
       try {
         var doc = new System.Xml.XmlDocument();
-        doc.Load(Server.ModDirectory + "cfg/databases.xml");
+        doc.Load(Path.Combine(Server.ModDirectory, "cfg/databases.xml"));
         try {
-          Database = DefaultDatabase.Load(@"cstrike/addons/sharpmod/SharpMod.Database.MySql.dll");
+          Database = DefaultDatabase.Load(Path.Combine(Server.ModDirectory, "SharpMod.Database.MySql.dll"));
           Database.Load(doc);
         } catch (Exception e) {
           Server.LogError("Database Interface failed to load, using default: {0}", e.Message);
