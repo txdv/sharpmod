@@ -36,7 +36,7 @@ namespace SharpMod.Commands
 
     public string Reason {
       get {
-        if (Arguments.Length < 2) return string.Empty;
+        if (Arguments.Length < 3) return string.Empty;
         return Arguments[2];
       }
     }
