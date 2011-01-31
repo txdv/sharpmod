@@ -29,59 +29,7 @@ namespace SharpMod.Nextmap
 {
   public class MainClass : BasicPlugin
   {
-    /// <summary>
-    /// Returns a list of all valid maps in the directory.
-    /// </summary>
-    /// <returns>
-    /// String array of all map names <see cref="System.String[]"/>
-    /// </returns>
-    private string[] LoadMapListFromDirectory()
-    {
-      List<string> list = new List<string>();
-      foreach (FileInfo fi in (new DirectoryInfo(Server.GameDirectory + "/maps").GetFiles("*.bsp")))
-      {
-        string map = fi.Name.Substring(0, fi.Name.Length-4);
-        if (Server.IsMapValid(map))
-        {
-          list.Add(map);
-        }
-      }
-      return list.ToArray();
-    }
-
-
-    /// <summary>
-    /// Returns a list of all valid maps in the mapcycle.
-    /// </summary>
-    /// <returns>
-    /// String array of all map names <see cref="System.String[]"/>
-    /// </returns>
-    private string[] LoadMapListFromMapcycle()
-    {
-      try {
-
-        List<string> list = new List<string>();
-        StreamReader sr = new StreamReader(File.Open(Server.GameDirectory + "/" + CVar.GetStringValue("mapcyclefile"), FileMode.Open));
-        while (!sr.EndOfStream)
-        {
-          string line = sr.ReadLine();
-          if (line.ToLower().EndsWith(".bsp"))
-          {
-            string map = line.Substring(0, line.Length-4);
-            if (Server.IsMapValid(map))
-            {
-              list.Add(map);
-            }
-          }
-        }
-        return list.ToArray();
-      } catch {
-        return new string[] {};
-      }
-
-    }
-
-    public override void Load ()
+    public override void Load()
     {
     }
 

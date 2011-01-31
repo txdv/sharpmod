@@ -23,6 +23,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using Mono.Unix;
 using SharpMod.MetaMod;
 using SharpMod.Helper;
@@ -407,6 +408,61 @@ namespace SharpMod
         int i = MetaModEngine.globalVariables->mapname;
         IntPtr ptr = MetaModEngine.engineFunctions.SzFromIndex(i);
         return Mono.Unix.UnixMarshal.PtrToString(ptr);
+      }
+    }
+
+    /// <summary>
+    /// Returns a list of all valid maps in the directory.
+    /// </summary>
+    /// <returns>
+    /// String array of all map names <see cref="System.String[]"/>
+    /// </returns>
+    private string[] LoadMapListFromDirectory()
+    {
+      List<string> list = new List<string>();
+      var files = new DirectoryInfo(Path.Combine(Server.GameDirectory, "maps")).GetFiles("*.bsp");
+      foreach (FileInfo fi in files) {
+        string map = fi.Name.Substring(0, fi.Name.Length - 4);
+        if (Server.IsMapValid(map)) {
+          list.Add(map);
+        }
+      }
+      return list.ToArray();
+    }
+
+    /// <summary>
+    /// Returns a list of all valid maps in the mapcycle.
+    /// </summary>
+    /// <returns>
+    /// String array of all map names <see cref="System.String[]"/>
+    /// </returns>
+    private string[] LoadMapListFromMapcycle()
+    {
+      StreamReader sr = null;
+      List<string> list = new List<string>();
+      try {
+        string mapcyclefile = Path.Combine(Server.GameDirectory, CVar.GetStringValue("mapcyclefile"));
+        sr = new StreamReader(File.Open(mapcyclefile, FileMode.Open));
+        while (!sr.EndOfStream) {
+          string line = sr.ReadLine();
+          if (line.ToLower().EndsWith(".bsp")) {
+            string map = line.Substring(0, line.Length - 4);
+            if (Server.IsMapValid(map))
+              list.Add(map);
+          } else {
+            if (Server.IsMapValid(line))
+              list.Add(line);
+          }
+        }
+        return list.ToArray();
+      } catch {
+        try {
+          return list.ToArray();
+        } catch {
+          return new string[] {};
+        }
+      } finally {
+        if (sr != null) sr.Close();
       }
     }
   }
