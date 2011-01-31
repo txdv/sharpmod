@@ -675,12 +675,37 @@ namespace SharpMod
     public static Player Find(string target)
     {
       Player player = null;
+      player = FindByUserId(target);
+      if (player != null) return player;
       player = FindByAuthId(target);
       if (player != null) return player;
       player = FindByName(target);
       if (player != null) return player;
       return player;
 
+    }
+
+    public static Player FindByUserId(string id)
+    {
+      if (id.Length < 2 || id[0] != '#')
+        return null;
+
+      int result;
+      if (int.TryParse(id.Substring(1), out result)) {
+        return FindByUserId(result);
+      } else {
+        return null;
+      }
+
+    }
+
+    public static Player FindByUserId(int id)
+    {
+      foreach (Player player in Player.Players) {
+        if (player.UserID == id)
+          return player;
+      }
+      return null;
     }
 
     /// <summary>
@@ -698,6 +723,15 @@ namespace SharpMod
         if (player.AuthID == authId)
           return player;
       }
+
+      var potentiallist = from s in Player.Players
+                          where s.AuthID.Contains(authId)
+                          select s;
+
+      if (potentiallist.Count() == 1) {
+        return potentiallist.First();
+      }
+
       return null;
     }
 
@@ -716,6 +750,15 @@ namespace SharpMod
         if (player.Name == name)
           return player;
       }
+
+      var potentiallist = from s in Player.Players
+                          where s.Name.Contains(name)
+                          select s;
+
+      if (potentiallist.Count() == 1) {
+        return potentiallist.First();
+      }
+
       return null;
     }
 
