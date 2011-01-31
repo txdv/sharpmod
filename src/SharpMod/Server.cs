@@ -88,7 +88,7 @@ namespace SharpMod
     /// </param>
     public void Set(string key, string val)
     {
-        MetaModEngine.engineFunctions.SetServerKeyValue(MetaModEngine.engineFunctions.GetInfoKeyBuffer(Pointer), key, val);
+      MetaModEngine.engineFunctions.SetServerKeyValue(MetaModEngine.engineFunctions.GetInfoKeyBuffer(Pointer), key, val);
     }
 
     /// <summary>
@@ -334,7 +334,7 @@ namespace SharpMod
     /// </summary>
     public static bool Is64Bit
     {
-        get { return Marshal.SizeOf(typeof(IntPtr)) == 8; }
+      get { return Marshal.SizeOf(typeof(IntPtr)) == 8; }
     }
 
     /// <summary>
