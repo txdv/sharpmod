@@ -110,7 +110,7 @@ namespace SharpMod
   /// <summary>
   /// A class that represents the running Server
   /// </summary>
-  public class Server
+  public static class Server
   {
 
     private static Delegate del = Delegate.CreateDelegate(typeof(Callback), null,
@@ -435,7 +435,7 @@ namespace SharpMod
     /// <returns>
     /// String array of all map names <see cref="System.String[]"/>
     /// </returns>
-    private string[] LoadMapListFromDirectory()
+    public static string[] LoadMapListFromDirectory()
     {
       List<string> list = new List<string>();
       var files = new DirectoryInfo(Path.Combine(Server.GameDirectory, "maps")).GetFiles("*.bsp");
@@ -454,7 +454,7 @@ namespace SharpMod
     /// <returns>
     /// String array of all map names <see cref="System.String[]"/>
     /// </returns>
-    private string[] LoadMapListFromMapcycle()
+    public static string[] LoadMapListFromMapcycle()
     {
       StreamReader sr = null;
       List<string> list = new List<string>();
