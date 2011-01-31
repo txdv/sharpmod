@@ -314,7 +314,8 @@ namespace SharpMod
       if (target == null)
         return;
 
-      target.Kick(information.Reason);
+      if (!target.Privileges.HasPrivilege("noban"))
+        target.Kick(information.Reason);
     }
 
     // TODO: create an interface for information saving
