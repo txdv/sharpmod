@@ -264,6 +264,14 @@ namespace SharpMod
         MaximumArguments = 2,
         HelpString = "<map> - changes the active map to"
       });
+
+      RegisterCommand(new CommandInformation(typeof(ListMaps)) {
+        CommandType = CommandType.Both,
+        CommandString = "smod_maps",
+        MinimumArguments = 1,
+        MaximumArguments = 1,
+        HelpString = "- lists all available maps"
+      });
     }
 
     /// <summary>
