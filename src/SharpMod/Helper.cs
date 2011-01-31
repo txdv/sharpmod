@@ -89,12 +89,6 @@ namespace SharpMod.Helper
 
     public static string Shift(this string text, char c)
     {
-      // TODO: see if the commented code does exactly the same
-
-      //string[] res = text.Split(new char[] { c }, 2);
-      //if (res.Length == 2) return res[1];
-      //else return string.Empty;
-
       return text.Split(' ').Shift().Join(' ');
     }
 
