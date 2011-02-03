@@ -90,7 +90,7 @@ namespace SharpMod.Commands
         return;
       }
 
-      KickInformation ki = new KickInformation(player, target, Reason);
+      KickInfo ki = new KickInfo(player, target, Reason);
 
       target.Kick(Reason);
 
@@ -189,7 +189,7 @@ namespace SharpMod.Commands
         WriteLine(player, "Duration was misformed");
       }
 
-      BanInformation bi = new BanInformation(player, target, duration, Reason);
+      BanInfo bi = new BanInfo(player, target, duration, Reason);
 
       int userid = Player.GetUserID(player);
 
@@ -227,7 +227,7 @@ namespace SharpMod.Commands
     {
     }
 
-    private BanInformation[] biList = null;
+    private BanInfo[] biList = null;
 
     public override void Execute(Player player)
     {
@@ -251,7 +251,7 @@ namespace SharpMod.Commands
     protected override void OnSuccess(Player player)
     {
       WriteLine(player, "Listing bans from {0} to {1}", 1, biList.Length);
-      foreach (BanInformation bi in biList) {
+      foreach (BanInfo bi in biList) {
         WriteLine(player, "{0}", bi.Player.AuthId);
       }
     }
@@ -365,7 +365,7 @@ namespace SharpMod.Commands
         return;
       }
 
-      MapChangeInformation mc = new MapChangeInformation(player, Map);
+      MapChangeInfo mc = new MapChangeInfo(player, Map);
 
       Task.Factory.StartNew(delegate {
         try {

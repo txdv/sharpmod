@@ -305,7 +305,7 @@ namespace SharpMod
     }
     #endregion
 
-    private static void ResolvedBans(BanInformation information)
+    private static void ResolvedBans(BanInfo information)
     {
       if (information == null)
         return;

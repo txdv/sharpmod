@@ -61,20 +61,20 @@ namespace SharpMod.Database
     #endregion
   }
 
-  public abstract class AdminCommandInformation
+  public abstract class AdminCommandInfo
   {
-    public AdminCommandInformation()
+    public AdminCommandInfo()
     {
       Date = DateTime.Now;
     }
 
-    public AdminCommandInformation(PlayerInfo admin)
+    public AdminCommandInfo(PlayerInfo admin)
       : this()
     {
       Admin = admin;
     }
 
-    public AdminCommandInformation(Player admin)
+    public AdminCommandInfo(Player admin)
       : this(new PlayerInfo(admin))
     {
     }
@@ -83,14 +83,14 @@ namespace SharpMod.Database
     public IPlayerExtendedInfo Admin { get; set; }
   }
 
-  public class BanInformation : AdminCommandInformation
+  public class BanInfo : AdminCommandInfo
   {
-    public BanInformation()
+    public BanInfo()
       : base()
     {
     }
 
-    public BanInformation(Player admin, Player target, TimeSpan duration, string reason)
+    public BanInfo(Player admin, Player target, TimeSpan duration, string reason)
       : base(admin)
     {
       // PlayerAuthId = target.AuthID;
@@ -104,27 +104,27 @@ namespace SharpMod.Database
     public string              Reason   { get; set; }
   }
 
-  public class UnbanInformation : AdminCommandInformation
+  public class UnbanInfo : AdminCommandInfo
   {
-    public UnbanInformation()
+    public UnbanInfo()
       : base()
     {
     }
 
-    public UnbanInformation(Player admin)
+    public UnbanInfo(Player admin)
       : base(admin)
     {
     }
   }
 
-  public class KickInformation : AdminCommandInformation
+  public class KickInfo : AdminCommandInfo
   {
-    public KickInformation()
+    public KickInfo()
       : base()
     {
     }
 
-    public KickInformation(Player admin, Player target, string reason)
+    public KickInfo(Player admin, Player target, string reason)
       : base(admin)
     {
       PlayerAuthId = target.AuthID;
@@ -145,14 +145,14 @@ namespace SharpMod.Database
     }
   }
 
-  public class MapChangeInformation : AdminCommandInformation
+  public class MapChangeInfo : AdminCommandInfo
   {
-    public MapChangeInformation()
+    public MapChangeInfo()
       : base()
     {
     }
 
-    public MapChangeInformation(Player admin, string map)
+    public MapChangeInfo(Player admin, string map)
       : base(admin)
     {
       Map = map;
@@ -168,13 +168,13 @@ namespace SharpMod.Database
     Privileges LoadPrivileges(IPlayerExtendedInfo player);
     bool SavePrivileges(IPlayerExtendedInfo player, string access);
 
-    BanInformation[] GetAllBans();
-    BanInformation GetActiveBan(IPlayerExtendedInfo player);
-    bool AddBan(BanInformation bi);
+    BanInfo[] GetAllBans();
+    BanInfo GetActiveBan(IPlayerExtendedInfo player);
+    bool AddBan(BanInfo bi);
 
-    bool AddKick(KickInformation ki);
+    bool AddKick(KickInfo ki);
 
-    bool AddMapChange(MapChangeInformation mi);
+    bool AddMapChange(MapChangeInfo mi);
   }
 
   public class DefaultDatabase : IDatabase
@@ -211,27 +211,27 @@ namespace SharpMod.Database
       return false;
     }
 
-    public BanInformation[] GetAllBans()
+    public BanInfo[] GetAllBans()
     {
       return null;
     }
 
-    public BanInformation GetActiveBan(IPlayerExtendedInfo player)
+    public BanInfo GetActiveBan(IPlayerExtendedInfo player)
     {
       return null;
     }
 
-    public bool AddBan(BanInformation bi)
+    public bool AddBan(BanInfo bi)
     {
       return false;
     }
 
-    public bool AddKick(KickInformation ki)
+    public bool AddKick(KickInfo ki)
     {
       return false;
     }
 
-    public bool AddMapChange(MapChangeInformation mi)
+    public bool AddMapChange(MapChangeInfo mi)
     {
       return false;
     }

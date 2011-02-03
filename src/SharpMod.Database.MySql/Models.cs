@@ -68,7 +68,7 @@ namespace SharpMod.Database.MySql
     {
     }
 
-    public AdminCommand(AdminCommandInformation aci)
+    public AdminCommand(AdminCommandInfo aci)
     {
       Date        = aci.Date;
       // TODO: change
@@ -92,7 +92,7 @@ namespace SharpMod.Database.MySql
     {
     }
 
-    public Kick(KickInformation ki)
+    public Kick(KickInfo ki)
       : base(ki)
     {
       PlayerAuthId = ki.PlayerAuthId;
@@ -105,9 +105,9 @@ namespace SharpMod.Database.MySql
     [Property]
     public string Reason { get; set; }
 
-    public BanInformation GetBanInformation()
+    public BanInfo GetBanInformation()
     {
-      BanInformation bi = new BanInformation();
+      BanInfo bi = new BanInfo();
       //bi.PlayerAuthId = PlayerAuthId;
       bi.Reason       = Reason;
 
@@ -122,7 +122,7 @@ namespace SharpMod.Database.MySql
     {
     }
 
-    public Ban(BanInformation bi)
+    public Ban(BanInfo bi)
       : base(bi)
     {
       Duration     = bi.Duration;
@@ -153,9 +153,9 @@ namespace SharpMod.Database.MySql
       return (Ban[])FindAll(typeof(Ban));
     }
 
-    public BanInformation GetBanInformation()
+    public BanInfo GetBanInfo()
     {
-      BanInformation bi = new BanInformation();
+      BanInfo bi = new BanInfo();
 
       bi.Date         = Date;
       bi.Duration     = Duration;
@@ -177,7 +177,7 @@ namespace SharpMod.Database.MySql
     {
     }
 
-    public Unban(UnbanInformation ui)
+    public Unban(UnbanInfo ui)
       : base(ui)
     {
     }
@@ -193,7 +193,7 @@ namespace SharpMod.Database.MySql
     {
     }
 
-    public MapChange(MapChangeInformation mi)
+    public MapChange(MapChangeInfo mi)
       : base(mi)
     {
       Map = mi.Map;

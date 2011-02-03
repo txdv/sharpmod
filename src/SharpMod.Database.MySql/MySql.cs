@@ -129,11 +129,11 @@ namespace SharpMod.Database.MySql
       }
     }
 
-    public BanInformation[] GetAllBans()
+    public BanInfo[] GetAllBans()
     {
       try {
         var list = from b in Ban.GetAll()
-                   select b.GetBanInformation();
+                   select b.GetBanInfo();
 
         return list.ToArray();
       } catch {
@@ -141,16 +141,16 @@ namespace SharpMod.Database.MySql
       }
     }
 
-    public BanInformation GetActiveBan(IPlayerExtendedInfo player)
+    public BanInfo GetActiveBan(IPlayerExtendedInfo player)
     {
       try {
-        return Ban.FindActiveBan(player.AuthId).GetBanInformation();
+        return Ban.FindActiveBan(player.AuthId).GetBanInfo();
       } catch {
         return null;
       }
     }
 
-    public bool AddBan(BanInformation bi)
+    public bool AddBan(BanInfo bi)
     {
       try {
         Ban ban = new Ban(bi);
@@ -170,7 +170,7 @@ namespace SharpMod.Database.MySql
       }
     }
 
-    public bool AddKick(KickInformation ki)
+    public bool AddKick(KickInfo ki)
     {
       try {
         Kick kick = new Kick(ki);
@@ -181,7 +181,7 @@ namespace SharpMod.Database.MySql
       }
     }
 
-    public bool AddMapChange(MapChangeInformation mi)
+    public bool AddMapChange(MapChangeInfo mi)
     {
       try {
         MapChange mc = new MapChange(mi);
