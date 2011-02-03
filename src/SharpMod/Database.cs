@@ -25,10 +25,42 @@ using System.Xml;
 using System.Net;
 using System.Reflection;
 using System.Collections.Generic;
+using Psi;
 using SharpMod.Helper;
 
 namespace SharpMod.Database
 {
+  public interface IPlayerExtendedInfo : IPlayerInfo
+  {
+    IPAddress IPAddress { get; }
+  }
+
+  public class PlayerInfo : IPlayerExtendedInfo
+  {
+    public PlayerInfo(Player player)
+    {
+      IPAddress = player.IPAddress;
+      Name      = player.Name;
+      UserId    = player.UserID;
+      AuthId    = player.AuthID;
+      // TODO: do something about this, we need
+      // some serious rethinking about the class
+      // model
+      Team      = "";
+    }
+
+    #region IPlayerExtendedInfo implementation
+    public IPAddress IPAddress { get; set; }
+    #endregion
+
+    #region IPlayerInfo implementation
+    public string Name   { get; set; }
+    public int    UserId { get; set; }
+    public string AuthId { get; set; }
+    public string Team   { get; set; }
+    #endregion
+  }
+
   public abstract class AdminCommandInformation
   {
     public AdminCommandInformation()
@@ -36,24 +68,19 @@ namespace SharpMod.Database
       Date = DateTime.Now;
     }
 
-    public AdminCommandInformation(Player admin)
+    public AdminCommandInformation(PlayerInfo admin)
       : this()
     {
-      AdminAuthId = admin == null ? "server" : admin.AuthID;
+      Admin = admin;
     }
 
-    public DateTime Date       { get; set; }
-    public string AdminAuthId  { get; set; }
-
-    /// <summary>
-    /// Searches by AdminAuthId for the actual Admin
-    /// in the server
-    /// </summary>
-    public Player Admin {
-      get {
-        return Player.FindByAuthId(AdminAuthId);
-      }
+    public AdminCommandInformation(Player admin)
+      : this(new PlayerInfo(admin))
+    {
     }
+
+    public DateTime            Date  { get; set; }
+    public IPlayerExtendedInfo Admin { get; set; }
   }
 
   public class BanInformation : AdminCommandInformation
@@ -66,25 +93,28 @@ namespace SharpMod.Database
     public BanInformation(Player admin, Player target, TimeSpan duration, string reason)
       : base(admin)
     {
-      PlayerAuthId = target.AuthID;
+      // PlayerAuthId = target.AuthID;
+      Player = new PlayerInfo(target);
       Duration     = duration;
       Reason       = reason;
     }
 
-    public TimeSpan Duration   { get; set; }
-    public string PlayerAuthId { get; set; }
-    public string Reason       { get; set; }
+    public TimeSpan            Duration { get; set; }
+    public IPlayerExtendedInfo Player   { get; set; }
+    public string              Reason   { get; set; }
+  }
 
-    /// <summary>
-    /// Searches by PlayerAuthId for the actual Player
-    /// in the server
-    /// </summary>
-    public Player Player {
-      get {
-        return Player.FindByAuthId(PlayerAuthId);
-      }
+  public class UnbanInformation : AdminCommandInformation
+  {
+    public UnbanInformation()
+      : base()
+    {
     }
 
+    public UnbanInformation(Player admin)
+      : base(admin)
+    {
+    }
   }
 
   public class KickInformation : AdminCommandInformation
@@ -135,10 +165,11 @@ namespace SharpMod.Database
   {
     bool Load(XmlDocument doc);
 
-    Privileges LoadPrivileges(string authId);
-    bool SavePrivileges(string authId, string access);
+    Privileges LoadPrivileges(IPlayerExtendedInfo player);
+    bool SavePrivileges(IPlayerExtendedInfo player, string access);
 
-    BanInformation GetActiveBan(string authId);
+    BanInformation[] GetAllBans();
+    BanInformation GetActiveBan(IPlayerExtendedInfo player);
     bool AddBan(BanInformation bi);
 
     bool AddKick(KickInformation ki);
@@ -170,17 +201,22 @@ namespace SharpMod.Database
       return false;
     }
 
-    public Privileges LoadPrivileges(string authId)
+    public Privileges LoadPrivileges(IPlayerExtendedInfo player)
     {
       return null;
     }
 
-    public bool SavePrivileges(string authId, string access)
+    public bool SavePrivileges(IPlayerExtendedInfo player, string access)
     {
       return false;
     }
 
-    public BanInformation GetActiveBan(string authId)
+    public BanInformation[] GetAllBans()
+    {
+      return null;
+    }
+
+    public BanInformation GetActiveBan(IPlayerExtendedInfo player)
     {
       return null;
     }

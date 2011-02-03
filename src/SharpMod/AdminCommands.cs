@@ -215,6 +215,48 @@ namespace SharpMod.Commands
     }
   }
 
+  public class ListBans : Command
+  {
+    public ListBans(string[] arguments)
+      : base(arguments)
+    {
+    }
+
+    public ListBans()
+      : this(new string[] { "smod_bans" })
+    {
+    }
+
+    private BanInformation[] biList = null;
+
+    public override void Execute(Player player)
+    {
+      int userid = Player.GetUserID(player);
+
+      if (player != null && (!player.Privileges.HasPrivilege("ban") | !player.Privileges.HasPrivilege("unban"))) {
+        WriteLine(player, "You have no ban privileges");
+        return;
+      }
+
+      Task.Factory.StartNew(delegate {
+        try {
+          biList = SharpMod.Database.GetAllBans();
+          OnSuccess(userid);
+        } catch {
+          OnFailure(userid);
+        }
+      });
+    }
+
+    protected override void OnSuccess(Player player)
+    {
+      WriteLine(player, "Listing bans from {0} to {1}", 1, biList.Length);
+      foreach (BanInformation bi in biList) {
+        WriteLine(player, "{0}", bi.Player.AuthId);
+      }
+    }
+  }
+
   public class Who : Command
   {
     private static Player playerInstance = null;

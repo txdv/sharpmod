@@ -86,6 +86,10 @@
       <Project>{BADBD373-6538-4F67-92AC-BA43F89CC440}</Project>
       <Name>TextTools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\psi\Psi\Psi.csproj">
+      <Project>{51240530-3278-44F8-8B60-98313B58C7A6}</Project>
+      <Name>Psi</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="messages.xml" />

@@ -1,0 +1,3 @@
+[submodule "src/psi"]
+	path = src/psi
+	url = git://github.com/txdv/psi.git

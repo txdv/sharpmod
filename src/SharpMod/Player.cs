@@ -118,9 +118,9 @@ namespace SharpMod
 
       player.ReloadPrivileges();
     }
-    private static void ResolvedPrivileges(string auth, Privileges priv)
+    private static void ResolvedPrivileges(PlayerInfo pi, Privileges priv)
     {
-      Player player = Player.FindByAuthId(auth);
+      Player player = Player.FindByUserId(pi.UserId);
 
       // Player isn't in the server any more, just stop it.
       if (player == null)
@@ -178,6 +178,7 @@ namespace SharpMod
         MetaModEngine.SetResult(MetaResult.Supercede);
       else
         MetaModEngine.SetResult(MetaResult.Handled);
+
     }
     protected static void OnCommand(CommandEventArgs args)
     {
@@ -287,10 +288,10 @@ namespace SharpMod
       OnAssignPrivileges(args);
       player.OnPlayerAssignPrivileges(args);
 
-      string authid = player.AuthID;
+      PlayerInfo pi = new PlayerInfo(player);
 
       Task.Factory.StartNew(delegate {
-        TaskManager.Join(ResolvedBans, SharpMod.Database.GetActiveBan(authid));
+        TaskManager.Join(ResolvedBans, SharpMod.Database.GetActiveBan(pi));
       });
 
     }
@@ -309,7 +310,7 @@ namespace SharpMod
       if (information == null)
         return;
 
-      Player target = information.Player;
+      Player target = Player.FindByUserId(information.Player.UserId);
 
       if (target == null)
         return;
@@ -771,10 +772,10 @@ namespace SharpMod
 
     public void ReloadPrivileges()
     {
-      string authid = AuthID;
+      PlayerInfo pi = new PlayerInfo(this);
 
       Task.Factory.StartNew(delegate {
-        TaskManager.Join<string, Privileges>(ResolvedPrivileges, authid, SharpMod.Database.LoadPrivileges(authid));
+        TaskManager.Join<PlayerInfo, Privileges>(ResolvedPrivileges, pi, SharpMod.Database.LoadPrivileges(pi));
       });
     }
 
@@ -799,7 +800,32 @@ namespace SharpMod
       UpdateUserInfo(InfoKeyBuffer);
     }
 
+    public void StripUserWeapons()
+    {
+      Entity strip = new Entity("player_weaponstrip");
+      strip.Spawn();
+      strip.Use(this);
+      strip.Remove();
 
+      // TODO: set active weapon to 0
+    }
 
+    public Entity GiveItem(string itemname)
+    {
+      Entity item = new Entity(itemname);
+
+      if (item.IsNull) {
+        return null;
+      }
+
+      item.Origin = Origin;
+      item.Spawnflags |= (1 << 30);
+
+      item.Spawn();
+
+      item.Touch(this);
+
+      return item;
+    }
   }
 }

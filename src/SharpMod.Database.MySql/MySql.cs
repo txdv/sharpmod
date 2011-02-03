@@ -21,11 +21,13 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using MySql.Data.MySqlClient;
+using System.Linq;
+using NHibernate;
 using NHibernate.Criterion;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Framework.Config;
 
+using Psi;
 using SharpMod.Database;
 using SharpMod.Helper;
 
@@ -68,17 +70,30 @@ namespace SharpMod.Database.MySql
 
       source.Add(typeof(ActiveRecordBase), properties);
 
-      ActiveRecordStarter.Initialize(source, typeof(User), typeof(Ban), typeof(Kick), typeof(MapChange));
+      ActiveRecordStarter.Initialize(source,
+                                     typeof(Ban),
+                                     typeof(Kick),
+                                     typeof(User),
+                                     typeof(MapChange),
+                                     typeof(PlayerIPAddress),
+                                     typeof(PlayerWorldId),
+                                     typeof(PlayerName),
+                                     typeof(Unban),
+                                     typeof(Config)
+                                     );
 
       ActiveRecordStarter.CreateSchema();
+
+      Config cfg = new Config("uniqueid", "authid");
+      cfg.Save();
 
       return true;
     }
 
-    public Privileges LoadPrivileges(string authId)
+    public Privileges LoadPrivileges(IPlayerExtendedInfo player)
     {
       try {
-        User user = User.FindByAuthId(authId);
+        User user = User.Find(player);
 
         if (user == null)
           return null;
@@ -91,14 +106,14 @@ namespace SharpMod.Database.MySql
       }
     }
 
-    public bool SavePrivileges(string authId, string access)
+    public bool SavePrivileges(IPlayerExtendedInfo player, string access)
     {
       try {
-        User user = User.FindByAuthId(authId);
+        User user = User.FindByUniqueId(player.AuthId);
 
         if (user == null) {
           user = new User();
-          user.AuthId = authId;
+          user.UniqueId = player.AuthId;
           user.Access = access;
           user.Save();
           return true;
@@ -114,10 +129,22 @@ namespace SharpMod.Database.MySql
       }
     }
 
-    public BanInformation GetActiveBan(string authId)
+    public BanInformation[] GetAllBans()
     {
       try {
-        return Ban.FindActiveBan(authId).GetBanInformation();
+        var list = from b in Ban.GetAll()
+                   select b.GetBanInformation();
+
+        return list.ToArray();
+      } catch {
+        return null;
+      }
+    }
+
+    public BanInformation GetActiveBan(IPlayerExtendedInfo player)
+    {
+      try {
+        return Ban.FindActiveBan(player.AuthId).GetBanInformation();
       } catch {
         return null;
       }
@@ -128,6 +155,15 @@ namespace SharpMod.Database.MySql
       try {
         Ban ban = new Ban(bi);
         ban.Save();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    public bool Unban()
+    {
+      try {
         return true;
       } catch {
         return false;

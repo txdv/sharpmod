@@ -58,7 +58,7 @@ plugin_info_t Plugin_info = {
   "2008/01/01", // date
   "Andrius Bentkus <andrius.bentkus@gmail.com>",  // author
   "http://www.sharpmod.org/", // url
-  "CSHARPMOD",// logtag, all caps please
+  "SMOD",// logtag, all caps please
   PT_ANYTIME, // (when) loadable
   PT_ANYPAUSE,  // (when) unloadable
 };

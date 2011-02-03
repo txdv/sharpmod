@@ -247,6 +247,13 @@ namespace SharpMod
         HelpString = "<target> <duration> [reason] - bans a target by partial steamid, nick or ip with optional reason for duration"
       });
 
+      RegisterCommand(new CommandInformation(typeof(ListBans)) {
+        CommandType = CommandType.Both,
+        CommandString = "smod_bans",
+        MinimumArguments = 2,
+        HelpString = " - lists all bans"
+      });
+
       RegisterCommand(new CommandInformation(typeof(Who)) {
         CommandType = CommandType.Both,
         CommandString = "smod_who",
@@ -444,6 +451,7 @@ namespace SharpMod
     public KickCommand(Player player, string reason)
       : this(player.Name, reason)
     {
+
     }
   }
 }
