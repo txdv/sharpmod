@@ -97,9 +97,11 @@ namespace SharpMod
     /// </returns>
     public static CVar Get(string name)
     {
-      IntPtr ptr = MetaModEngine.engineFunctions.CVarGetPointer(name);
-      if (ptr == IntPtr.Zero) return null;
-      else return new CVar(ptr);
+      CVarInfo *cvar = MetaModEngine.engineFunctions.CVarGetPointer(name);
+      if (cvar == null)
+        return null;
+      else
+        return new CVar(cvar);
     }
 
     /// <summary>
