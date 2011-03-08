@@ -50,7 +50,7 @@ namespace SharpMod
 
     public static void Init()
     {
-      Version = new CVar("sharpmod_version", "0.1");
+      Version = new CVar("smod_version", "0.1");
 
       // load plugins
 
