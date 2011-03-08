@@ -55,7 +55,7 @@ namespace SharpMod
       // load plugins
 
       Server.Print(License);
-      Server.RegisterCommand("sharp", sharp);
+      Server.RegisterCommand("smod", smod);
 
 
       try {
@@ -74,14 +74,14 @@ namespace SharpMod
       }
     }
 
-    static void sharpHelp()
+    static void smodHelp()
     {
-      Console.WriteLine ("Usage: sharp < command > [ argument ]");
+      Console.WriteLine ("Usage: smod < command > [ argument ]");
       Console.WriteLine ("   gpl\t\t - print the license");
       Console.WriteLine ("   plugins\t - lists currently loaded plugins");
     }
 
-    static void sharp(string[] args)
+    static void smod(string[] args)
     {
       if (args.Length > 1)
       switch (args[1]) {
@@ -95,10 +95,10 @@ namespace SharpMod
         break;
 
       default:
-        sharpHelp();
+        smodHelp();
         break;
       }
-      else sharpHelp();
+      else smodHelp();
     }
 	}
 }
