@@ -79,7 +79,7 @@ namespace SharpMod
   /// <summary>
   /// CVariable class for GoldSrc
   /// </summary>
-  public class CVar : IDisposable
+  public class CVar
   {
     // @todo: Check if there is already an instance of an cvar (a C# class)
     // and create only new ones if there isn't
@@ -269,18 +269,5 @@ namespace SharpMod
 
     #endregion
 
-    #region IDisposable implementation
-
-    public void Dispose ()
-    {
-      unsafe {
-        // TODO: Do we really need to cleanup the cvars?
-        //Mono.Unix.UnixMarshal.FreeHeap(new IntPtr(cvar->name));
-        //Mono.Unix.UnixMarshal.FreeHeap(new IntPtr(cvar->str));
-        //Mono.Unix.UnixMarshal.FreeHeap(new IntPtr(cvar));
-      }
-    }
-
-    #endregion
   }
 }
