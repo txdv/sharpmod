@@ -172,9 +172,14 @@ namespace SharpMod
       MetaMod.MetaModEngine.engineFunctions.CVarRegister(cvar);
     }
 
-    internal CVar(IntPtr ptr)
+    internal CVar(CVarInfo *cvar)
     {
-      cvar = (CVarInfo*)ptr.ToPointer();
+      this.cvar = cvar;
+    }
+
+    internal CVar(IntPtr ptr)
+      : this((CVarInfo*)ptr.ToPointer())
+    {
     }
 
     bool GetFlag(int field)
