@@ -81,7 +81,7 @@ namespace SharpMod
   /// </summary>
   unsafe public class CVar
   {
-    // @todo: Check if there is already an instance of an cvar (a C# class)
+    // TODO: Check if there is already an instance of an cvar (a C# class)
     // and create only new ones if there isn't
 
     private CVarInfo* cvar;
