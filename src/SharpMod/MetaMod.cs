@@ -202,9 +202,9 @@ namespace SharpMod.MetaMod
 
   internal unsafe delegate void CVarRegisterDelegate(CVarInfo *pCvar);
   internal delegate float CVarGetFloatDelegate(string szVarName);
-  internal unsafe delegate IntPtr CVarGetStringDelegate(char *name);
+  internal unsafe delegate sbyte *CVarGetStringDelegate(string name);
   internal delegate void CVarSetFloatDelegate(string szVarName, float flValue);
-  internal unsafe delegate void CVarSetStringDelegate(char *name, string val);
+  internal unsafe delegate void CVarSetStringDelegate(string name, string val);
   internal delegate void AlertMessageDelegate(short alerttype, string format);
   internal delegate IntPtr SzFromIndexDelegate(int iString);
   internal delegate int AllocStringDelegate(string szValue);

@@ -69,8 +69,8 @@ namespace SharpMod
   /// </summary>
   internal unsafe struct CVarInfo
   {
-    internal char *name;
-    internal char *str;
+    internal sbyte *name;
+    internal sbyte *str;
     internal int flags;
     internal float val;
     internal CVarInfo* next;
@@ -113,14 +113,12 @@ namespace SharpMod
     /// </returns>
     public unsafe static string GetStringValue(string name)
     {
-      IntPtr ptr = UnixMarshal.StringToHeap(name);
-      ptr = MetaMod.MetaModEngine.engineFunctions.CVarGetString((char *)ptr.ToPointer());
-      return Mono.Unix.UnixMarshal.PtrToString(ptr);
+      return new string(MetaMod.MetaModEngine.engineFunctions.CVarGetString(name));
     }
 
     public unsafe static void SetStringValue(string cvarname, string value)
     {
-      MetaModEngine.engineFunctions.CVarSetString((char *)Mono.Unix.UnixMarshal.StringToHeap(cvarname).ToPointer(), value);
+      MetaModEngine.engineFunctions.CVarSetString(cvarname, value);
     }
 
     public static float GetFloatValue(string name)
@@ -136,15 +134,15 @@ namespace SharpMod
     /// <summary>
     /// Name of an instance of a CVariable
     /// </summary>
-    public unsafe string Name { get { return Mono.Unix.UnixMarshal.PtrToString(new IntPtr(cvar->name)); } }
+    public unsafe string Name { get { return new string(cvar->name); } }
 
     /// <summary>
     /// The string value of an CVariable instance
     /// </summary>
     public unsafe string String
     {
-      get { return Mono.Unix.UnixMarshal.PtrToString(MetaMod.MetaModEngine.engineFunctions.CVarGetString(cvar->name)); }
-      set { MetaMod.MetaModEngine.engineFunctions.CVarSetString(cvar->name, value); }
+      get { return new string(cvar->name); }
+      set { MetaMod.MetaModEngine.engineFunctions.CVarSetString(Name, value); }
     }
 
     /// <summary>
@@ -168,9 +166,9 @@ namespace SharpMod
     public CVar(string name, string val)
     {
       unsafe {
-        cvar = (CVarInfo*)Mono.Unix.UnixMarshal.AllocHeap(sizeof(CVarInfo)).ToPointer();
-        cvar->name = (char *)Mono.Unix.UnixMarshal.StringToHeap(name).ToPointer();
-        cvar->str = (char *)Mono.Unix.UnixMarshal.StringToHeap(val).ToPointer();
+        cvar = (CVarInfo*)UnixMarshal.AllocHeap(sizeof(CVarInfo)).ToPointer();
+        cvar->name = (sbyte *)UnixMarshal.StringToHeap(name).ToPointer();
+        cvar->str  = (sbyte *)UnixMarshal.StringToHeap(val).ToPointer();
         cvar->next = (CVarInfo*)IntPtr.Zero.ToPointer();
         MetaMod.MetaModEngine.engineFunctions.CVarRegister(cvar);
       }
