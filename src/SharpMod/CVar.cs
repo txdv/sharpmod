@@ -79,12 +79,12 @@ namespace SharpMod
   /// <summary>
   /// CVariable class for GoldSrc
   /// </summary>
-  public class CVar
+  unsafe public class CVar
   {
     // @todo: Check if there is already an instance of an cvar (a C# class)
     // and create only new ones if there isn't
 
-    private unsafe CVarInfo* cvar;
+    private CVarInfo* cvar;
 
     /// <summary>
     /// Creates a CVar class for an already in the GoldSrc engine registered cvar.
@@ -111,12 +111,12 @@ namespace SharpMod
     /// <returns>
     /// Value of the CVariable <see cref="System.String"/>
     /// </returns>
-    public unsafe static string GetStringValue(string name)
+    public static string GetStringValue(string name)
     {
       return new string(MetaMod.MetaModEngine.engineFunctions.CVarGetString(name));
     }
 
-    public unsafe static void SetStringValue(string cvarname, string value)
+    public static void SetStringValue(string cvarname, string value)
     {
       MetaModEngine.engineFunctions.CVarSetString(cvarname, value);
     }
@@ -134,12 +134,12 @@ namespace SharpMod
     /// <summary>
     /// Name of an instance of a CVariable
     /// </summary>
-    public unsafe string Name { get { return new string(cvar->name); } }
+    public string Name { get { return new string(cvar->name); } }
 
     /// <summary>
     /// The string value of an CVariable instance
     /// </summary>
-    public unsafe string String
+    public string String
     {
       get { return new string(cvar->name); }
       set { MetaMod.MetaModEngine.engineFunctions.CVarSetString(Name, value); }
@@ -148,7 +148,7 @@ namespace SharpMod
     /// <summary>
     /// The float value of the cvar
     /// </summary>
-    public unsafe float Float
+    public float Float
     {
       get { return cvar->val; }
       set { cvar->val = value; }
@@ -165,26 +165,24 @@ namespace SharpMod
     /// </param>
     public CVar(string name, string val)
     {
-      unsafe {
-        cvar = (CVarInfo*)UnixMarshal.AllocHeap(sizeof(CVarInfo)).ToPointer();
-        cvar->name = (sbyte *)UnixMarshal.StringToHeap(name).ToPointer();
-        cvar->str  = (sbyte *)UnixMarshal.StringToHeap(val).ToPointer();
-        cvar->next = (CVarInfo*)IntPtr.Zero.ToPointer();
-        MetaMod.MetaModEngine.engineFunctions.CVarRegister(cvar);
-      }
+      cvar = (CVarInfo*)UnixMarshal.AllocHeap(sizeof(CVarInfo)).ToPointer();
+      cvar->name = (sbyte *)UnixMarshal.StringToHeap(name).ToPointer();
+      cvar->str  = (sbyte *)UnixMarshal.StringToHeap(val).ToPointer();
+      cvar->next = (CVarInfo*)IntPtr.Zero.ToPointer();
+      MetaMod.MetaModEngine.engineFunctions.CVarRegister(cvar);
     }
 
-    unsafe internal CVar(IntPtr ptr)
+    internal CVar(IntPtr ptr)
     {
       cvar = (CVarInfo*)ptr.ToPointer();
     }
 
-    unsafe bool GetFlag(int field)
+    bool GetFlag(int field)
     {
       return (cvar->flags & field) > 0;
     }
 
-    unsafe void SetFlag(int field, bool val)
+    void SetFlag(int field, bool val)
     {
       if (val)
         cvar->flags |= field;
