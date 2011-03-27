@@ -1,3 +1,6 @@
 [submodule "src/psi"]
 	path = src/psi
 	url = git://github.com/txdv/psi.git
+[submodule "src/manos"]
+	path = src/manos
+	url = git@github.com:txdv/manos.git

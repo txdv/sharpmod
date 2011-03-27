@@ -906,6 +906,7 @@ typedef struct {
       }
 
       TaskManager.WorkFrame();
+      Manos.IO.IOLoop.Instance.EventLoop.RunNonBlocking();
       MetaModEngine.SetResult(MetaResult.Handled);
     }
 

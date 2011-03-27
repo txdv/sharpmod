@@ -94,6 +94,10 @@
       <Project>{51240530-3278-44F8-8B60-98313B58C7A6}</Project>
       <Name>Psi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\manos\src\Manos\Manos.csproj">
+      <Project>{2548B25A-2E1F-4E21-BC43-7E39B1F6F23F}</Project>
+      <Name>Manos</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="messages.xml" />
