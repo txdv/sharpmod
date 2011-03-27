@@ -221,7 +221,7 @@ namespace SharpMod.MetaMod
   internal unsafe delegate CVarInfo *CVarGetPointerDelegate(string cvarname);
   internal delegate void GetPlayerStatsDelegate(IntPtr playerEntity, ref int ping, ref int packet_loss);
   internal delegate void AddServerCommandDelegate(string name, IntPtr functionPointer);
-  internal delegate IntPtr GetPlayerAuthIdDelegate(IntPtr playerEntity);
+  internal unsafe delegate sbyte *GetPlayerAuthIdDelegate(IntPtr playerEntity);
 
 
   #pragma warning disable 169
