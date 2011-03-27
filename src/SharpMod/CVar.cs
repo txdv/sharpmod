@@ -136,22 +136,22 @@ namespace SharpMod
     /// <summary>
     /// Name of an instance of a CVariable
     /// </summary>
-    public string Name { get { return new string(cvar->name); } }
+    public string Name {
+      get { return new string(cvar->name); }
+    }
 
     /// <summary>
     /// The string value of an CVariable instance
     /// </summary>
-    public string String
-    {
-      get { return new string(cvar->name); }
+    public string String {
+      get { return new string(cvar->str); }
       set { MetaMod.MetaModEngine.engineFunctions.CVarSetString(Name, value); }
     }
 
     /// <summary>
     /// The float value of the cvar
     /// </summary>
-    public float Float
-    {
+    public float Float {
       get { return cvar->val; }
       set { cvar->val = value; }
     }
