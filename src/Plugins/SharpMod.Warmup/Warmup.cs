@@ -31,12 +31,12 @@ namespace SharpMod.Warmup
 {
   public static class HelperMethods
   {
-    public static bool True(this string str) {
+    public static bool Bool(this string str) {
       return !((str == "0") || (str == "off"));
     }
 
-    public static bool True(this CVar cvar) {
-      return cvar.String.True();
+    public static bool Bool(this CVar cvar) {
+      return cvar.String.Bool();
     }
 
     public static float GetFloat(this CVar cvar) {
@@ -53,9 +53,9 @@ namespace SharpMod.Warmup
     CVar warmup    = new CVar("warmup",              "on");
     CVar time      = new CVar("warmup_time",         "5" );
     CVar message   = new CVar("warmup_message",      "1" );
-    CVar knifeonly = new CVar("warmup_knifeonly",    "0" );
-		CVar armvis    = new CVar("warmup_armoury_vis",  "0" );
-		CVar armpick   = new CVar("warmup_armoury_pick", "0" );
+    CVar knifeonly = new CVar("warmup_knifeonly",    "1" );
+    CVar armvis    = new CVar("warmup_armoury_vis",  "0" );
+    CVar armpick   = new CVar("warmup_armoury_pick", "0" );
 		
 
     TimerWatcher messageWatcher = null;
@@ -73,7 +73,7 @@ namespace SharpMod.Warmup
         if (Timeout == 0) {
           EndWarmup();
         } else {
-          if (message.True()) {
+          if (message.Bool()) {
             foreach (var player in Player.Players) {
               SendMessage(player, Timeout);
             }
@@ -86,7 +86,7 @@ namespace SharpMod.Warmup
     private void EventGameStart(string str1, string str2)
     {
       if (str2 == "#Game_Commencing") {
-        if (warmup.True()) {
+        if (warmup.Bool()) {
           StartWarmup(time.GetInt());
         }
       }
@@ -101,7 +101,7 @@ namespace SharpMod.Warmup
         ClearPlayer(player);
       }
 			
-			SetArmouryVisibility(armvis.True(), armpick.True());
+      SetArmouryVisibility(armvis.Bool(), armpick.Bool());
 
       messageWatcher.Start();
     }
@@ -118,7 +118,7 @@ namespace SharpMod.Warmup
 
     public void ClearPlayer(Player player)
     {
-      if (knifeonly.True()) {
+      if (knifeonly.Bool()) {
         player.StripUserWeapons();
         player.GiveItem("weapon_knife");
         player.SetMoney(0);
