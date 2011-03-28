@@ -125,7 +125,6 @@ namespace SharpMod.Warmup
       }
     }
 		
-		// , bool visibility = true, bool touch = true
 		public void SetArmouryVisibility(bool vis, bool pick)
 		{
       foreach (var entity in Entity.Find("classname", "armoury_entity")) {
