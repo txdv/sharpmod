@@ -344,9 +344,8 @@ namespace SharpMod
       : this((Edict*)ptr) { }
 
     internal Entity(IntPtr ptr)
+      : this(ptr.ToPointer())
     {
-      Pointer = ptr;
-      entity = (Edict *)ptr.ToPointer();
     }
 
     public Entity()
