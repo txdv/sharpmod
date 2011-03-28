@@ -450,8 +450,7 @@ namespace SharpMod
       }
     }
 
-    public bool Valid
-    {
+    public bool Valid {
       get {
         return true;
       }
@@ -557,8 +556,7 @@ namespace SharpMod
     /// <summary>
     /// Returns the total entity count in the engine
     /// </summary>
-    public static int Count
-    {
+    public static int Count {
       get {
         return MetaModEngine.engineFunctions.NumberOfEntities();
       }
