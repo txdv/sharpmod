@@ -29,6 +29,13 @@ namespace SharpMod
   /// </summary>
   public class Model
   {
+    public IntPtr Pointer { get; protected set; }
+
+    public Model(IntPtr model)
+    {
+      Pointer = model;
+    }
+
     /// <summary>
     /// Precaches a mode
     /// </summary>
@@ -74,6 +81,11 @@ namespace SharpMod
     public static IntPtr GetPointer(IntPtr entity)
     {
       return MetaModEngine.engineFunctions.GetModelPtr(entity);
+    }
+
+    public static Model GetModel(Entity entity)
+    {
+      return new Model(GetPointer(entity));
     }
 
   }
