@@ -114,6 +114,27 @@ namespace SharpMod
     Discardbody = 4,
   }
 
+  public enum Solid : int
+  {
+    Not = 0,
+    Trigger = 1,
+    BBox = 2,
+    Slidebox = 3,
+    BSP = 4,
+  }
+
+  public enum Effects : int
+  {
+    Brightfield    =   1, // Swirling cloud of particles
+    Muzzleflash    =   2, // Single frame ELIGHT on entity attachment 0
+    Brightlight    =   4, // DLIGHT centered at entity origin
+    Dimlight       =   8, // Player flashlight
+    Invisiblelight =  16, // Get lighting from ceiling
+    Nointerpolate  =  32, // Don't interpolate the next frame
+    Light          =  64, // Rocket flare glow sprite
+    Nodraw         = 128, // Don't draw entity
+  }
+
   #endregion
 
   // engine/edict.h
@@ -558,14 +579,35 @@ namespace SharpMod
        return MetaModEngine.engineFunctions.IndexOfEdict(new IntPtr(ptr));
     }
 
-    public static Entity Find(Entity startSearchAfter, string field, string val)
+    public static IEnumerable<Entity> Find(string field, string val)
     {
-      return new Entity(MetaModEngine.engineFunctions.FindEntityByString(startSearchAfter.Pointer, field, val));
+      Entity first = Find(null, field, val);
+
+      if (first == null) {
+        yield break;
+      } else {
+        yield return first;
+      }
+
+      Entity entity = first;
+
+      while ((entity = Find(entity, field, val)).Pointer != first.Pointer) {
+        yield return entity;
+      }
     }
 
-    internal static Entity Find(Edict *startSearchAfter, string field, string val)
+    public static Entity Find(Entity startSearchAfter, string field, string val)
     {
-      return Find(new Entity(startSearchAfter), field, val);
+      IntPtr entity = Find((startSearchAfter == null ? IntPtr.Zero : startSearchAfter.Pointer), field, val);
+      if (entity == IntPtr.Zero) {
+        return null;
+      }
+      return new Entity(entity);
+    }
+
+    public static IntPtr Find(IntPtr startSearchAfter, string field, string val)
+    {
+      return MetaModEngine.engineFunctions.FindEntityByString(startSearchAfter, field, val);
     }
 
     internal static void Remove(IntPtr entity)
@@ -605,5 +647,100 @@ namespace SharpMod
     }
 
     #endregion
+
+    public Solid Solid {
+      get {
+        return (Solid)entity->v.solid;
+      }
+      set {
+        entity->v.solid = (int)value;
+      }
+    }
+
+    bool GetEffect(Effects effect)
+    {
+      return (entity->v.effects & (int)effect) > 0;
+    }
+
+    void SetEffect(Effects effect, bool val)
+    {
+      if (val)
+        entity->v.effects |= (int)effect;
+      else
+        entity->v.effects &= ~(int)effect;
+    }
+
+    public bool Brightfield {
+      get {
+        return GetEffect(Effects.Brightfield);
+      }
+      set {
+        SetEffect(Effects.Brightfield, value);
+      }
+    }
+
+    public bool Muzzleflash {
+      get {
+        return GetEffect(Effects.Muzzleflash);
+      }
+      set {
+        SetEffect(Effects.Muzzleflash, value);
+      }
+    }
+
+    public bool Brightlight {
+      get {
+        return GetEffect(Effects.Brightlight);
+      }
+      set {
+        SetEffect(Effects.Brightlight, value);
+      }
+    }
+
+    public bool Dimlight {
+      get {
+        return GetEffect(Effects.Dimlight);
+      }
+      set {
+        SetEffect(Effects.Dimlight, value);
+      }
+    }
+
+    public bool Invisiblelight {
+      get {
+        return GetEffect(Effects.Invisiblelight);
+      }
+      set {
+        SetEffect(Effects.Invisiblelight, value);
+      }
+    }
+
+    public bool Nointerpolate {
+      get {
+        return GetEffect(Effects.Nointerpolate);
+      }
+      set {
+        SetEffect(Effects.Nointerpolate, value);
+      }
+    }
+
+    public bool Light {
+      get {
+        return GetEffect(Effects.Light);
+      }
+      set {
+        SetEffect(Effects.Light, value);
+      }
+    }
+
+    public bool Nodraw {
+      get {
+        return GetEffect(Effects.Nodraw);
+      }
+      set {
+        SetEffect(Effects.Nodraw, value);
+      }
+    }
+
   }
 }
