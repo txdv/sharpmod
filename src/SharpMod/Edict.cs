@@ -388,16 +388,25 @@ namespace SharpMod
     }
     public static Entity CreateEntity(IntPtr entityPointer)
     {
-      if (entityPointer.ToPointer() == null) return null;
+      if (entityPointer == IntPtr.Zero) {
+        return null;
+      }
+
       int index = Entity.GetIndex(entityPointer);
+
       if (entityDictionary.ContainsKey(index)) {
         return entityDictionary[index];
       } else {
         Edict* edict = (Edict *)entityPointer.ToPointer();
         // TODO: 1 and maxplayer can be bot or player
-        if (index >= 1 && index <= Server.MaxPlayers) return RegisterEntity(index, new Player(entityPointer));
+        if (index >= 1 && index <= Server.MaxPlayers) {
+          return RegisterEntity(index, new Player(entityPointer));
+        }
+
         string classname = GetClassName(edict);
+
         if (classname.StartsWith("weapon_")) return RegisterEntity(index, new CounterStrike.Weapon(edict));
+
         switch (classname) {
         case "player":
           return RegisterEntity(index, new Player(entityPointer));
