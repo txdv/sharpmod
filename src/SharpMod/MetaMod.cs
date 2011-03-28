@@ -555,9 +555,9 @@ typedef struct {
     internal PluginLoadTime unloadable;
   };
 
-  internal class MetaModEngine
+  unsafe internal class MetaModEngine
   {
-    unsafe internal static void SetResult(MetaResult result)
+    internal static void SetResult(MetaResult result)
     {
       globals->mres = result;
     }
@@ -570,11 +570,11 @@ typedef struct {
     internal static EngineFunctions engineFunctions;
     internal static EntityAPI dllapiFunctions;
     internal static MetaUtilityFunctions metaUtilityFunctions;
-    unsafe internal static MetaGlobals* globals;
-    unsafe internal static GlobalVariables* globalVariables;
+    internal static MetaGlobals* globals;
+    internal static GlobalVariables* globalVariables;
 
     //[MethodImplAttribute(MethodImplOptions.InternalCall)]
-    unsafe internal static void handlerGiveFnptrsToDll(IntPtr engineFunctionsFromEngine, GlobalVariables* globalVariables)
+    internal static void handlerGiveFnptrsToDll(IntPtr engineFunctionsFromEngine, GlobalVariables* globalVariables)
     {
       #if DEBUG
       Console.WriteLine(" -- MONO: handlerGiveFnptrsToDll");
@@ -587,7 +587,7 @@ typedef struct {
     }
 
     //internal static MetaUtilityFunctions muf;
-    unsafe internal static void handlerMeta_Query(PluginLoadTime now, IntPtr PluginInfo, IntPtr MetaUtilFuncs)
+    internal static void handlerMeta_Query(PluginLoadTime now, IntPtr PluginInfo, IntPtr MetaUtilFuncs)
 //    unsafe internal static void handlerMeta_Query(PluginLoadTime now, IntPtr PluginInfo, ref MetaUtilityFunctions MetaUtilFuncs)
     {
       #if DEBUG
@@ -618,7 +618,7 @@ typedef struct {
       PLID = PluginInfo;
     }
 
-    unsafe internal static void handlerMeta_Attach(IntPtr a, MetaFunctions *pFunctionTable, MetaGlobals* pMetaGlobals, IntPtr pGamedllFuncs)
+    internal static void handlerMeta_Attach(IntPtr a, MetaFunctions *pFunctionTable, MetaGlobals* pMetaGlobals, IntPtr pGamedllFuncs)
     {
       #if DEBUG
       Console.WriteLine(" -- MONO: handlerMeta_Attach");
@@ -641,7 +641,7 @@ typedef struct {
 
     #region Engine Functions Post
 
-    internal static unsafe int GetEngineFunctionsPost(ref EngineFunctions functions, ref int interfaceVersion)
+    internal static int GetEngineFunctionsPost(ref EngineFunctions functions, ref int interfaceVersion)
     {
       functions = new EngineFunctions();
 
@@ -685,8 +685,7 @@ typedef struct {
         // the registering part and the first message (weaponlist in cstrike case)
         // so we need to initialize the game mode before the first message so we can
         // intercept this valuable information
-        switch (Server.GameDirectory)
-        {
+        switch (Server.GameDirectory) {
         case "cstrike":
           CounterStrike.CounterStrike.Init();
           break;
@@ -758,7 +757,7 @@ typedef struct {
 
     internal static int writeCoordCount = 0;
     internal static Vector3f coord = new Vector3f();
-    unsafe internal static void WriteCoordPost(int val)
+    internal static void WriteCoordPost(int val)
     {
       float *flValue = (float *)&val;
       switch (writeCoordCount)
@@ -814,7 +813,7 @@ typedef struct {
 
     #region Command Argument Modifier
 
-    unsafe internal static IntPtr CmdArgs()
+    internal static IntPtr CmdArgs()
     {
       if (Command.overrideArguments && Command.instance != null) {
         SetResult(MetaResult.Supercede);
@@ -824,7 +823,7 @@ typedef struct {
         return IntPtr.Zero;
       }
     }
-    unsafe internal static int CmdArgc()
+    internal static int CmdArgc()
     {
       if (Command.overrideArguments && Command.instance != null) {
         SetResult(MetaResult.Supercede);
@@ -834,7 +833,7 @@ typedef struct {
         return 0;
       }
     }
-    unsafe internal static IntPtr CmdArgv(int i)
+    internal static IntPtr CmdArgv(int i)
     {
       if (Command.overrideArguments && Command.instance != null) {
         SetResult(MetaResult.Supercede);
@@ -857,7 +856,7 @@ typedef struct {
 
     #region EntityAPI2 Post
 
-    unsafe internal static int GetEntityAPI2Post(ref EntityAPI functionTable, ref int interfaceVersion)
+    internal static int GetEntityAPI2Post(ref EntityAPI functionTable, ref int interfaceVersion)
     {
       #if DEBUG
       Console.WriteLine(" -- MONO: GetEntityAPI2Post");
