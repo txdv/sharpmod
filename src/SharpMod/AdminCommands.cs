@@ -27,6 +27,9 @@ using SharpMod.Database;
 
 namespace SharpMod.Commands
 {
+  [CommandInfo(CommandString = "smod_kick", CommandType = CommandType.Both,
+               MinimumArguments = 2, MaximumArguments = -1,
+               HelpString = "<target> [reason] - kicks a target by partial steamid, nick or ip with the reason")]
   public class Kick : Command
   {
     public string Target {
@@ -100,6 +103,9 @@ namespace SharpMod.Commands
     }
   }
 
+  [CommandInfo(CommandString = "smod_ban", CommandType = CommandType.Both,
+               MinimumArguments = 3, MaximumArguments = -1,
+               HelpString = "<target> <duration> [reason] - bans a target by partial steamid, nick or ip with optional reason for duration")]
   public class Ban : Command
   {
     public Ban(string[] arguments)
@@ -215,6 +221,9 @@ namespace SharpMod.Commands
     }
   }
 
+  [CommandInfo(CommandString = "smod_bans", CommandType = CommandType.Both,
+               MinimumArguments = 2,
+               HelpString = " - lists all bans")]
   public class ListBans : Command
   {
     public ListBans(string[] arguments)
@@ -257,6 +266,9 @@ namespace SharpMod.Commands
     }
   }
 
+  [CommandInfo(CommandString = "smod_who", CommandType = CommandType.Both,
+               MinimumArguments = 1,
+               HelpString = "- shows the active player list with the according privileges")]
   public class Who : Command
   {
     private static Player playerInstance = null;
@@ -306,6 +318,9 @@ namespace SharpMod.Commands
     }
   }
 
+  [CommandInfo(CommandString = "smod_reloadadmins", CommandType = CommandType.Both,
+               MinimumArguments = 1,
+               HelpString = "- reloads the admins")]
   public class AdminReload : Command
   {
     public AdminReload(string[] arguments)
@@ -330,6 +345,9 @@ namespace SharpMod.Commands
     }
   }
 
+  [CommandInfo(CommandString = "smod_map", CommandType = CommandType.Both,
+               MinimumArguments = 2,
+               HelpString = "<map> - changes the active map to")]
   public class ChangeMap : Command
   {
     public ChangeMap(string[] arguments)
@@ -384,6 +402,9 @@ namespace SharpMod.Commands
     }
   }
 
+  [CommandInfo(CommandString = "smod_maps", CommandType = CommandType.Both,
+               MinimumArguments = 1, MaximumArguments = 1,
+               HelpString = "- lists all available maps")]
   public class ListMaps : Command
   {
     public ListMaps(string[] arguments)

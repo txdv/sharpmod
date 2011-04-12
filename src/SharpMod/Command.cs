@@ -22,6 +22,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Reflection;
 using SharpMod.Commands;
 using SharpMod.MetaMod;
 using SharpMod.Helper;
@@ -35,7 +36,7 @@ namespace SharpMod
     Both   = (Player | Server)
   }
 
-  public class CommandInformation
+  public class CommandInfo : System.Attribute
   {
     public int MinimumArguments { get; set; }
 
@@ -48,26 +49,7 @@ namespace SharpMod
     public string HelpString { get; set; }
 
     public CommandType CommandType { get; set; }
-
-    public bool ValidArgumentCount(string[] args)
-    {
-      return (MinimumArguments <= args.Length) && (args.Length <= MaximumArguments);
-    }
-
-    public Command GetInstance(string[] args)
-    {
-      return (Command)Activator.CreateInstance(Type, new object[] { args });
-    }
-
-    public CommandInformation(Type type)
-    {
-      if (!type.IsSubclassOf(typeof(Command))) {
-        throw new ArgumentException("Argument is not of subclass of Command");
-      }
-      Type = type;
-      HelpString = string.Empty;
-    }
- }
+  }
 
   /// <summary>
   /// A class for handling commands send by the players
@@ -213,75 +195,23 @@ namespace SharpMod
   public class CommandManager
   {
     private static Dictionary<string, ClientCommandDelegate> events = new Dictionary<string, ClientCommandDelegate>();
-    private static List<CommandInformation> commandInformationList = new List<CommandInformation>();
+    private static Dictionary<string, Tuple<CommandInfo, Type>> cmdInfo = new Dictionary<string, Tuple<CommandInfo, Type>>();
 
     static CommandManager()
     {
-      RegisterCommand(new CommandInformation(typeof(SayCommand)) {
-        CommandString = "say",
-        MinimumArguments = 2,
-        MaximumArguments = 2,
-        HelpString = "<text> - will enter a message in the global chat"
-      });
+      // build in server commands
+      RegisterCommand(typeof(SayCommand));
+      RegisterCommand(typeof(SayTeamCommand));
+      RegisterCommand(typeof(KickCommand));
 
-      RegisterCommand(new CommandInformation(typeof(SayTeamCommand)) {
-        CommandString = "say_team",
-        MinimumArguments = 2,
-        MaximumArguments = 2,
-        HelpString = "<text> - will enter a message in the team chat"
-      });
-
-      RegisterCommand(new CommandInformation(typeof(Kick)) {
-        CommandType = CommandType.Both,
-        CommandString = "smod_kick",
-        MinimumArguments = 2,
-        MaximumArguments = -1,
-        HelpString = "<target> [reason] - kicks a target by partial steamid, nick or ip with the reason"
-      });
-
-      RegisterCommand(new CommandInformation(typeof(Ban)) {
-        CommandType = CommandType.Both,
-        CommandString = "smod_ban",
-        MinimumArguments = 3,
-        MaximumArguments = -1,
-        HelpString = "<target> <duration> [reason] - bans a target by partial steamid, nick or ip with optional reason for duration"
-      });
-
-      RegisterCommand(new CommandInformation(typeof(ListBans)) {
-        CommandType = CommandType.Both,
-        CommandString = "smod_bans",
-        MinimumArguments = 2,
-        HelpString = " - lists all bans"
-      });
-
-      RegisterCommand(new CommandInformation(typeof(Who)) {
-        CommandType = CommandType.Both,
-        CommandString = "smod_who",
-        MinimumArguments = 1,
-        HelpString = "- shows the active player list with the according privileges"
-      });
-
-      RegisterCommand(new CommandInformation(typeof(AdminReload)) {
-        CommandType = CommandType.Both,
-        CommandString = "smod_reloadadmins",
-        MinimumArguments = 1,
-        HelpString = "- reloads the admins"
-      });
-
-      RegisterCommand(new CommandInformation(typeof(ChangeMap)) {
-        CommandType = CommandType.Both,
-        CommandString = "smod_map",
-        MinimumArguments = 2,
-        HelpString = "<map> - changes the active map to"
-      });
-
-      RegisterCommand(new CommandInformation(typeof(ListMaps)) {
-        CommandType = CommandType.Both,
-        CommandString = "smod_maps",
-        MinimumArguments = 1,
-        MaximumArguments = 1,
-        HelpString = "- lists all available maps"
-      });
+      // admin commands
+      RegisterCommand(typeof(Kick));
+      RegisterCommand(typeof(Ban));
+      RegisterCommand(typeof(ListBans));
+      RegisterCommand(typeof(Who));
+      RegisterCommand(typeof(AdminReload));
+      RegisterCommand(typeof(ChangeMap));
+      RegisterCommand(typeof(ListMaps));
     }
 
     /// <summary>
@@ -303,11 +233,18 @@ namespace SharpMod
       else events.Add(str, handler);
     }
 
-    public static void RegisterCommand(CommandInformation commandInformation) {
-      commandInformationList.Add(commandInformation);
-      if ((commandInformation.CommandType & CommandType.Server) > 0) {
-        Server.RegisterCommand(commandInformation.CommandString, ServerCommandHandler);
+    public static void RegisterCommand(Type type)
+    {
+      object[] objs = type.GetCustomAttributes(typeof(CommandInfo), false);
+      if (objs.Length == 0) {
+        throw new ArgumentException("Argument has to have the attribute CommandInfo set");
       }
+
+      CommandInfo info = objs[0] as CommandInfo;
+
+      cmdInfo[info.CommandString] = Tuple.Create(info, type);
+
+      Server.RegisterCommand(info.CommandString, ServerCommandHandler);
     }
 
     private static void ServerCommandHandler(string[] arguments)
@@ -322,9 +259,11 @@ namespace SharpMod
         return new Command(arguments);
       }
 
-      foreach (CommandInformation ci in commandInformationList) {
-        if ((arguments[0] == ci.CommandString) && ((ci.CommandType & type) > 0)) {
-          return (Command)Activator.CreateInstance(ci.Type, new object[] { arguments });
+      if (cmdInfo.ContainsKey(arguments[0])) {
+        var combinedInfo = cmdInfo[arguments[0]];
+        CommandInfo info = combinedInfo.Item1;
+        if ((info.CommandType & type) > 0) {
+          return (Command)Activator.CreateInstance(combinedInfo.Item2, new object[] { arguments });
         }
       }
 
@@ -387,6 +326,9 @@ namespace SharpMod
   /// <summary>
   /// The say command
   /// </summary>
+  [CommandInfo(CommandString = "say",
+               MinimumArguments = 2, MaximumArguments = 2,
+               HelpString = "<text> - will enter a message in the global chat")]
   public class SayCommand : TextCommand
   {
     public SayCommand(string[] arguments)
@@ -400,6 +342,9 @@ namespace SharpMod
     }
   }
 
+  [CommandInfo(CommandString = "say",
+               MinimumArguments = 2, MaximumArguments = 2,
+               HelpString = "<text> - will enter a message in the team chat")]
   public class SayTeamCommand : TextCommand
   {
     public SayTeamCommand(string[] arguments)
@@ -413,6 +358,9 @@ namespace SharpMod
     }
   }
 
+  [CommandInfo(CommandString = "kick", CommandType = CommandType.Both,
+               MinimumArguments = 2, MaximumArguments = -1,
+               HelpString = "<text> - will enter a message in the global chat")]
   public class KickCommand : Command
   {
     public string Target {
