@@ -179,7 +179,7 @@ namespace SharpMod
     {
       if (player == null) {
         Server.Print(text);
-      } else  {
+      } else {
         player.PrintConsole(text);
       }
     }
