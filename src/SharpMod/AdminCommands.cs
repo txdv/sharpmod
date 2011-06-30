@@ -203,8 +203,8 @@ namespace SharpMod.Commands
         try {
           SharpMod.Database.AddBan(bi);
           TaskManager.Join(OnSuccess, userid);
-        } catch {
-          TaskManager.Join(OnFailure, userid);
+        } catch (Exception e) {
+          TaskManager.Join(OnFailure, userid, e);
         }
       });
     }
@@ -251,8 +251,8 @@ namespace SharpMod.Commands
         try {
           biList = SharpMod.Database.GetAllBans();
           OnSuccess(userid);
-        } catch {
-          OnFailure(userid);
+        } catch (Exception e) {
+          OnFailure(userid, e);
         }
       });
     }
@@ -448,8 +448,8 @@ namespace SharpMod.Commands
       Task.Factory.StartNew(delegate {
         try {
           TaskManager.Join(List, userid, Server.LoadMapListFromDirectory());
-        } catch {
-          TaskManager.Join(OnFailure, userid);
+        } catch (Exception e) {
+          TaskManager.Join(OnFailure, userid, e);
         }
       });
     }
