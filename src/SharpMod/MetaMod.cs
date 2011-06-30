@@ -905,7 +905,7 @@ typedef struct {
       }
 
       TaskManager.WorkFrame();
-      Manos.IO.IOLoop.Instance.EventLoop.RunNonBlocking();
+      SharpMod.Context.RunOnceNonblocking();
       MetaModEngine.SetResult(MetaResult.Handled);
     }
 

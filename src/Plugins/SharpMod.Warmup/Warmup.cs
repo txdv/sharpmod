@@ -23,9 +23,9 @@ using System;
 using SharpMod;
 using SharpMod.Helper;
 using SharpMod.CounterStrike;
+
 using Manos;
 using Manos.IO;
-using Libev;
 
 namespace SharpMod.Warmup
 {
@@ -56,9 +56,8 @@ namespace SharpMod.Warmup
     CVar knifeonly = new CVar("warmup_knifeonly",    "1" );
     CVar armvis    = new CVar("warmup_armoury_vis",  "0" );
     CVar armpick   = new CVar("warmup_armoury_pick", "0" );
-		
 
-    TimerWatcher messageWatcher = null;
+    ITimerWatcher messageWatcher = null;
 
     public bool Enabled { get; protected set; }
     public int Timeout { get; protected set; }
@@ -69,7 +68,7 @@ namespace SharpMod.Warmup
 
       Player.RegisterCommand("warmup_start", delegate { StartWarmup(time.GetInt()); });
 
-      messageWatcher = new TimerWatcher(TimeSpan.FromSeconds(1), delegate {
+      messageWatcher = SharpMod.Context.CreateTimerWatcher(TimeSpan.FromSeconds(1), delegate {
         if (Timeout == 0) {
           EndWarmup();
         } else {

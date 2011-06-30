@@ -43,6 +43,14 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Data" />
+    <Reference Include="Manos, Version=0.1.3.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\manos\build\Manos.dll</HintPath>
+    </Reference>
+    <Reference Include="Manos.IO, Version=0.1.3.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\manos\build\Manos.IO.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -93,10 +101,6 @@
     <ProjectReference Include="..\psi\Psi\Psi.csproj">
       <Project>{51240530-3278-44F8-8B60-98313B58C7A6}</Project>
       <Name>Psi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\manos\src\Manos\Manos.csproj">
-      <Project>{2548B25A-2E1F-4E21-BC43-7E39B1F6F23F}</Project>
-      <Name>Manos</Name>
     </ProjectReference>
     <ProjectReference Include="..\hltools\HLTools\HLTools.csproj">
       <Project>{E5D928F5-B095-48F2-A5D2-65D228CE320E}</Project>
