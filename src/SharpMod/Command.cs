@@ -157,6 +157,19 @@ namespace SharpMod
     {
       OnFailure(Player.FindByUserId(userid));
     }
+    protected virtual void OnFailure(int userid, string errorMessage)
+    {
+      Player player = Player.FindByUserId(userid);
+      WriteLine(player, errorMessage);
+      OnFailure(player);
+    }
+    protected virtual void OnFailure(int userid, Exception exception)
+    {
+      Player player = Player.FindByUserId(userid);
+      WriteLine(player, exception.Message);
+      WriteLine(player, exception.StackTrace);
+      OnFailure(player);
+    }
     protected virtual void OnFailure(Player player)
     {
       Server.LogDeveloper("Command failed: {0}", Arguments.Join(' '));
