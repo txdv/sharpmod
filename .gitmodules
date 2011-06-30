@@ -4,3 +4,6 @@
 [submodule "src/manos"]
 	path = src/manos
 	url = git@github.com:txdv/manos.git
+[submodule "src/hltools"]
+	path = src/hltools
+	url = https://github.com/txdv/hltools/

@@ -362,7 +362,11 @@ namespace SharpMod.Commands
 
     public string Map {
       get {
-        return Arguments[1];
+        string map = Arguments[1].ToLower();
+        if (map.EndsWith(".bsp")) {
+          return map.Substring(0, map.Length - 4);
+        }
+        return map;
       }
     }
 
@@ -371,34 +375,48 @@ namespace SharpMod.Commands
       int userid = Player.GetUserID(player);
 
       if (player != null && !player.Privileges.HasPrivilege("map")) {
-        WriteLine(player, "You have no map privileges");
-        OnFailure(userid);
+        OnFailure(userid, "You have no map privileges");
         return;
       }
 
 
       if (!Server.IsMapValid(Map)) {
-        WriteLine(player, "invalid map provided");
-        OnFailure(userid);
+        OnFailure(userid, "Invalid map provided");
         return;
       }
 
       MapChangeInfo mc = new MapChangeInfo(player, Map);
 
+      //int comp = int.Parse(CVar.Get("smod_map_completness").String);
+      int comp = 1;
+
       Task.Factory.StartNew(delegate {
         try {
+          var res = SharpMod.Verifier.VerifyMap(Map + ".bsp");
+          if (comp >= 1 && !res.ServerCapable) {
+            TaskManager.Join(OnFailure, userid, "Server is not capable of running this map");
+            return;
+          }
+
+          if (comp >= 2 && !res.ClientCapable) {
+            TaskManager.Join(OnFailure, userid, "Server is not capable of serving all client files");
+            return;
+          }
           SharpMod.Database.AddMapChange(mc);
-        } catch {
+          TaskManager.Join(OnSuccess, userid);
+        } catch (Exception e) {
+          TaskManager.Join(OnFailure, userid, e);
         }
       });
+    }
 
+    protected override void OnSuccess(Player player)
+    {
       Server.ExecuteCommand("changelevel {0}", Map);
 
       // TODO: make this beautiful, 30 == SVC_INTERMISSSION
       Message.Begin(MessageDestination.AllReliable, 30, IntPtr.Zero, IntPtr.Zero);
       Message.End();
-
-      OnSuccess(userid);
     }
   }
 

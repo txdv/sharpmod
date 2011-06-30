@@ -98,6 +98,10 @@
       <Project>{2548B25A-2E1F-4E21-BC43-7E39B1F6F23F}</Project>
       <Name>Manos</Name>
     </ProjectReference>
+    <ProjectReference Include="..\hltools\HLTools\HLTools.csproj">
+      <Project>{E5D928F5-B095-48F2-A5D2-65D228CE320E}</Project>
+      <Name>HLTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="messages.xml" />

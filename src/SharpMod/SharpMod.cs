@@ -23,6 +23,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using SharpMod.Database;
+using HLTools;
 
 namespace SharpMod
 {
@@ -48,6 +49,8 @@ namespace SharpMod
 
     internal static IDatabase Database { get; set; }
 
+    public static Verifier Verifier { get; private set; }
+
     public static void Init()
     {
       Version = new CVar("smod_version", "0.1");
@@ -57,6 +60,7 @@ namespace SharpMod
       Server.Print(License);
       Server.RegisterCommand("smod", smod);
 
+      Verifier = new Verifier(Directory.GetCurrentDirectory(), Server.GameDirectory);
 
       try {
         var doc = new System.Xml.XmlDocument();
