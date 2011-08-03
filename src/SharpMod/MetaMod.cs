@@ -581,9 +581,6 @@ typedef struct {
       #endif
       engineFunctions = (EngineFunctions)Marshal.PtrToStructure(engineFunctionsFromEngine, typeof(EngineFunctions));
       MetaModEngine.globalVariables = globalVariables;
-
-      SharpMod.Init();
-      Server.Init();
     }
 
     //internal static MetaUtilityFunctions muf;
@@ -872,6 +869,8 @@ typedef struct {
       functionTable.PutInServer      = Player.OnPutInServer;
 
       Server.Init();
+      SharpMod.Init();
+
       MetaModEngine.SetResult(MetaResult.Handled);
       return 0;
     }
