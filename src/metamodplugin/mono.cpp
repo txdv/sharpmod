@@ -66,8 +66,8 @@ plugin_info_t Plugin_info = {
 MonoMethod *search_method(MonoClass *klass, char *methodname);
 
 MonoMethod *handlerGiveFnptrsToDll;
-MonoMethod *handlerMeta_Query; 
-MonoMethod *handlerMeta_Attach; 
+MonoMethod *handlerMeta_Query;
+MonoMethod *handlerMeta_Attach;
 MonoMethod *handlerGetEntityAPI2;
 
 void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pGlobals)
@@ -152,7 +152,7 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 //  pFunctionTable  (requested) table of function tables this plugin catches
 //  pMGlobals   (given) global vars from metamod
 //  pGamedllFuncs (given) copy of function tables from game dll
-C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME now, META_FUNCTIONS *pFunctionTable, 
+C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME now, META_FUNCTIONS *pFunctionTable,
   meta_globals_t *pMetaGlobals, gamedll_funcs_t *pGamedllFuncs)
 {
 #ifdef __DEBUG__
@@ -198,8 +198,8 @@ MonoMethod *search_method(MonoClass *klass, char *methodname)
   return NULL;
 }
 
-C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */, 
-		PL_UNLOAD_REASON /* reason */) 
+C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */,
+                            PL_UNLOAD_REASON /* reason */)
 {
   mono_jit_cleanup(domain);
   return(TRUE);
