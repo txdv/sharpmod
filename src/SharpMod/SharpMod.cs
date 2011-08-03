@@ -28,8 +28,8 @@ using HLTools;
 namespace SharpMod
 {
 
-	public sealed class SharpMod
-	{
+  public sealed class SharpMod
+  {
 
     /// <summary>
     /// Variable for holding the Version of sharpmod
@@ -108,5 +108,5 @@ namespace SharpMod
       }
       else smodHelp();
     }
-	}
+  }
 }
