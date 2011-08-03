@@ -290,10 +290,7 @@ namespace SharpMod
 
       PlayerInfo pi = new PlayerInfo(player);
 
-      Task.Factory.StartNew(delegate {
-        TaskManager.Join(ResolvedBans, SharpMod.Database.GetActiveBan(pi));
-      });
-
+      SharpMod.Database.GetActiveBan(pi, ResolvedBans);
     }
     #endregion
 
@@ -774,8 +771,8 @@ namespace SharpMod
     {
       PlayerInfo pi = new PlayerInfo(this);
 
-      Task.Factory.StartNew(delegate {
-        TaskManager.Join<PlayerInfo, Privileges>(ResolvedPrivileges, pi, SharpMod.Database.LoadPrivileges(pi));
+      SharpMod.Database.LoadPrivileges(pi, delegate (Privileges priv) {
+        ResolvedPrivileges(pi, priv);
       });
     }
 

@@ -25,17 +25,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextTools", "BaseSolutions\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToolsConsole", "BaseSolutions\TextToolsConsole\TextToolsConsole.csproj", "{23166914-04AB-40EC-8780-8028A2CBD5A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Psi", "psi\Psi\Psi.csproj", "{51240530-3278-44F8-8B60-98313B58C7A6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HLTools", "hltools\HLTools\HLTools.csproj", "{E5D928F5-B095-48F2-A5D2-65D228CE320E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{A8E60C42-0DF0-43EE-BEBE-C69CD2AE487C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMod.DProto", "Extensions\dproto\SharpMod.DProto.csproj", "{B3A157A1-64E0-4A67-A4D6-FE3F63FD2323}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Psi", "External\psi\Psi\Psi.csproj", "{51240530-3278-44F8-8B60-98313B58C7A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manos.IO", "External\manos\src\Manos.IO\Manos.IO.csproj", "{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Databases", "Databases", "{5D876F74-8FBC-45CD-82FA-909FCDE54334}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMod.Database.MySql", "SharpMod.Database.MySql\SharpMod.Database.MySql.csproj", "{4DAEB79F-DA1F-45DA-A031-F3D8E9ED664A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{EA0F2C61-4A1D-4EBA-BD99-1D77A5B6BD93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manos.MySql", "External\Manos.MySql\Manos.MySql\Manos.MySql.csproj", "{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +53,10 @@ Global
 		{23166914-04AB-40EC-8780-8028A2CBD5A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23166914-04AB-40EC-8780-8028A2CBD5A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23166914-04AB-40EC-8780-8028A2CBD5A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CDA552F-0BFF-4AEE-B713-EA78E478E781}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CDA552F-0BFF-4AEE-B713-EA78E478E781}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CDA552F-0BFF-4AEE-B713-EA78E478E781}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -67,6 +77,10 @@ Global
 		{53BB0109-0590-45EC-A895-B36016B9689C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53BB0109-0590-45EC-A895-B36016B9689C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53BB0109-0590-45EC-A895-B36016B9689C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83E2C6D7-409B-4BF8-96BD-47480160FDD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{83E2C6D7-409B-4BF8-96BD-47480160FDD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83E2C6D7-409B-4BF8-96BD-47480160FDD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -110,10 +124,12 @@ Global
 		{83E2C6D7-409B-4BF8-96BD-47480160FDD3} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
 		{BADBD373-6538-4F67-92AC-BA43F89CC440} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
 		{23166914-04AB-40EC-8780-8028A2CBD5A3} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
-		{51240530-3278-44F8-8B60-98313B58C7A6} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
 		{E5D928F5-B095-48F2-A5D2-65D228CE320E} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
 		{B3A157A1-64E0-4A67-A4D6-FE3F63FD2323} = {A8E60C42-0DF0-43EE-BEBE-C69CD2AE487C}
+		{51240530-3278-44F8-8B60-98313B58C7A6} = {A8E60C42-0DF0-43EE-BEBE-C69CD2AE487C}
+		{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF} = {A8E60C42-0DF0-43EE-BEBE-C69CD2AE487C}
 		{4DAEB79F-DA1F-45DA-A031-F3D8E9ED664A} = {5D876F74-8FBC-45CD-82FA-909FCDE54334}
+		{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA} = {EA0F2C61-4A1D-4EBA-BD99-1D77A5B6BD93}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SharpMod\SharpMod.csproj
@@ -133,8 +149,8 @@ Global
 		$2.inheritsScope = text/plain
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
-		$3.BeforeMethodCallParentheses = False
 		$3.BeforeMethodDeclarationParentheses = False
+		$3.BeforeMethodCallParentheses = False
 		$3.BeforeConstructorDeclarationParentheses = False
 		$3.BeforeDelegateDeclarationParentheses = False
 		$3.NewParentheses = False
@@ -143,7 +159,7 @@ Global
 		$3.scope = text/x-csharp
 		$0.StandardHeader = $4
 		$4.Text = @\n    This file is part of sharpmod.\n    sharpmod is a metamod plugin which enables you to write plugins\n    for Valve GoldSrc using .NET programms.\n\n    Copyright (C) 2011 Andrius Bentkus\n\n    csharpmod is free software: you can redistribute it and/or modify\n    it under the terms of the GNU General Public License as published by\n    the Free Software Foundation, either version 3 of the License, or\n    (at your option) any later version.\n\n    csharpmod is distributed in the hope that it will be useful,\n    but WITHOUT ANY WARRANTY; without even the implied warranty of\n    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n    GNU General Public License for more details.\n\n    You should have received a copy of the GNU General Public License\n    along with csharpmod.  If not, see <http://www.gnu.org/licenses/>.\n
-		$4.inheritsSet = Apache2License
+		$4.IncludeInNewFiles = False
 		$0.TextStylePolicy = $5
 		$5.inheritsSet = null
 		$5.scope = application/xml

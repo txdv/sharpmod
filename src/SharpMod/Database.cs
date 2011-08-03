@@ -165,16 +165,16 @@ namespace SharpMod.Database
   {
     bool Load(XmlDocument doc);
 
-    Privileges LoadPrivileges(IPlayerExtendedInfo player);
-    bool SavePrivileges(IPlayerExtendedInfo player, string access);
+    void LoadPrivileges(IPlayerExtendedInfo player, Action<Privileges> callback);
+    void SavePrivileges(IPlayerExtendedInfo player, string access, Action<bool> callback);
 
-    BanInfo[] GetAllBans();
-    BanInfo GetActiveBan(IPlayerExtendedInfo player);
-    bool AddBan(BanInfo bi);
+    void GetAllBans(Action<Exception, BanInfo[]> callback);
+    void GetActiveBan(IPlayerExtendedInfo player, Action<BanInfo> callback);
+    void AddBan(BanInfo bi, Action<Exception, bool> callback);
 
-    bool AddKick(KickInfo ki);
+    void AddKick(KickInfo ki, Action<bool> callback);
 
-    bool AddMapChange(MapChangeInfo mi);
+    void AddMapChange(MapChangeInfo mi, Action<bool> callback);
   }
 
   public class DefaultDatabase : IDatabase
@@ -201,39 +201,39 @@ namespace SharpMod.Database
       return false;
     }
 
-    public Privileges LoadPrivileges(IPlayerExtendedInfo player)
+    public void LoadPrivileges(IPlayerExtendedInfo player, Action<Privileges> callback)
     {
-      return null;
+      callback(null);
     }
 
-    public bool SavePrivileges(IPlayerExtendedInfo player, string access)
+    public void SavePrivileges(IPlayerExtendedInfo player, string access, Action<bool> callback)
     {
-      return false;
+      callback(false);
     }
 
-    public BanInfo[] GetAllBans()
+    public void GetAllBans(Action<Exception, BanInfo[]> callback)
     {
-      return null;
+      callback(null, new BanInfo[] { });
     }
 
-    public BanInfo GetActiveBan(IPlayerExtendedInfo player)
+    public void GetActiveBan(IPlayerExtendedInfo player, Action<BanInfo> callback)
     {
-      return null;
+      callback(null);
     }
 
-    public bool AddBan(BanInfo bi)
+    public void AddBan(BanInfo bi, Action<Exception, bool> callback)
     {
-      return false;
+      callback(null, false);
     }
 
-    public bool AddKick(KickInfo ki)
+    public void AddKick(KickInfo ki, Action<bool> callback)
     {
-      return false;
+      callback(false);
     }
 
-    public bool AddMapChange(MapChangeInfo mi)
+    public void AddMapChange(MapChangeInfo mi, Action<bool> callback)
     {
-      return false;
+      callback(false);
     }
   }
 

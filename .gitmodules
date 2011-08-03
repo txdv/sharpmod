@@ -1,9 +1,9 @@
 [submodule "src/psi"]
-	path = src/psi
+	path = src/External/psi
 	url = git://github.com/txdv/psi.git
 [submodule "src/manos"]
-	path = src/manos
+	path = src/External/manos
 	url = git@github.com:txdv/manos.git
 [submodule "src/hltools"]
-	path = src/hltools
+	path = src/External/hltools
 	url = https://github.com/txdv/hltools/

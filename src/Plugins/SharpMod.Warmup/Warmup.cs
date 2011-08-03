@@ -24,7 +24,6 @@ using SharpMod;
 using SharpMod.Helper;
 using SharpMod.CounterStrike;
 
-using Manos;
 using Manos.IO;
 
 namespace SharpMod.Warmup

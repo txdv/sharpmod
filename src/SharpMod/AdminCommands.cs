@@ -97,8 +97,7 @@ namespace SharpMod.Commands
 
       target.Kick(Reason);
 
-      Task.Factory.StartNew(delegate {
-        SharpMod.Database.AddKick(ki);
+      SharpMod.Database.AddKick(ki, delegate {
       });
     }
   }
@@ -200,12 +199,13 @@ namespace SharpMod.Commands
       int userid = Player.GetUserID(player);
 
       Task.Factory.StartNew(delegate {
-        try {
-          SharpMod.Database.AddBan(bi);
-          TaskManager.Join(OnSuccess, userid);
-        } catch (Exception e) {
-          TaskManager.Join(OnFailure, userid, e);
-        }
+        SharpMod.Database.AddBan(bi, delegate (Exception exception, bool success) {
+          if (success) {
+            OnSuccess(userid);
+          } else {
+            OnFailure(userid, exception);
+          }
+        });
       });
     }
 
@@ -247,12 +247,12 @@ namespace SharpMod.Commands
         return;
       }
 
-      Task.Factory.StartNew(delegate {
-        try {
-          biList = SharpMod.Database.GetAllBans();
+      SharpMod.Database.GetAllBans(delegate (Exception exception, BanInfo[] list) {
+        if (exception != null) {
+          OnFailure(userid, exception);
+        } else {
+          biList = list;
           OnSuccess(userid);
-        } catch (Exception e) {
-          OnFailure(userid, e);
         }
       });
     }
@@ -390,17 +390,18 @@ namespace SharpMod.Commands
       //int comp = int.Parse(CVar.Get("smod_map_completness").String);
       int comp = 1;
 
+      // TODO: make this work
+      /*
       Task.Factory.StartNew(delegate {
         try {
           var res = SharpMod.Verifier.VerifyMap(Map + ".bsp");
           if (comp >= 1 && !res.ServerCapable) {
             TaskManager.Join(OnFailure, userid, "Server is not capable of running this map");
-            return;
+
           }
 
           if (comp >= 2 && !res.ClientCapable) {
             TaskManager.Join(OnFailure, userid, "Server is not capable of serving all client files");
-            return;
           }
           SharpMod.Database.AddMapChange(mc);
           TaskManager.Join(OnSuccess, userid);
@@ -408,6 +409,7 @@ namespace SharpMod.Commands
           TaskManager.Join(OnFailure, userid, e);
         }
       });
+      */
     }
 
     protected override void OnSuccess(Player player)

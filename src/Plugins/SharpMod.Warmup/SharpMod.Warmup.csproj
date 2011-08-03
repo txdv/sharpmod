@@ -36,19 +36,15 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Manos, Version=0.1.3.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\manos\build\Manos.dll</HintPath>
-    </Reference>
-    <Reference Include="Manos.IO, Version=0.1.3.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\manos\build\Manos.IO.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SharpMod\SharpMod.csproj">
       <Project>{FA7994EC-F092-4A21-AE72-CC775053017C}</Project>
       <Name>SharpMod</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\External\manos\src\Manos.IO\Manos.IO.csproj">
+      <Project>{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}</Project>
+      <Name>Manos.IO</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
