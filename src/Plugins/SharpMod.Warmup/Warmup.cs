@@ -99,7 +99,7 @@ namespace SharpMod.Warmup
       foreach (var player in Player.Players) {
         ClearPlayer(player);
       }
-			
+
       SetArmouryVisibility(armvis.Bool(), armpick.Bool());
 
       messageWatcher.Start();
@@ -109,8 +109,8 @@ namespace SharpMod.Warmup
     {
       Enabled = false;
       Server.ExecuteCommand("sv_restart 1");
-			
-			SetArmouryVisibility(true, true);
+
+    SetArmouryVisibility(true, true);
 
       messageWatcher.Stop();
     }
@@ -123,14 +123,14 @@ namespace SharpMod.Warmup
         player.SetMoney(0);
       }
     }
-		
-		public void SetArmouryVisibility(bool vis, bool pick)
-		{
+
+    public void SetArmouryVisibility(bool vis, bool pick)
+    {
       foreach (var entity in Entity.Find("classname", "armoury_entity")) {
         entity.Solid = (pick ? Solid.Trigger : Solid.Not);
         entity.Nodraw = !vis;
       }
-		}
+    }
 
     public void SendMessage(Player player, float time)
     {

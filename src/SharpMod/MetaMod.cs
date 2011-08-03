@@ -757,8 +757,7 @@ typedef struct {
     internal static void WriteCoordPost(int val)
     {
       float *flValue = (float *)&val;
-      switch (writeCoordCount)
-      {
+      switch (writeCoordCount) {
       case 0:
         coord.x = *flValue;
         break;
