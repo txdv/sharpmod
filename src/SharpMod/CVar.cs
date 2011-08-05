@@ -84,7 +84,8 @@ namespace SharpMod
     // TODO: Check if there is already an instance of an cvar (a C# class)
     // and create only new ones if there isn't
 
-    private CVarInfo* cvar;
+    IntPtr ptr;
+    CVarInfo *cvar { get { return (CVarInfo *)ptr.ToPointer(); } }
 
     /// <summary>
     /// Creates a CVar class for an already in the GoldSrc engine registered cvar.
@@ -97,11 +98,12 @@ namespace SharpMod
     /// </returns>
     public static CVar Get(string name)
     {
-      CVarInfo *cvar = MetaModEngine.engineFunctions.CVarGetPointer(name);
-      if (cvar == null)
+      IntPtr ptr = MetaModEngine.engineFunctions.CVarGetPointer(name);
+      if (ptr == IntPtr.Zero) {
         return null;
-      else
-        return new CVar(cvar);
+      } else {
+        return new CVar(ptr);
+      }
     }
 
     /// <summary>
@@ -167,21 +169,16 @@ namespace SharpMod
     /// </param>
     public CVar(string name, string val)
     {
-      cvar = (CVarInfo*)UnixMarshal.AllocHeap(sizeof(CVarInfo)).ToPointer();
+      ptr = UnixMarshal.AllocHeap(sizeof(CVarInfo));
       cvar->name = (sbyte *)UnixMarshal.StringToHeap(name).ToPointer();
       cvar->str  = (sbyte *)UnixMarshal.StringToHeap(val).ToPointer();
       cvar->next = (CVarInfo*)IntPtr.Zero.ToPointer();
-      MetaMod.MetaModEngine.engineFunctions.CVarRegister(cvar);
-    }
-
-    internal CVar(CVarInfo *cvar)
-    {
-      this.cvar = cvar;
+      MetaMod.MetaModEngine.engineFunctions.CVarRegister(ptr);
     }
 
     internal CVar(IntPtr ptr)
-      : this((CVarInfo*)ptr.ToPointer())
     {
+      this.ptr = ptr;
     }
 
     bool GetFlag(int field)

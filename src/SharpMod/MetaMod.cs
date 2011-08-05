@@ -200,7 +200,7 @@ namespace SharpMod.MetaMod
   internal delegate void WriteStringDelegate(string val);
   internal delegate void WriteEntityDelegate(int val);
 
-  internal unsafe delegate void CVarRegisterDelegate(CVarInfo *pCvar);
+  internal unsafe delegate void CVarRegisterDelegate(IntPtr pCvar);
   internal delegate float CVarGetFloatDelegate(string szVarName);
   internal unsafe delegate sbyte *CVarGetStringDelegate(string name);
   internal delegate void CVarSetFloatDelegate(string szVarName, float flValue);
@@ -218,7 +218,7 @@ namespace SharpMod.MetaMod
   internal delegate int IsMapValidDelegate(string filename);
   internal delegate int GetPlayerUserId(IntPtr playerEntity);
   internal delegate int IsDedicatedServerDelegate();
-  internal unsafe delegate CVarInfo *CVarGetPointerDelegate(string cvarname);
+  internal unsafe delegate IntPtr CVarGetPointerDelegate(string cvarname);
   internal delegate void GetPlayerStatsDelegate(IntPtr playerEntity, ref int ping, ref int packet_loss);
   internal delegate void AddServerCommandDelegate(string name, IntPtr functionPointer);
   internal unsafe delegate sbyte *GetPlayerAuthIdDelegate(IntPtr playerEntity);
