@@ -71,6 +71,7 @@
     <Compile Include="CounterStrike\CounterStrike.cs" />
     <Compile Include="CounterStrike\Weapon.cs" />
     <Compile Include="CounterStrike\Hostage.cs" />
+    <Compile Include="MapCycle.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -184,6 +184,13 @@ namespace SharpMod
   /// </summary>
   public static class Message
   {
+    internal static void Init()
+    {
+      for (int i = 0; i < 64; i++) {
+        TypeNames[i] = new BinaryTree.Node("", i);
+      }
+    }
+
     #if DEBUG
     private static MessageInformation messageInformation;
     #endif
@@ -554,7 +561,7 @@ namespace SharpMod
 
     public static bool Intercept(string name, Delegate del)
     {
-      BinaryTree.Node node = Message.Types.GetNode(name);
+      var node = Message.Types.GetNode(name);
 
       if (node == null) {
         return false;
@@ -562,6 +569,65 @@ namespace SharpMod
 
       node.invokerlist.Add(del);
       return true;
+    }
+
+    public static bool Intercept(int id, Delegate del)
+    {
+      var node = Message.TypeNames[id];
+
+      if (node == null) {
+        return false;
+      }
+
+      node.invokerlist.Add(del);
+      return true;
+    }
+
+    internal static void Invoke(Delegate del, MessageHeader message_header, List<object> parameters)
+    {
+      var param = del.Method.GetParameters();
+
+      object[] argumentList = new object[param.Length];
+
+      int last = 0;
+      for (int i = 0; i < param.Length; i++) {
+        Type t = param[i].ParameterType;
+
+        // handle special arguments first
+        if (t == typeof(MessageHeader)) {
+          argumentList[i] = message_header;
+          last++;
+        } else if (t == typeof(Player)) {
+          argumentList[i] = message_header.Player;
+          last++;
+        } else if (t.IsMessage()) {
+          int j = 0;
+          object o = Activator.CreateInstance(t);
+          foreach (var pi in t.GetFields()) {
+            if (j < parameters.Count) {
+              pi.SetValue(o, parameters[j]);
+            }
+            j++;
+          }
+          argumentList[i] = o;
+          last++;
+        } else {
+          break;
+        }
+      }
+
+      // copy the parameters in order for the rest
+      parameters.CopyTo(0, argumentList, last, param.Length - last);
+      for (int i = last + parameters.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
+
+      del.Method.Invoke(null, argumentList);
+    }
+
+    internal static void Invoke(List<Delegate> list, MessageHeader message_header, List<object> parameters)
+    {
+      foreach (Delegate del in list) {
+        Invoke(del, message_header, parameters);
+      }
     }
 
     internal static void Invoke(MessageHeader message_header, List<object> parameters)
@@ -572,44 +638,7 @@ namespace SharpMod
         return;
       }
 
-      foreach (Delegate del in node.invokerlist) {
-        var param = del.Method.GetParameters();
-
-        object[] argumentList = new object[param.Length];
-
-        int last = 0;
-        for (int i = 0; i < param.Length; i++) {
-          Type t = param[i].ParameterType;
-
-          // handle special arguments first
-          if (t == typeof(MessageHeader)) {
-            argumentList[i] = message_header;
-            last++;
-          } else if (t == typeof(Player)) {
-            argumentList[i] = message_header.Player;
-            last++;
-          } else if (t.IsMessage()) {
-            int j = 0;
-            object o = Activator.CreateInstance(t);
-            foreach (var pi in t.GetFields()) {
-              if (j < parameters.Count) {
-                pi.SetValue(o, parameters[j]);
-              }
-              j++;
-            }
-            argumentList[i] = o;
-            last++;
-          } else {
-            break;
-          }
-        }
-
-        // copy the parameters in order for the rest
-        parameters.CopyTo(0, argumentList, last, param.Length - last);
-        for (int i = last + parameters.Count; i < param.Length; i++) argumentList[i] = param[i].DefaultValue;
-
-        del.Method.Invoke(null, argumentList);
-      }
+      Invoke(node.invokerlist, message_header, parameters);
     }
 
     enum PluginFunctions

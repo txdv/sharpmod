@@ -107,6 +107,18 @@ namespace SharpMod
     }
   }
 
+  public class ServerCommands
+  {
+    internal ServerCommands()
+    {
+    }
+
+    public void ChangeLevel(string map)
+    {
+      Server.ExecuteCommand("changelevel {0}", map);
+    }
+  }
+
   /// <summary>
   /// A class that represents the running Server
   /// </summary>
@@ -119,6 +131,13 @@ namespace SharpMod
     private static Dictionary<string, CommandDelegate> serverCommands = new Dictionary<string, CommandDelegate>();
 
     private static int maxplayers;
+
+    static Server()
+    {
+      Commands = new ServerCommands();
+    }
+
+    public static ServerCommands Commands { get; private set; }
 
     /// <summary>
     /// Deals with the local information of the server

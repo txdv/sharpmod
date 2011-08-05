@@ -80,6 +80,9 @@ namespace SharpMod
       } catch (Exception e) {
         Server.LogError("Failed to load cfg/databases.xml: {0}", e.Message);
       }
+
+      Message.Init();
+      MapCycle.Init();
     }
 
     static void smodHelp()
