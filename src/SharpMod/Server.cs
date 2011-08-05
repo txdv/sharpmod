@@ -166,11 +166,14 @@ namespace SharpMod
     unsafe public static string GameDirectory {
       get {
         int length = 0;
-        foreach (DirectoryInfo di in (new DirectoryInfo("./")).GetDirectories())
-        {
-          if (di.Name.Length > length) length = di.Name.Length;
+        foreach (DirectoryInfo di in (new DirectoryInfo("./")).GetDirectories()) {
+          if (di.Name.Length > length) {
+            length = di.Name.Length;
+          }
         }
-        if (length == 0) length = 256;
+        if (length == 0) {
+          length = 256;
+        }
 
         // 64 should be enough, since most game dirs are like cstrike/valve/naturalselection
         IntPtr ptr = UnixMarshal.AllocHeap(length);
@@ -309,7 +312,7 @@ namespace SharpMod
     /// </param>
     public static void EnqueueCommand(string command, params object[] objs)
     {
-      EnqueueCommand(String.Format(command, objs));
+      EnqueueCommand(string.Format(command, objs));
     }
 
     /// <summary>
