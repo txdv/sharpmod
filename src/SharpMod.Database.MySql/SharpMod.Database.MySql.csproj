@@ -52,6 +52,10 @@
       <Project>{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA}</Project>
       <Name>Manos.MySql</Name>
     </ProjectReference>
+    <ProjectReference Include="..\External\manos\src\Manos.IO\Manos.IO.csproj">
+      <Project>{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}</Project>
+      <Name>Manos.IO</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
