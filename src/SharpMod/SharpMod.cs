@@ -68,7 +68,7 @@ namespace SharpMod
 
       try {
         var doc = new System.Xml.XmlDocument();
-        doc.Load(Path.Combine(Server.ModDirectory, "cfg/databases.xml"));
+        doc.Load(Path.Combine(Server.ModDirectory, Path.Combine("cfg", "databases.xml")));
         try {
           Database = DefaultDatabase.Load(Path.Combine(Server.ModDirectory, "SharpMod.Database.MySql.dll"));
           Database.Load(doc);
