@@ -63,7 +63,9 @@ namespace SharpMod
     protected static void OnConnect(ConnectEventArgs args)
     {
       MetaModEngine.SetResult(MetaResult.Handled);
-      if (Connect != null) Connect(args);
+      if (Connect != null) {
+        Connect(args);
+      }
     }
     internal static List<Player> pendingAuthPlayers = new List<Player>();
     internal static bool OnConnect(IntPtr entity, string name, string address, string reject_reason) 
@@ -108,7 +110,9 @@ namespace SharpMod
     public static event AuthorizeHandler Authorize;
     protected static void OnAuthorize(AuthorizeEventArgs args)
     {
-      if (Authorize != null) Authorize(args);
+      if (Authorize != null) {
+        Authorize(args);
+      }
     }
     internal static void OnAuthorize(Player player)
     {
@@ -123,8 +127,9 @@ namespace SharpMod
       Player player = Player.FindByUserId(pi.UserId);
 
       // Player isn't in the server any more, just stop it.
-      if (player == null)
+      if (player == null) {
         return;
+      }
 
       OnAssignPrivileges(player, priv == null ? player.Privileges : priv);
     }
@@ -134,7 +139,9 @@ namespace SharpMod
     public event AuthorizeHandler PlayerAuthorize;
     protected void OnPlayerAuthorize(AuthorizeEventArgs args)
     {
-      if (PlayerAuthorize != null) PlayerAuthorize(args);
+      if (PlayerAuthorize != null) {
+        PlayerAuthorize(args);
+      }
     }
     #endregion
 
@@ -304,16 +311,19 @@ namespace SharpMod
 
     private static void ResolvedBans(BanInfo information)
     {
-      if (information == null)
+      if (information == null) {
         return;
+      }
 
       Player target = Player.FindByUserId(information.Player.UserId);
 
-      if (target == null)
+      if (target == null) {
         return;
+      }
 
-      if (!target.Privileges.HasPrivilege("noban"))
+      if (!target.Privileges.HasPrivilege("noban")) {
         target.Kick(information.Reason);
+      }
     }
 
     // TODO: create an interface for information saving

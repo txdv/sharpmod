@@ -30,8 +30,7 @@ namespace SharpMod.CounterStrike
     #region team represantations
     public static string GetTeamString(Team team)
     {
-      switch (team)
-      {
+      switch (team) {
       case Team.Unassigned:
       return "UNASSIGNED";
       case Team.Terrorist:
