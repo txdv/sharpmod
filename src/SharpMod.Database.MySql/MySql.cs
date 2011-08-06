@@ -2,32 +2,63 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Linq;
+using System.Dynamic;
+
+using SharpMod;
+using SharpMod.Database;
+using SharpMod.Helper;
 
 using Psi;
 
-using SharpMod.Database;
-using SharpMod.Helper;
+using Manos.IO;
+using Manos.MySql;
 
 namespace SharpMod.Database.MySql
 {
   public class MySqlDatabase : IDatabase
   {
+    private static string createUserTable = @"CREATE TABLE IF NOT EXISTS users (id int PRIMARY KEY NOT NULL AUTO_INCREMENT, uniqueid varchar(50) NOT NULL, access text NOT NULL);";
+
+    private void CreateTables()
+    {
+      Client.Query(createUserTable);
+
+    }
+
+    public void FindByUniqueId(string uniqueId)
+    {
+      Client.Query(string.Format("SELECT * FROM users WHERE uniqueid = {0} LIMIT 1", uniqueId)).On(drow: (drow) => {
+      });
+    }
+
+    MySqlClient Client { get; set; }
+
+    public MySqlDatabase()
+    {
+      Client = new MySqlClient(SharpMod.Context);
+
+    }
+
     public string Hostname  { get; protected set; }
     public string Username  { get; protected set; }
     public string Password  { get; protected set; }
     public string Database  { get; protected set; }
-    public string Tablename { get; protected set; }
 
     public bool Load(XmlDocument doc)
     {
       try {
         var config = doc.GetXmlElement("mysql");
 
-        Hostname  = config.GetInnerText("hostname");
-        Username  = config.GetInnerText("username");
-        Password  = config.GetInnerText("password");
-        Database  = config.GetInnerText("database");
-        Tablename = config.GetInnerText("tablename");
+        Client.IPEndPoint = new IPEndPoint(IPAddress.Parse(config.GetInnerText("hostname")),
+                                               int.Parse(config.GetInnerText("port")));
+        Client.Username  = config.GetInnerText("username");
+        Client.Password  = config.GetInnerText("password");
+        Client.Database  = config.GetInnerText("database");
+
+        Client.Connect();
+        Client.Query(string.Format("use {0}", Client.Database));
+        CreateTables();
+
       } catch {
         return false;
       }
@@ -36,38 +67,46 @@ namespace SharpMod.Database.MySql
 
     public void AddBan(BanInfo bi, Action<Exception, bool> callback)
     {
-      throw new NotImplementedException ();
+      callback(null, false);
     }
 
     public void AddKick(KickInfo ki, Action<bool> callback)
     {
-      throw new NotImplementedException ();
+      callback(false);
     }
 
     public void AddMapChange(MapChangeInfo mi, Action<bool> callback)
     {
-      throw new NotImplementedException ();
+      callback(false);
     }
 
     public void GetActiveBan(IPlayerExtendedInfo player, Action<BanInfo> callback)
     {
-      throw new NotImplementedException ();
+      callback(null);
     }
 
     public void GetAllBans(Action<Exception, BanInfo[]> callback)
     {
-      throw new NotImplementedException ();
+      callback(null, new BanInfo[0]);
     }
-
 
     public void LoadPrivileges(IPlayerExtendedInfo player, Action<Privileges> callback)
     {
-      throw new NotImplementedException ();
+      Privileges priv = new Privileges("");
+      Client.Query(string.Format("SELECT * FROM users WHERE uniqueid = '{0}' LIMIT 1", player.AuthId))
+      .On(row: (row) => {
+          priv = new Privileges(row.GetValue("access") as string);
+      }, end: () => {
+          callback(priv);
+      });
     }
 
     public void SavePrivileges(IPlayerExtendedInfo player, string access, Action<bool> callback)
     {
-      throw new NotImplementedException ();
+      Client.Query(string.Format("UPDATE users SET access = '{0}' where uniqueid = '{1}'", access, player.AuthId))
+      .OnEnd(delegate {
+          callback(true);
+      });
     }
   }
 }

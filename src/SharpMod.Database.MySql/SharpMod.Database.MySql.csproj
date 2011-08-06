@@ -32,7 +32,6 @@
   <ItemGroup>
     <Compile Include="MySql.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Models.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
