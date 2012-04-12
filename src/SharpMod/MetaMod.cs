@@ -903,7 +903,9 @@ typedef struct {
       }
 
       TaskManager.WorkFrame();
-      SharpMod.Context.RunOnceNonblocking();
+      if (SharpMod.Context != null) {
+        SharpMod.Context.RunOnceNonblocking();
+      }
       MetaModEngine.SetResult(MetaResult.Handled);
     }
 

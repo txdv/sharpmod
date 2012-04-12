@@ -55,7 +55,7 @@ namespace SharpMod
 
     public static void Init()
     {
-      SharpMod.Context = Manos.IO.Context.Create();
+      //SharpMod.Context = Manos.IO.Context.Create();
 
       Version = new CVar("smod_version", "0.1");
 

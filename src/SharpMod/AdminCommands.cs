@@ -155,6 +155,7 @@ namespace SharpMod.Commands
         timespan = TimeSpan.FromMinutes(hours);
         return true;
       } else {
+        timespan = TimeSpan.Zero;
         return false;
       }
     }

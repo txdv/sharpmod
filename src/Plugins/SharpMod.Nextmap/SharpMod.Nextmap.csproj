@@ -38,14 +38,6 @@
       <Project>{FA7994EC-F092-4A21-AE72-CC775053017C}</Project>
       <Name>SharpMod</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SharpMod\SharpMod.csproj">
-      <Project>{FA7994EC-F092-4A21-AE72-CC775053017C}</Project>
-      <Name>SharpMod</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SharpMod\SharpMod.csproj">
-      <Project>{FA7994EC-F092-4A21-AE72-CC775053017C}</Project>
-      <Name>SharpMod</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

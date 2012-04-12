@@ -377,7 +377,7 @@ namespace SharpMod
     /// <summary>
     /// Returns the AuthID which might be a STEAMI ID
     /// </summary>
-    public string AuthID { unsafe get { return new string(MetaModEngine.engineFunctions.GetPlayerAuthId(Pointer)); } }
+    unsafe public string AuthID { get { return new string(MetaModEngine.engineFunctions.GetPlayerAuthId(Pointer)); } }
     /// <summary>
     /// Returns the Privileges of the player, which are determined by external resources
     /// like databases, privilege files. In other words, holds stuff like if the user
