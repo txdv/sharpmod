@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SwearFilter</RootNamespace>
     <AssemblyName>SwearFilter</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
