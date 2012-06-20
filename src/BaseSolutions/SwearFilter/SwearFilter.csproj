@@ -32,6 +32,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SwearFilter.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="ISwear.cs" />
+    <Compile Include="SwearComposite.cs" />
+    <Compile Include="Swear.cs" />
+    <Compile Include="SwearWord.cs" />
+    <Compile Include="SwearChecker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
