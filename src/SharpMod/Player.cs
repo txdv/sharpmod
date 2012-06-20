@@ -324,9 +324,9 @@ namespace SharpMod
 
 		// TODO: create an interface for information saving
 		// in the menu
-		internal Menues.SimpleMenu  menu;
-		internal int                menu_page;
-		internal Menues.Item[]      menu_items;
+		internal Menu.SimpleMenu  menu;
+		internal int              menu_page;
+		internal Menu.Item[]      menu_items;
 
 		/// <summary>
 		/// Releases the event handlers

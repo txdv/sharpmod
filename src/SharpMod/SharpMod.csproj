@@ -77,6 +77,13 @@
     <Compile Include="AdminCommands\AdminReload.cs" />
     <Compile Include="AdminCommands\ChangeMap.cs" />
     <Compile Include="AdminCommands\ListMaps.cs" />
+    <Compile Include="Menu\SimpleMenuExtender.cs" />
+    <Compile Include="Menu\MenuColor.cs" />
+    <Compile Include="Menu\Item.cs" />
+    <Compile Include="Menu\CVarItem.cs" />
+    <Compile Include="Menu\SimpleMenu.cs" />
+    <Compile Include="Menu\PlayerMenuInfo.cs" />
+    <Compile Include="Menu\Menu.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -102,5 +109,6 @@
   <ItemGroup>
     <Folder Include="CounterStrike\" />
     <Folder Include="AdminCommands\" />
+    <Folder Include="Menu\" />
   </ItemGroup>
 </Project>

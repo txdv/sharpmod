@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using SharpMod.Helper;
 using SharpMod.Database;
 
-namespace SharpMod
+namespace SharpMod.Commands
 {
 	[CommandInfo(CommandString = "smod_who", CommandType = CommandType.Both,
 		MinimumArguments = 1,

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SharpMod.Helper;
 using SharpMod.Database;
 
-namespace SharpMod
+namespace SharpMod.Commands
 {
 	[CommandInfo(CommandString = "smod_ban", CommandType = CommandType.Both,
 		MinimumArguments = 3, MaximumArguments = -1,
