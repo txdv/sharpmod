@@ -6,8 +6,8 @@ using SharpMod.Database;
 namespace SharpMod
 {
 	[CommandInfo(CommandString = "smod_maps", CommandType = CommandType.Both,
-	MinimumArguments = 1, MaximumArguments = 1,
-	HelpString = "- lists all available maps")]
+		MinimumArguments = 1, MaximumArguments = 1,
+		HelpString = "- lists all available maps")]
 	public class ListMaps : Command
 	{
 		public ListMaps(string[] arguments)
@@ -47,7 +47,7 @@ namespace SharpMod
 				player = Player.FindByUserId(userid);
 				if (player == null) {
 					return;
-					}
+				}
 			}
 
 			foreach (string map in maps) {

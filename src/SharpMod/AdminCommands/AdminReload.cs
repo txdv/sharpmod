@@ -6,8 +6,8 @@ using SharpMod.Database;
 namespace SharpMod
 {
 	[CommandInfo(CommandString = "smod_reloadadmins", CommandType = CommandType.Both,
-	MinimumArguments = 1,
-	HelpString = "- reloads the admins")]
+		MinimumArguments = 1,
+		HelpString = "- reloads the admins")]
 	public class AdminReload : Command
 	{
 		public AdminReload(string[] arguments)

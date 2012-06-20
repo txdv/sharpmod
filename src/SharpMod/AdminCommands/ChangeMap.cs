@@ -6,8 +6,8 @@ using SharpMod.Database;
 namespace SharpMod
 {
 	[CommandInfo(CommandString = "smod_map", CommandType = CommandType.Both,
-	MinimumArguments = 2,
-	HelpString = "<map> - changes the active map to")]
+		MinimumArguments = 2,
+		HelpString = "<map> - changes the active map to")]
 	public class ChangeMap : Command
 	{
 		public ChangeMap(string[] arguments)
