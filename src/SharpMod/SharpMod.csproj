@@ -87,7 +87,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <EmbeddedResource Include="gpl.txt" />
+    <EmbeddedResource Include="gpl.txt">
+      <LogicalName>gpl.txt</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BaseSolutions\TextTools\TextTools.csproj">

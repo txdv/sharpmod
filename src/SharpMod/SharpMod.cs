@@ -19,7 +19,7 @@ namespace SharpMod
 		/// 
 		public static string License {
 			get {
-				StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("sharpmod.gpl.txt"));
+				StreamReader sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("gpl.txt"));
 				string ret = sr.ReadToEnd();
 				sr.Close();
 				return ret;

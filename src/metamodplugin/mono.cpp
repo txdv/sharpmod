@@ -45,7 +45,7 @@ MonoImage *image;
 MonoClass *klass;
 MonoClass *engine_interface;
 
-char *file = "cstrike/addons/sharpmod/sharpmod.dll";
+char *file = "cstrike/addons/sharpmod/SharpMod.dll";
 
 meta_globals_t *gpMetaGlobals;    // metamod globals
 gamedll_funcs_t *gpGamedllFuncs;  // gameDLL function tables
