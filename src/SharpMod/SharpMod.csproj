@@ -64,13 +64,19 @@
     <Compile Include="Model.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="Database.cs" />
-    <Compile Include="AdminCommands.cs" />
     <Compile Include="CounterStrike\Enums.cs" />
     <Compile Include="CounterStrike\PlayerExtensions.cs" />
     <Compile Include="CounterStrike\CounterStrike.cs" />
     <Compile Include="CounterStrike\Weapon.cs" />
     <Compile Include="CounterStrike\Hostage.cs" />
     <Compile Include="MapCycle.cs" />
+    <Compile Include="AdminCommands\Ban.cs" />
+    <Compile Include="AdminCommands\Kick.cs" />
+    <Compile Include="AdminCommands\ListBans.cs" />
+    <Compile Include="AdminCommands\Who.cs" />
+    <Compile Include="AdminCommands\AdminReload.cs" />
+    <Compile Include="AdminCommands\ChangeMap.cs" />
+    <Compile Include="AdminCommands\ListMaps.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -104,5 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CounterStrike\" />
+    <Folder Include="AdminCommands\" />
   </ItemGroup>
 </Project>
