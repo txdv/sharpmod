@@ -28,6 +28,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="TextTable.cs" />
+    <Compile Include="Header.cs" />
+    <Compile Include="Align.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
