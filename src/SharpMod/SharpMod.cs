@@ -83,8 +83,7 @@ namespace SharpMod
 			default:
 				smodHelp();
 				break;
-			}
-			else {
+			} else {
 				smodHelp();
 			}
 		}
