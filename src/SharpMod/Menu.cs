@@ -43,12 +43,12 @@ namespace SharpMod
 
 		private static int defaultShowMenuTextLength = 175;
 
-		public static void ShowMenu (this Player player, short keys, byte displaytime, string text)
+		public static void ShowMenu(this Player player, short keys, byte displaytime, string text)
 		{
 			ShowMenu(player, keys, (char)displaytime, text);
 		}
 
-		public static void ShowMenu (this Player player, short keys, char displaytime, string text)
+		public static void ShowMenu(this Player player, short keys, char displaytime, string text)
 		{
 			int count = text.Length / defaultShowMenuTextLength;
 			if (count == 0) {
@@ -60,12 +60,12 @@ namespace SharpMod
 			}
 		}
 
-		public static void ShowMenu (this Player player, short keys, byte displaytime, byte multipart, string text)
+		public static void ShowMenu(this Player player, short keys, byte displaytime, byte multipart, string text)
 		{
 			ShowMenu(player, keys, (char)displaytime, multipart, text);
 		}
 
-		public static void ShowMenu (this Player player, short keys, char displaytime, byte multipart, string text)
+		public static void ShowMenu(this Player player, short keys, char displaytime, byte multipart, string text)
 		{
 			Message.Begin(MessageDestination.OneReliable, Message.GetUserMessageID("ShowMenu"), IntPtr.Zero, player.Pointer);
 			Message.Write(keys);
@@ -119,17 +119,17 @@ namespace SharpMod.Menues
 
 	public static class SimpleMenuExtender
 	{
-		public static void Show (this SimpleMenu menu, Player player)
+		public static void Show(this SimpleMenu menu, Player player)
 		{
 			player.ShowMenu(menu);
 		}
 
-		public static void Show (this SimpleMenu menu, Player player, byte displayTime)
+		public static void Show(this SimpleMenu menu, Player player, byte displayTime)
 		{
 			player.ShowMenu(menu, displayTime);
 		}
 
-		public static void Show (this SimpleMenu menu, Player player, int displayTime)
+		public static void Show(this SimpleMenu menu, Player player, int displayTime)
 		{
 			Show(menu, player, (byte)displayTime);
 		}
@@ -206,7 +206,7 @@ namespace SharpMod.Menues
 		public string CVarName { get { return cvar.Name; } protected set { cvar = CVar.Get(value); } }
 
 		public CVarItem(string varname, string[] values)
-		: base(varname)
+			: base(varname)
 		{
 			Values = values;
 			cvar = CVar.Get(varname);
@@ -241,8 +241,7 @@ namespace SharpMod.Menues
 			}
 		}
 
-		public int Index
-		{
+		public int Index {
 			get {
 				if (Values != null) {
 					for (int i = 0; i < Values.Length; i++) {
@@ -255,8 +254,7 @@ namespace SharpMod.Menues
 			}
 		}
 
-		public int NextItem
-		{
+		public int NextItem {
 			get {
 				if (Index == -1) {
 					return 0;
