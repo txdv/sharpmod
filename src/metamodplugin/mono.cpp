@@ -79,11 +79,11 @@ void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pG
 
   domain = mono_jit_init(file);
   assembly = mono_domain_assembly_open(domain, file);
-  if (!assembly)
-  {
+  printf("%s\n", file);
+  if (!assembly) {
     // somehow we need to tell the plugin to stop now
     //LOG_CONSOLE(PLID, "Cant find the .NET assembly file in directory");
-    printf("Cant find the .NET assembly file in directory");
+    printf("Can't find the assembly in directory");
     //return FALSE;
   }
   image = mono_assembly_get_image(assembly);
@@ -188,10 +188,8 @@ MonoMethod *search_method(MonoClass *klass, char *methodname)
 {
   MonoMethod *m = NULL;
   gpointer iter = NULL;
-  while ((m = mono_class_get_methods(klass, &iter)))
-  {
-    if (strcmp(mono_method_get_name(m), methodname) == 0)
-    {
+  while ((m = mono_class_get_methods(klass, &iter))) {
+    if (strcmp(mono_method_get_name(m), methodname) == 0) {
       return m;
     }
   }
