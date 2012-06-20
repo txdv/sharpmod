@@ -13,7 +13,8 @@ namespace SharpMod
 	/// <summary>
 	/// A class for dealing with infobuffers (localinfo, serverinfo)
 	/// </summary>
-	public class BufferInfo {
+	public class BufferInfo
+	{
 
 		/// <summary>
 		/// The constructor ...
