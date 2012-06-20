@@ -94,10 +94,6 @@
       <Project>{E5D928F5-B095-48F2-A5D2-65D228CE320E}</Project>
       <Name>HLTools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\External\manos\src\Manos.IO\Manos.IO.csproj">
-      <Project>{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}</Project>
-      <Name>Manos.IO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\External\psi\Psi\Psi.csproj">
       <Project>{51240530-3278-44F8-8B60-98313B58C7A6}</Project>
       <Name>Psi</Name>

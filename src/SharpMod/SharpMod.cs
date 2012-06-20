@@ -30,8 +30,6 @@ namespace SharpMod
 
 		public static Verifier Verifier { get; private set; }
 
-		public static Manos.IO.Context Context { get; private set; }
-
 		public static void Init()
 		{
 			Version = new CVar("smod_version", "0.1");

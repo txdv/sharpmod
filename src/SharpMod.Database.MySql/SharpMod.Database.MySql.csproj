@@ -46,14 +46,6 @@
       <Project>{51240530-3278-44F8-8B60-98313B58C7A6}</Project>
       <Name>Psi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\External\Manos.MySql\Manos.MySql\Manos.MySql.csproj">
-      <Project>{2822BBF7-8D7E-4A2B-9487-A53CA80A44DA}</Project>
-      <Name>Manos.MySql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\External\manos\src\Manos.IO\Manos.IO.csproj">
-      <Project>{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}</Project>
-      <Name>Manos.IO</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

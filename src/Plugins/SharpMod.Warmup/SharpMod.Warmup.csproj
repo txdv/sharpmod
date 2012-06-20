@@ -41,10 +41,6 @@
       <Project>{FA7994EC-F092-4A21-AE72-CC775053017C}</Project>
       <Name>SharpMod</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\manos\src\Manos.IO\Manos.IO.csproj">
-      <Project>{5E2AA984-1C9C-4890-BEF6-CC2981C49AFF}</Project>
-      <Name>Manos.IO</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
