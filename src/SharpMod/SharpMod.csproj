@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FA7994EC-F092-4A21-AE72-CC775053017C}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>sharpmod</RootNamespace>
-    <AssemblyName>sharpmod</AssemblyName>
+    <RootNamespace>SharpMod</RootNamespace>
+    <AssemblyName>SharpMod</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
