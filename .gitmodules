@@ -4,3 +4,6 @@
 [submodule "src/hltools"]
 	path = src/External/hltools
 	url = https://github.com/txdv/hltools/
+[submodule "src/External/LibuvSharp"]
+	path = src/External/LibuvSharp
+	url = https://github.com/txdv/LibuvSharp.git

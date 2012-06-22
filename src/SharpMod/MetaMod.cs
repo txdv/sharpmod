@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Mono.Unix;
 using SharpMod.Helper;
 using SharpMod.Math;
+using LibuvSharp;
 
 namespace SharpMod.MetaMod
 {
@@ -884,7 +885,7 @@ namespace SharpMod.MetaMod
 
 			TaskManager.WorkFrame();
 
-			// TODO: Run LibuvSharp
+			Loop.Default.RunAsync();
 			MetaModEngine.SetResult(MetaResult.Handled);
 		}
 
