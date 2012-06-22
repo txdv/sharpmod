@@ -37,9 +37,9 @@ namespace SharpMod.Menu
 		{
 			if (NumberedItems) {
 				if (ColoredMenu) {
-					sb.Append(String.Format("{0}{1}. ", NumberColor, index+1));
+					sb.Append(String.Format("{0}{1}. ", NumberColor, index + 1));
 				} else {
-					sb.Append(String.Format("{0}. ", index+1));
+					sb.Append(String.Format("{0}. ", index + 1));
 				}
 			}
 			// The text is for sure there!
