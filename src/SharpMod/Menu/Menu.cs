@@ -32,7 +32,7 @@ namespace SharpMod.Menu
 
 		private int GetPageCount(int items)
 		{
-			return (items / itemsPerPage) + (items % itemsPerPage > 0 ? 1 : 0);
+			return (items / itemsPerPage);
 		}
 
 		public override MenuInfo GetMenuInfo(Player player)
