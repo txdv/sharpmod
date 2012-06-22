@@ -9,20 +9,54 @@ namespace SharpMod.Warmup
 {
 	public static class HelperMethods
 	{
-		public static bool Bool(this string str) {
+		public static bool Bool(this string str)
+		{
 			return !((str == "0") || (str == "off"));
 		}
 
-		public static bool Bool(this CVar cvar) {
+		public static bool Bool(this CVar cvar)
+		{
 			return cvar.String.Bool();
 		}
 
-		public static float GetFloat(this CVar cvar) {
+		public static float GetFloat(this CVar cvar)
+		{
 			return float.Parse(cvar.String);
 		}
 
-		public static int GetInt(this CVar cvar) {
+		public static bool TryGetFloat(this CVar cvar, out float @value)
+		{
+			return float.TryParse(cvar.String, out @value);
+		}
+
+		public static bool TryGetFloat(this CVar cvar, out float @value, float defvalue)
+		{
+			if (float.TryParse(cvar.String, out @value)) {
+				return true;
+			} else {
+				@value = defvalue;
+				return false;
+			}
+		}
+
+		public static int GetInt(this CVar cvar)
+		{
 			return int.Parse(cvar.String);
+		}
+
+		public static bool TryGetInt(this CVar cvar, out int @value)
+		{
+			return int.TryParse(cvar.String, out @value);
+		}
+
+		public static bool TryGet2Int(this CVar cvar, out int @value, int defvalue)
+		{
+			if (int.TryParse(cvar.String, out @value)) {
+				return true;
+			} else {
+				@value = defvalue;
+				return false;
+			}
 		}
 	}
 
@@ -45,12 +79,13 @@ namespace SharpMod.Warmup
 			Message.Intercept("TextMsG", (Action<string, string>)EventGameStart);
 
 			Player.RegisterCommand("warmup_start", (player, cmd) => {
-				int t = time.GetInt();
+				int t;
 				if (cmd.Arguments.Length > 1) {
-					Console.WriteLine (cmd.Arguments[0]);
 					if (!int.TryParse(cmd.Arguments[1], out t)) {
 						t = time.GetInt();
 					}
+				} else {
+					t = time.GetInt();
 				}
 				StartWarmup(t);
 			});
