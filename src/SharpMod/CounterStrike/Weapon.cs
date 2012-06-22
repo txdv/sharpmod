@@ -283,8 +283,8 @@ namespace SharpMod.CounterStrike
 			FieldInfo[] fields = typeof(Weapons).GetFields(BindingFlags.Public | BindingFlags.Static);
 			// since we ommit 0 and 2, we have to add 2 more to accomodate all
 			// the fields ;)
-			weaponStrings = new string[fields.Length+2];
-			weaponEnum = new Weapons[fields.Length+2];
+			weaponStrings = new string[fields.Length + 2];
+			weaponEnum = new Weapons[fields.Length + 2];
 
 			int i = 1;
 			foreach (FieldInfo fi in fields) {
