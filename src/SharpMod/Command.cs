@@ -42,13 +42,13 @@ namespace SharpMod
 		/// Calls the GoldSrc engine (Cmd_Argc, Cmd_Argv) and returns the values as a C# array
 		/// </summary>
 		public static string[] EngineArguments {
-		get {
-		string[] args = new string[MetaModEngine.engineFunctions.Cmd_Argc()];
-		for (int i = 0; i < args.Length; i++) {
-		args[i] = Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.Cmd_Argv(i));
-		}
-		return args;
-		}
+			get {
+				string[] args = new string[MetaModEngine.engineFunctions.Cmd_Argc()];
+				for (int i = 0; i < args.Length; i++) {
+					args[i] = Mono.Unix.UnixMarshal.PtrToString(MetaModEngine.engineFunctions.Cmd_Argv(i));
+				}
+				return args;
+			}
 		}
 
 		public virtual bool Success { get; protected set; }
