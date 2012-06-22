@@ -87,13 +87,13 @@ namespace SharpMod.Menu
 		public override bool DoSelect(Player player, int index)
 		{
 			switch (index) {
-			case 9:
+			case 8:
 				if (player.menu_page > 0) {
 					player.menu_page--;
 				}
 				this.Show(player);
 				return true;
-			case 10:
+			case 9:
 				player.menu_page++;
 				this.Show(player);
 				return true;

@@ -21,6 +21,7 @@ namespace SharpMod
 	{
 		MenuInfo GetMenuInfo(Player player);
 		bool DoSelect(Player player, int index);
+		void Add(Menu.Item item, Action action);
 	}
 
 	public struct MenuTime
@@ -86,14 +87,21 @@ namespace SharpMod
 
 		public static void SelectMenu(this Player player, int index)
 		{
-			if (dict.ContainsKey(player)) {
-				MenuTime mt = dict[player];
+			#if DEBUG
+			Console.WriteLine("SelectMenu({0}, {1})", player.Name, index);
+			#endif
+			MenuTime mt;
+			if (dict.TryGetValue(player, out mt)) {
+				dict.Remove(player);
+
 				if (DateTime.Now <= mt.start.Add(mt.timeSpan)) {
 					mt.menu.DoSelect(player, index);
 				} else {
 					// TODO: random menuselect, make a log entry for abusive behaviour?
+					#if DEBUG
+					Console.WriteLine("SelectMenu({0}, {1})- bad time", player.Name, index);
+					#endif
 				}
-				dict.Remove(player);
 			}
 		}
 

@@ -64,7 +64,7 @@ namespace SharpMod.Menu
 			sb.Append("\n\n");
 
 			foreach (Item item in acc) {
-				AddItemText(sb, j+1, item);
+				AddItemText(sb, j + 1, item);
 				if (item.Enabled) {
 					keys |= (short)(1 << j);
 				}
@@ -78,8 +78,24 @@ namespace SharpMod.Menu
 
 		public override bool DoSelect(Player player, int index)
 		{
-			return player.menu_items[index].DoSelect(player, index);
+			var mi = player.menu_items;
+			if (index < mi.Length) {
+				return mi[index].DoSelect(player, index);
+			} else {
+				return false;
+			}
 		}
+
+		public virtual void Add(Item item, Action action)
+		{
+			item.Select += (player, index) => {
+				action();
+				return true;
+			};
+
+			Add(item);
+		}
+
 		#endregion
 
 		#region IList<Item> implementation

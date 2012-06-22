@@ -149,7 +149,7 @@ namespace SharpMod
 
 			switch (cmd.Arguments[0]) {
 			case "menuselect":
-				player.SelectMenu(Convert.ToInt32(cmd.Arguments[1]));
+				player.SelectMenu(Convert.ToInt32(cmd.Arguments[1]) - 1);
 				break;
 			default:
 				CommandManager.Execute(player, cmd);
