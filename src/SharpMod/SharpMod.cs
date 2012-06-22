@@ -62,9 +62,9 @@ namespace SharpMod
 
 		static void smodHelp()
 		{
-			Console.WriteLine ("Usage: smod < command > [ argument ]");
-			Console.WriteLine ("   gpl\t\t - print the license");
-			Console.WriteLine ("   plugins\t - lists currently loaded plugins");
+			Console.WriteLine("Usage: smod < command > [ argument ]");
+			Console.WriteLine("   gpl\t\t - print the license");
+			Console.WriteLine("   plugins\t - lists currently loaded plugins");
 		}
 
 		static void smod(string[] args)
