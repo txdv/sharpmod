@@ -99,7 +99,7 @@ namespace SharpMod.Database
 	public class KickInfo : AdminCommandInfo
 	{
 		public KickInfo()
-		: base()
+			: base()
 		{
 		}
 
