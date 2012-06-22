@@ -35,7 +35,7 @@ namespace SharpMod.Menu
 			return (items / itemsPerPage) + (items % itemsPerPage > 0 ? 1 : 0);
 		}
 
-		public override MenuInfo GetMenuInfo (Player player)
+		public override MenuInfo GetMenuInfo(Player player)
 		{
 			StringBuilder sb = new StringBuilder();
 			List<Item> acc = new List<Item>();
@@ -84,7 +84,7 @@ namespace SharpMod.Menu
 			return new MenuInfo(keys, DisplayTime, sb.ToString());
 		}
 
-		public override bool DoSelect (Player player, int index)
+		public override bool DoSelect(Player player, int index)
 		{
 			switch (index) {
 			case 9:

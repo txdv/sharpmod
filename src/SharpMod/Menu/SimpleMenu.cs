@@ -26,7 +26,7 @@ namespace SharpMod.Menu
 			DisplayTime = 255;
 		}
 
-		public override void MenuIterator (Player player, IList<Item> itemlist, int start, ref int current, int end)
+		public override void MenuIterator(Player player, IList<Item> itemlist, int start, ref int current, int end)
 		{
 			foreach (Item item in list) {
 				item.MenuIterator(player, itemlist, start, ref current, end);
@@ -47,7 +47,7 @@ namespace SharpMod.Menu
 		}
 
 		#region IMenu implementation
-		public virtual MenuInfo GetMenuInfo (Player player)
+		public virtual MenuInfo GetMenuInfo(Player player)
 		{
 			StringBuilder sb = new StringBuilder();
 			List<Item> acc = new List<Item>();

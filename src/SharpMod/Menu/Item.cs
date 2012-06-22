@@ -10,12 +10,12 @@ namespace SharpMod.Menu
 		public virtual bool Selectable { get; protected set; }
 
 		public Item(string text)
-		: this(text, true, true)
+			: this(text, true, true)
 		{
 		}
 
 		public Item(string text, bool selectable)
-		: this(text, selectable, true)
+			: this(text, selectable, true)
 		{
 		}
 
