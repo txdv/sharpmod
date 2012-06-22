@@ -123,8 +123,7 @@ namespace SharpMod
 				foreach (Type type in asm.GetTypes()) {
 					if (type.GetInterface("IPlugin") != null) {
 						IPlugin ip = (IPlugin)Activator.CreateInstance(type);
-						ip.Load();
-						plugins.Add(ip);
+						Load(ip);
 						return true;
 					}
 				}
@@ -132,6 +131,13 @@ namespace SharpMod
 			} catch {
 				return false;
 			}
+		}
+
+		public static bool Load(IPlugin plugin)
+		{
+			plugin.Load();
+			plugins.Add(plugin);
+			return true;
 		}
 
 

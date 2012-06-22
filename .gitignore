@@ -1,12 +1,13 @@
 bin/
 include/
+libs/
+obj/
 *.swp
 *.bak
 *.exe
 *.dll
 *.pidb
 *.mdb
-obj/
 *.depend
 includedir
 fix

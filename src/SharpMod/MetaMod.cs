@@ -864,6 +864,7 @@ namespace SharpMod.MetaMod
 
 			// Load plugins here
 			PluginManager.LoadPlugins();
+			RubyPluginManager.LoadPlugins();
 
 			PluginManager.ShowPlugins();
 
