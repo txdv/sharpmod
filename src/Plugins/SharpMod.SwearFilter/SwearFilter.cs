@@ -6,7 +6,7 @@ namespace SharpMod.SwearFilter
 {
 	public class Plugin : BasicPlugin
 	{
-		public override void Load ()
+		public override void Load()
 		{
 			Player.RegisterCommand("say", SwearCheck);
 			Player.RegisterCommand("say_team", SwearCheck);
