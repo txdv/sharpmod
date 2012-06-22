@@ -26,10 +26,10 @@ namespace SharpMod.Menu
 			DisplayTime = 255;
 		}
 
-		public override void MenuIterator(Player player, IList<Item> itemlist, int start, ref int current, int end)
+		public override void MenuIterator(Player player, IList<Item> itemlist, int start, ref int current, int end, ref int max)
 		{
 			foreach (Item item in list) {
-				item.MenuIterator(player, itemlist, start, ref current, end);
+				item.MenuIterator(player, itemlist, start, ref current, end, ref max);
 			}
 		}
 
@@ -55,7 +55,8 @@ namespace SharpMod.Menu
 			int i = 0, j = 0;
 			short keys = 0;
 
-			MenuIterator(player, acc, 0, ref i, 10);
+			int max = 0;
+			MenuIterator(player, acc, 0, ref i, 10, ref max);
 
 			player.menu = this;
 			player.menu_items = acc.ToArray();

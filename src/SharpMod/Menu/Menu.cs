@@ -51,12 +51,14 @@ namespace SharpMod.Menu
 				player.menu_page = 0;
 			}
 
-			MenuIterator(player, acc, GetItemIndex(page), ref i, GetItemIndex(page) + itemsPerPage);
+			int max = 0;
+			MenuIterator(player, acc, GetItemIndex(page), ref i, GetItemIndex(page) + itemsPerPage, ref max);
+			int maxPage = GetPageCount(max);
 
 			player.menu_items = acc.ToArray();
 
 			sb.Append(Text);
-			sb.Append(String.Format(" ({0}/{1})\n\n", page + 1, GetPageCount(i) + 1));
+			sb.Append(String.Format(" ({0}/{1})\n\n", page + 1, maxPage + 1));
 
 			foreach (Item item in acc) {
 				AddItemText(sb, j, item);
@@ -74,7 +76,7 @@ namespace SharpMod.Menu
 				sb.Append("9. Back\n");
 			}
 
-			if (page < GetPageCount(i)) {
+			if (page < maxPage) {
 				// if there are some more pages, hit the next
 				// page counter
 				keys |= (short)(1 << 9); // next

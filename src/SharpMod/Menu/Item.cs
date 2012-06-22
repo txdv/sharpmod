@@ -26,7 +26,7 @@ namespace SharpMod.Menu
 			Selectable = selectable;
 		}
 
-		public virtual void MenuIterator(Player player, IList<Item> itemlist, int start, ref int current, int end)
+		public virtual void MenuIterator(Player player, IList<Item> itemlist, int start, ref int current, int end, ref int max)
 		{
 			if ((start <= current) && (current < end)) {
 				itemlist.Add(this);
@@ -35,6 +35,8 @@ namespace SharpMod.Menu
 			if (current < end) {
 				current++;
 			}
+
+			max++;
 		}
 
 		public delegate bool SelectDelegate(Player player, int index);
