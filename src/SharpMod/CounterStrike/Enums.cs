@@ -107,9 +107,9 @@ namespace SharpMod.CounterStrike
 	/// Enumerator for CounterStrike SpecialColors (Spectator, Terrorist, Blue)
 	/// </summary>
 	public enum SpecialColor {
-	White = 0,
-	Red = 1,
-	Blue = 3
+		White = 0,
+		Red = 1,
+		Blue = 3
 	}
 	// The offsets can be found in the amxmodx cstrike plugin code
 	// amxmodx-1.8.1/dlls/cstrike/cstrike/cstrike.h
