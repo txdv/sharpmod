@@ -31,6 +31,7 @@ namespace SharpMod.Menu
 			if ((start <= current) && (current < end)) {
 				itemlist.Add(this);
 			}
+
 			if (current < end) {
 				current++;
 			}

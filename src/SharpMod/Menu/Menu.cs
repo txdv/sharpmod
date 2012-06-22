@@ -56,7 +56,7 @@ namespace SharpMod.Menu
 			player.menu_items = acc.ToArray();
 
 			sb.Append(Text);
-			sb.Append(String.Format(" ({0}/{1})\n\n", page+1, GetPageCount(i)+1));
+			sb.Append(String.Format(" ({0}/{1})\n\n", page + 1, GetPageCount(i) + 1));
 
 			foreach (Item item in acc) {
 				AddItemText(sb, j, item);
