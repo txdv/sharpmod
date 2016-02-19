@@ -1,6 +1,6 @@
 
 METAMOD=metamod-1.19-linux.src.tar.gz
-HLSDK=hlsdk-2.3-p3.tar.gz
+HLSDK=hlsdk-2.3-p4.tar.gz
 
 DOWNLOAD_DIR=tmp/
 .PHONY: include
@@ -14,7 +14,7 @@ all: fix
 download:
 	mkdir $(DOWNLOAD_DIR)
 	wget http://sourceforge.net/projects/metamod/files/Metamod%20Sourcecode/1.19/metamod-1.19-linux.src.tar.gz/download --directory-prefix=$(DOWNLOAD_DIR)
-	wget http://metamod.sourceforge.net/files/sdk/hlsdk-2.3-p3.tar.gz --directory-prefix=$(DOWNLOAD_DIR)
+	wget http://metamod.sourceforge.net/files/sdk/$(HLSDK) --directory-prefix=$(DOWNLOAD_DIR)
 	touch download
 	echo "This is a placeholder in order to make the Makefile script work correctly, do not delete this file manually" > download
 
@@ -23,8 +23,8 @@ includedir: download
 	mv $(DOWNLOAD_DIR)/download $(DOWNLOAD_DIR)/metamod-1.19-linux.src.tar.gz
 	tar xzvf $(DOWNLOAD_DIR)/metamod-1.19-linux.src.tar.gz --directory include/
 	mv include/metamod-1.19 include/metamod
-	tar xzvf $(DOWNLOAD_DIR)/hlsdk-2.3-p3.tar.gz --directory include/
-	mv include/hlsdk-2.3-p3 include/hlsdk
+	tar xzvf $(DOWNLOAD_DIR)/$(HLSDK) --directory include/
+	mv include/$(patsubst %.tar.gz,%,$(HLSDK)) include/hlsdk
 	touch includedir
 
 fix: includedir
@@ -37,7 +37,7 @@ fix: includedir
 clean:
 	rm -rvf tmp
 	rm -f download
-	rm -f fix 
+	rm -f fix
 	rm -rvf include
 	rm -f includedir
 	rm -rvf bin
