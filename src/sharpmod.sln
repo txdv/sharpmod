@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{EA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Psi", "External\psi\Psi\Psi.csproj", "{51240530-3278-44F8-8B60-98313B58C7A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibuvSharp", "External\LibuvSharp\LibuvSharp\LibuvSharp.csproj", "{281B560A-E3B1-437C-9274-DD655E860E6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{23166914-04AB-40EC-8780-8028A2CBD5A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23166914-04AB-40EC-8780-8028A2CBD5A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23166914-04AB-40EC-8780-8028A2CBD5A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281B560A-E3B1-437C-9274-DD655E860E6E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CDA552F-0BFF-4AEE-B713-EA78E478E781}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CDA552F-0BFF-4AEE-B713-EA78E478E781}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CDA552F-0BFF-4AEE-B713-EA78E478E781}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -95,9 +101,9 @@ Global
 		{E5D928F5-B095-48F2-A5D2-65D228CE320E} = {3C873117-CC13-4F98-AB46-7E0A7756BD4E}
 		{B3A157A1-64E0-4A67-A4D6-FE3F63FD2323} = {A8E60C42-0DF0-43EE-BEBE-C69CD2AE487C}
 		{51240530-3278-44F8-8B60-98313B58C7A6} = {EA0F2C61-4A1D-4EBA-BD99-1D77A5B6BD93}
+		{281B560A-E3B1-437C-9274-DD655E860E6E} = {EA0F2C61-4A1D-4EBA-BD99-1D77A5B6BD93}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = SharpMod\SharpMod.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
@@ -290,5 +296,6 @@ Global
 		$38.LineAlign = 0
 		$37.inheritsSet = Mono
 		outputpath = ..\bin
+		StartupItem = SharpMod\SharpMod.csproj
 	EndGlobalSection
 EndGlobal
